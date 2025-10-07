@@ -1,0 +1,145 @@
+# Get auth token admin
+## Token Authorization: Basic YWRtaW46YWRtaW4=
+POST http://localhost:4111/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+###
+
+# Get auth token user
+## Authorization: Basic YW5uOm15UGFzczI1IQ==
+POST http://localhost:4111/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "kirill",
+  "password": "myPass25!"
+}
+
+###
+
+# POSITIVE TEST Admin can create User
+POST http://localhost:4111/api/v1/admin/users
+Content-Type: application/json
+Authorization:  Basic YWRtaW46YWRtaW4=
+
+{
+  "username": "kirill1",
+  "password": "myPass25!",
+  "role": "USER"
+}
+
+###
+# POSITIVE TEST Admin can create User
+POST http://localhost:4111/api/v1/admin/users
+Content-Type: application/json
+Authorization:  Basic YWRtaW46YWRtaW4=
+
+{
+"username": "ann",
+"password": "myPass25!",
+"role": "USER"
+}
+
+###
+
+# NEGATIVE TEST Admin can not create User with empty username
+POST http://localhost:4111/api/v1/admin/users
+Content-Type: application/json
+Authorization:  Basic YWRtaW46YWRtaW4=
+
+{
+  "username": "",
+  "password": "{{$random.uuid}}",
+  "role": "USER"
+}
+
+###
+
+# NEGATIVE TEST Admin can not create User with 3 spaces in username
+POST http://localhost:4111/api/v1/admin/users
+Content-Type: application/json
+Authorization:  Basic YWRtaW46YWRtaW4=
+
+{
+  "username": "   ",
+  "password": "asd{{$random.integer()}}!D",
+  "role": "USER"
+}
+
+###
+
+# NEGATIVE TEST Admin can not create User with 1 word and space
+POST http://localhost:4111/api/v1/admin/users
+Content-Type: application/json
+Authorization:  Basic YWRtaW46YWRtaW4=
+
+{
+  "username": "Kirill ",
+  "password": "asd{{$random.integer()}}!D",
+  "role": "USER"
+}
+
+###
+
+# NEGATIVE TEST User can not create User
+POST http://localhost:4111/api/v1/admin/users
+Content-Type: application/json
+Authorization:  Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "username": "kirill12",
+  "password": "myPass25!",
+  "role": "USER"
+}
+
+###
+
+# Create an account
+## Token Authorization: Basic a2lyaWxsOm15UGFzczI1IQ== - kirill
+## Token Authorization: Basic YW5uOm15UGFzczI1IQ== - ann
+###
+POST http://localhost:4111/api/v1/accounts
+Content-Type: application/
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+###
+
+# Get customers account
+## Token Authorization: Basic a2lyaWxsOm15UGFzczI1IQ== - kirill
+GET http://localhost:4111/api/v1/customer/accounts
+Content-Type: application/
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+###
+###
+## Token Authorization: Basic YW5uOm15UGFzczI1IQ== - ann
+GET http://localhost:4111/api/v1/customer/accounts
+Content-Type: application/
+Authorization: Basic YW5uOm15UGFzczI1IQ==
+###
+###
+
+## Token Authorization: Basic YW5uOm15UGFzczI1IQ== - ann
+GET http://localhost:4111/api/v1/accounts/1/transactions
+Content-Type: application/
+Authorization: Basic YW5uOm15UGFzczI1IQ==
+
+###
+
+# Create Account
+### POSITIVE TEST
+POST http://localhost:4111/api/v1/admin/users
+Content-Type: application/json
+Authorization:  Basic YWRtaW46YWRtaW4=
+
+{
+  "username": "kate1998",
+  "password": "verysTRongPassword33$",
+  "role": "USER"
+}
+
+###
