@@ -21,6 +21,12 @@ Content-Type: application/json
 }
 
 ###
+# Get  usrer profile
+## Authorization: Basic YW5uOm15UGFzczI1IQ==
+GET http://localhost:4111/api/v1/customer/profile
+Authorization:  Basic a2lyaWxsOm15UGFzczI1IQ==
+
+###
 
 # POSITIVE TEST Admin can create User
 POST http://localhost:4111/api/v1/admin/users
@@ -28,7 +34,7 @@ Content-Type: application/json
 Authorization:  Basic YWRtaW46YWRtaW4=
 
 {
-  "username": "kirill1",
+  "username": "kirill",
   "password": "myPass25!",
   "role": "USER"
 }

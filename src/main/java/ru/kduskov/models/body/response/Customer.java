@@ -1,10 +1,7 @@
 package ru.kduskov.models.body.response;
 
 import groovyjarjarantlr4.v4.runtime.misc.Nullable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.kduskov.enums.Role;
 
 import java.util.List;

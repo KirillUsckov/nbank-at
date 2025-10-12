@@ -2,5 +2,6 @@ package ru.kduskov.enums;
 
 public enum TransactionType {
     DEPOSIT,
-    TRANSACTION
+    TRANSFER_IN,
+    TRANSFER_OUT
 }
