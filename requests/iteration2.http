@@ -1,0 +1,259 @@
+# Get auth token user
+## Authorization:  Basic a2lyaWxsOm15UGFzczI1IQ==
+POST http://localhost:4111/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "kirill",
+  "password": "myPass25!"
+}
+###
+# deposit
+## User can add deposit to his account
+## edit whe requirmens for deposit will be available
+
+### POSITIVE CASE - deposit to personal account with amout 5000/4999/1/2
+POST http://localhost:4111/api/v1/accounts/deposit
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "id": 1,
+  "balance": 100000
+}
+
+### NEGATIVE CASE - deposit to personal account with amout 5001/0/-1
+POST http://localhost:4111/api/v1/accounts/deposit
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "id": 1,
+  "balance": -1
+}
+
+
+### NEGATIVE CASE - deposit to someone elese's account with amout
+POST http://localhost:4111/api/v1/accounts/deposit
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "id": 2,
+  "balance": 5000
+}
+
+
+### NEGATIVE CASE - deposit to doesnt existed account account+*
+POST http://localhost:4111/api/v1/accounts/deposit
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "id": 3000,
+  "balance": 5001
+}
+
+######################################################
+
+# transfer
+## User can transfer money from 1  his account to another his account
+### POSITIVE CASE: transfer to anothers user account with amount 1/10000/9999 - enougth money
+POST http://localhost:4111/api/v1/accounts/transfer
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "senderAccountId": 1,
+  "receiverAccountId": 2,
+  "amount": 9999
+}
+### POSITIVE CASE: transfer to self user account with amount 1/10000/9999 - enougth money
+POST http://localhost:4111/api/v1/accounts/transfer
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "senderAccountId": 1,
+  "receiverAccountId": 3,
+  "amount": 1
+}
+### NEGATIVE CASE: transfer to anothers user account with amount 1/10000/9999 - money not enought
+POST http://localhost:4111/api/v1/accounts/transfer
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "senderAccountId": 1,
+  "receiverAccountId": 2,
+  "amount": 9999
+}
+
+### NEGATIVE CASE: transfer to self user account with amount 1/10000/9999 - money not enought
+POST http://localhost:4111/api/v1/accounts/transfer
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "senderAccountId": 1,
+  "receiverAccountId": 3,
+  "amount": 1
+}
+
+### NEGATIVE CASE: transfer to anothers user account with amount -1/0/10001
+POST http://localhost:4111/api/v1/accounts/transfer
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "senderAccountId": 3,
+  "receiverAccountId": 2,
+  "amount": 10001
+}
+
+
+### NEGATIVE CASE: transfer to self user account with amount -1/0/10001
+POST http://localhost:4111/api/v1/accounts/transfer
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "senderAccountId": 3,
+  "receiverAccountId": 1,
+  "amount": 10001
+}
+
+
+### NEGATIVE CASE: transfer to not existed user account with amount 1/10000/9999
+POST http://localhost:4111/api/v1/accounts/transfer
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "senderAccountId": 3,
+  "receiverAccountId": 4,
+  "amount": 1000
+}
+
+### NEGATIVE CASE: transfer from not existed user account
+POST http://localhost:4111/api/v1/accounts/transfer
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "senderAccountId": 4,
+  "receiverAccountId": 3,
+  "amount": 1000
+}
+
+### NEGATIVE CASE: transfer from not another user account
+POST http://localhost:4111/api/v1/accounts/transfer
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "senderAccountId": 2,
+  "receiverAccountId": 3,
+  "amount": 1000
+}
+
+
+######################################################
+# edit name
+### POSITIVE CASE - name with 2 words and 1 space without numbers
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "name": "Kirill Beria"
+}
+###
+
+### NEGATIVE CASE - name with 2 word and 2 spaces without numbers
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "name": "Kirill  Beria"
+}
+
+### NEGATIVE CASE - name with 2 word and 1 spaces with numbers
+
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "name": "Kirill  Beria1"
+}
+
+### NEGATIVE CASE - name with 1 word and 1 space without numbers
+
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "name": "Kirill  "
+}
+
+### NEGATIVE CASE - name with 1 space
+
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "name": " "
+}
+
+### NEGATIVE CASE - name with 1 word
+
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "name": "Kirill"
+}
+
+### NEGATIVE CASE - name with 2 numbers and 1 space between
+
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "name": "1 2"
+}
+
+### NEGATIVE CASE - name is empty
+
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "name": ""
+}
+
+### NEGATIVE CASE - name is null
+
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic a2lyaWxsOm15UGFzczI1IQ==
+
+{
+  "name": null
+}
+
+### NEGATIVE CASE - admin can not edit name
+PUT http://localhost:4111/api/v1/customer/profile
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+
+{
+  "name": "Kirill Beria"
+}
