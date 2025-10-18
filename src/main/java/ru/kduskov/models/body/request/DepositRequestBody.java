@@ -10,7 +10,7 @@ import ru.kduskov.enums.GenerationsRules;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class DepositRequestBody extends BaseRequest {
-    private long id;
+    private Long id;
     @GeneratingRule(valueKey = GenerationsRules.DEPOSIT_BALANCE)
-    private long balance;
+    private Double balance;
 }

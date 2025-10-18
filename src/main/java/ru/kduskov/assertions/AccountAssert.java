@@ -118,21 +118,18 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return matches(originalAccount);
     }
 
-    public AccountAssert wasIncreasedBy(long depositAmount, AccountResponseBody originalAccount) {
-        var expectedBalance = originalAccount.getBalance() + depositAmount;
+    public AccountAssert wasIncreasedBy(double transactionAmount, AccountResponseBody originalAccount) {
+        var expectedBalance = originalAccount.getBalance() + transactionAmount;
         return hasBalance(expectedBalance)
                 .hasAccountNumber(originalAccount.getAccountNumber());
     }
 
-
-
-    public AccountAssert wasDencreasedBy(long depositAmount, AccountResponseBody originalAccount) {
-        var expectedBalance = originalAccount.getBalance() - depositAmount;
+    public AccountAssert wasDencreasedBy(double transactionAmount, AccountResponseBody originalAccount) {
+        var expectedBalance = originalAccount.getBalance() - transactionAmount;
         return hasBalance(expectedBalance)
                 .hasAccountNumber(originalAccount.getAccountNumber());
     }
 
-    // Валидация депозита (полная проверка)
     public AccountAssert isValidDepositResponse(double depositAmount, long accountId, AccountResponseBody originalAccount) {
 
         return hasId(accountId)
@@ -141,7 +138,6 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
                 .hasLatestDeposit(depositAmount, accountId);
     }
 
-    // Приватные методы
     private void validateTransaction(Transaction transaction,
                                      double expectedAmount,
                                      TransactionType expectedType,

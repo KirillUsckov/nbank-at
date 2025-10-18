@@ -7,11 +7,10 @@ import ru.kduskov.models.body.response.customer.profile.ChangeUserProfileRespons
 import ru.kduskov.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.steps.UserSteps;
 
-public class UserProfileAssertionSteps {
-    private final Assertions assertions;
+public class UserProfileAssertionSteps extends  BaseAssertionsSteps{
 
     public UserProfileAssertionSteps(SoftAssertions softly) {
-        this.assertions = new Assertions(softly);
+        super(softly);
     }
 
     public void assertChangeUserProfileResponse(ChangeUserProfileRequestBody requestBody, ChangeUserProfileResponseBody userProfileResponseBody) {
@@ -25,5 +24,4 @@ public class UserProfileAssertionSteps {
     public void assertCustomerNameMatchesPrevious(UserProfileResponseBody customerBeforeRequest, UserProfileResponseBody customerAfterRequest) {
         assertions.assertThat(customerAfterRequest).hasName(customerBeforeRequest.getName());
     }
-
 }

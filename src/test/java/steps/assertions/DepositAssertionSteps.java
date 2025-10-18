@@ -4,13 +4,13 @@ import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.assertions.Assertions;
 import ru.kduskov.models.body.request.DepositRequestBody;
 import ru.kduskov.models.body.response.general.AccountResponseBody;
-import ru.kduskov.steps.UserSteps;
 
-public class DepositAssertionSteps {
-    private final Assertions assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class DepositAssertionSteps extends BaseAssertionsSteps {
 
     public DepositAssertionSteps(SoftAssertions softly) {
-        this.assertions = new Assertions(softly);
+        super(softly);
     }
 
     public void assertSingleDeposit(DepositRequestBody depositRequestBody,
@@ -20,5 +20,4 @@ public class DepositAssertionSteps {
         assertions.assertThat(depositResponseBody)
                 .isValidDepositResponse(depositRequestBody.getBalance(), depositRequestBody.getId(), userAccount);
     }
-
 }

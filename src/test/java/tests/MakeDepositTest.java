@@ -1,27 +1,30 @@
 package tests;
 
+import constants.ErrorMessages;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import ru.kduskov.enums.Endpoint;
-import ru.kduskov.generators.RandomData;
+import ru.kduskov.generators.DepositRequestGenerator;
 import ru.kduskov.models.body.request.DepositRequestBody;
 import ru.kduskov.models.body.response.general.AccountResponseBody;
-import ru.kduskov.requests.skelethon.requesters.CrudRequester;
 import ru.kduskov.requests.skelethon.requesters.ValidatedCrudRequested;
 import ru.kduskov.specs.RequestSpecs;
 import ru.kduskov.specs.ResponseSpecs;
+import ru.kduskov.steps.DepositSteps;
 import ru.kduskov.steps.UserSteps;
 import steps.assertions.AccountAssertionSteps;
 import steps.assertions.DepositAssertionSteps;
-import steps.assertions.TransferAssertionSteps;
+
+import static constants.ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT;
 
 public class MakeDepositTest extends BaseTest {
     private static AccountResponseBody firstUserAccount;
     private static AccountResponseBody secondUserAccount;
     private static String secondUserAuthToken;
+    private final DepositSteps depositSteps = new DepositSteps();
     private DepositAssertionSteps depositAssertionSteps;
     private AccountAssertionSteps accountAssertionSteps;
 
@@ -53,12 +56,9 @@ public class MakeDepositTest extends BaseTest {
     @Test
     public void checkAdminCannotMakeDeposit() {
         var accountsBeforeRequest = userSteps.getUserAccounts(userAuthToken);
-        new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.accessForbidden(), Endpoint.MAKE_DEPOSIT)
-                .post(
-                        DepositRequestBody.builder()
-                                .id(firstUserAccount.getId())
-                                .build()
-                );
+        var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId());
+
+        this.depositSteps.sendDepositWithStringResponse(depositRequestBody, RequestSpecs.adminSpec(), ResponseSpecs.accessForbidden());
 
         var accountsAfterRequest = userSteps.getUserAccounts(userAuthToken);
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
@@ -67,18 +67,9 @@ public class MakeDepositTest extends BaseTest {
     @Test
     public void checkUserCanMakeDepositToHisOwnAccount() {
         var accountsBeforeRequest = userSteps.getUserAccounts(userAuthToken);
-        var depositRequestBody =
-                DepositRequestBody.builder()
-                        .id(firstUserAccount.getId())
-                        .balance(RandomData.getValidDepositAmount())
-                        .build();
-        var depositResponseBody =
-                new ValidatedCrudRequested<AccountResponseBody>(
-                        RequestSpecs.userSpec(userAuthToken),
-                        ResponseSpecs.ok(),
-                        Endpoint.MAKE_DEPOSIT
-                )
-                        .post(depositRequestBody);
+        var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId());
+
+        var depositResponseBody = this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(userAuthToken), ResponseSpecs.ok());
         firstUserAccount.setBalance(firstUserAccount.getBalance() + depositRequestBody.getBalance());
 
         this.depositAssertionSteps.assertSingleDeposit(depositRequestBody, depositResponseBody, firstUserAccount);
@@ -94,43 +85,32 @@ public class MakeDepositTest extends BaseTest {
     @Test
     public void checkUserCantMakeDepositToOthersAccount() {
         var accountsBeforeRequest = userSteps.getUserAccounts(secondUserAuthToken);
-        var depositRequestBody =
-                DepositRequestBody.builder()
-                        .id(secondUserAccount.getId())
-                        .balance(RandomData.getValidDepositAmount())
-                        .build();
-        new CrudRequester(RequestSpecs.userSpec(userAuthToken), ResponseSpecs.accessForbidden(), Endpoint.MAKE_DEPOSIT)
-                .post(depositRequestBody);
+        var depositRequestBody = DepositRequestGenerator.generate();
+        depositRequestBody.setId(secondUserAccount.getId());
+
+        var message = this.depositSteps.sendDepositWithStringResponse(depositRequestBody, userAuthToken, ResponseSpecs.accessForbidden());
+        this.accountAssertionSteps.assertMessage(UNAUTHORIZED_ACCESS_TO_ACCOUNT, message);
+
         var accountsAfterRequest = userSteps.getUserAccounts(secondUserAuthToken);
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, secondUserAccount);
     }
 
     @Test
     public void checkUserCantMakeDepositToNotExistedAccount() {
-        var depositRequestBody =
-                DepositRequestBody.builder()
-                        .id(RandomData.getId())
-                        .balance(RandomData.getValidDepositAmount())
-                        .build();
-        new CrudRequester(RequestSpecs.userSpec(userAuthToken), ResponseSpecs.accessForbidden(), Endpoint.MAKE_DEPOSIT).post(depositRequestBody);
+        var depositRequestBody = DepositRequestGenerator.generate();
+
+        var message = this.depositSteps.sendDepositWithStringResponse(depositRequestBody, userAuthToken, ResponseSpecs.accessForbidden());
+
+        this.accountAssertionSteps.assertMessage(UNAUTHORIZED_ACCESS_TO_ACCOUNT, message);
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 2, 4999, 5000})
-    public void checkUserCanMakeDepositOnlyWithBalanceInRange(int balance) {
+    @ValueSource(doubles = {0.1, 4999.99, 5000})
+    public void checkUserCanMakeDepositOnlyWithBalanceInRange(double balance) {
         var accountsBeforeRequest = userSteps.getUserAccounts(userAuthToken);
-        var depositRequestBody =
-                DepositRequestBody.builder()
-                        .id(firstUserAccount.getId())
-                        .balance(balance)
-                        .build();
-        var depositResponseBody =
-                new ValidatedCrudRequested<AccountResponseBody>(
-                        RequestSpecs.userSpec(userAuthToken),
-                        ResponseSpecs.ok(),
-                        Endpoint.MAKE_DEPOSIT
-                )
-                        .post(depositRequestBody);
+        var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId(), balance);
+        var depositResponseBody =  this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(userAuthToken), ResponseSpecs.ok());
+
         var totalBalance = firstUserAccount.getBalance() + balance;
         firstUserAccount.setBalance(totalBalance);
         this.depositAssertionSteps.assertSingleDeposit(depositRequestBody, depositResponseBody, firstUserAccount);
@@ -144,15 +124,29 @@ public class MakeDepositTest extends BaseTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {-1, 0, 5001})
-    public void checkUserCanNotMakeDepositOnlyWithBalanceOutOfRange(int balance) {
+    @ValueSource(doubles = {-0.01, 0})
+    public void checkUserCanNotMakeDepositWithLowBalance(double balance) {
+        var accountsBeforeRequest = userSteps.getUserAccounts(userAuthToken);
+        var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId(), balance);
+
+        var message = this.depositSteps.sendDepositWithStringResponse(depositRequestBody, userAuthToken, ResponseSpecs.badRequest());
+        this.depositAssertionSteps.assertMessage(ErrorMessages.Deposit.DEPOSIT_AMOUNT_MUST_BE_AT_LEAST_MIN, message);
+
+        var accountsAfterRequest = userSteps.getUserAccounts(userAuthToken);
+        this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
+    }
+
+    @Test
+    public void checkUserCanNotMakeDepositWithHighBalance() {
         var accountsBeforeRequest = userSteps.getUserAccounts(userAuthToken);
         var depositRequestBody =
                 DepositRequestBody.builder()
                         .id(firstUserAccount.getId())
-                        .balance(balance)
+                        .balance(5000.01)
                         .build();
-        new CrudRequester(RequestSpecs.userSpec(userAuthToken), ResponseSpecs.badRequest(), Endpoint.MAKE_DEPOSIT).post(depositRequestBody);
+
+        var message = this.depositSteps.sendDepositWithStringResponse(depositRequestBody, userAuthToken, ResponseSpecs.badRequest());
+        this.depositAssertionSteps.assertMessage(ErrorMessages.Deposit.DEPOSIT_AMOUNT_CANNOT_EXCEED_MAX, message);
 
         var accountsAfterRequest = userSteps.getUserAccounts(userAuthToken);
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, firstUserAccount);

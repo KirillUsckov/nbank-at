@@ -10,8 +10,8 @@ import ru.kduskov.enums.GenerationsRules;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class TransferRequestBody extends BaseRequest {
-    private long senderAccountId;
-    private long receiverAccountId;
+    private Long senderAccountId;
+    private Long receiverAccountId;
     @GeneratingRule(valueKey = GenerationsRules.TRANSFER_AMOUNT)
-    private long amount;
+    private Double amount;
 }

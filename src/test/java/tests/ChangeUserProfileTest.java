@@ -1,5 +1,6 @@
 package tests;
 
+import constants.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,6 +20,7 @@ import steps.assertions.UserProfileAssertionSteps;
 
 import java.util.stream.Stream;
 
+import static constants.ErrorMessages.UserProfile.NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ChangeUserProfileTest extends BaseTest {
@@ -56,12 +58,8 @@ public class ChangeUserProfileTest extends BaseTest {
                 .name(name)
                 .build();
 
-        new CrudRequester(
-                RequestSpecs.userSpec(userAuthToken),
-                ResponseSpecs.badRequest(),
-                Endpoint.CHANGE_USER_PROFILE
-        )
-                .put(requestBody);
+        var message = userSteps.getChangeUserProfileStringResponse(requestBody, userAuthToken, ResponseSpecs.badRequest());
+        this.userProfileAssertionSteps.assertMessage(NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY, message);
 
         var customerAfterRequest = userSteps.getCustomer(userAuthToken);
 

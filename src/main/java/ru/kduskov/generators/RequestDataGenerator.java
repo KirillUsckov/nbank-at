@@ -7,11 +7,13 @@ import ru.kduskov.enums.GenerationsRules;
 import ru.kduskov.models.body.request.BaseRequest;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public final class RequestDataGenerator {
     private static final Faker faker = new Faker();
     private static final Random random = new Random();
+    private static final DecimalFormat df = new DecimalFormat("#.##");
 
     public static <T extends BaseRequest> T generateFilledObject(Class<T> clazz) {
         try {
@@ -30,8 +32,8 @@ public final class RequestDataGenerator {
 
     private static Object generateFromValueKey(GenerationsRules rule) {
         return switch (rule) {
-            case DEPOSIT_BALANCE -> faker.number().numberBetween(1, 5_001);
-            case TRANSFER_AMOUNT -> faker.number().numberBetween(1, 10_001);
+            case DEPOSIT_BALANCE -> Double.parseDouble(df.format(new Random().nextDouble(0.01, 5_001)));
+            case TRANSFER_AMOUNT -> Double.parseDouble(df.format(new Random().nextDouble(0.01, 10_001)));
             case PASSWORD -> generateSecurePassword();
             default -> null;
         };
@@ -41,7 +43,7 @@ public final class RequestDataGenerator {
         var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         var lower = "abcdefghijklmnopqrstuvwxyz";
         var digits = "0123456789";
-        var special = "@$!%-_+?&"; // Только эти специальные символы
+        var special = "@$!%-+?&"; // Только эти специальные символы
 
         var random = new Random();
         var password = new StringBuilder();
@@ -51,18 +53,18 @@ public final class RequestDataGenerator {
         password.append(digits.charAt(random.nextInt(digits.length())));
         password.append(special.charAt(random.nextInt(special.length())));
 
-        String allChars = upper + lower + digits + special;
-        int length = 8 + random.nextInt(117); // 8-128 символов
+        var allChars = upper + lower + digits + special;
+        var length = 8 + random.nextInt(117); // 8-128 символов
         for (int i = 4; i < length; i++) {
             password.append(allChars.charAt(random.nextInt(allChars.length())));
         }
 
 
         // Перемешиваем символы
-        char[] chars = password.toString().toCharArray();
-        for (int i = chars.length - 1; i > 0; i--) {
-            int j = random.nextInt(i + 1);
-            char temp = chars[i];
+        var chars = password.toString().toCharArray();
+        for (var i = chars.length - 1; i > 0; i--) {
+            var j = random.nextInt(i + 1);
+            var temp = chars[i];
             chars[i] = chars[j];
             chars[j] = temp;
         }

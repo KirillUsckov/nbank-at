@@ -9,11 +9,12 @@ import ru.kduskov.steps.UserSteps;
 import java.util.List;
 import java.util.Optional;
 
-public class AccountAssertionSteps {
-    private final Assertions assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class AccountAssertionSteps extends BaseAssertionsSteps {
 
     public AccountAssertionSteps(SoftAssertions softly) {
-        this.assertions = new Assertions(softly);
+        super(softly);
     }
 
     public void assertBalanceWasNotChanged(List<AccountResponseBody> accountsBeforeRequest,
@@ -32,9 +33,9 @@ public class AccountAssertionSteps {
     public void assertBalanceWasIncreased(List<AccountResponseBody> accountsBeforeRequest,
                                           List<AccountResponseBody> accountsAfterRequest,
                                           AccountResponseBody account,
-                                          long depositAmount) {
+                                          double transactionAmount) {
         assertAccountExistInList(accountsAfterRequest, account)
-                .wasIncreasedBy(depositAmount,
+                .wasIncreasedBy(transactionAmount,
                         findAccountByNumber(accountsBeforeRequest, account.getAccountNumber())
                                 .orElseThrow(() -> new AssertionError("Account not found in before request"))
                 );
@@ -43,22 +44,22 @@ public class AccountAssertionSteps {
     public void assertBalanceWasDecreased(List<AccountResponseBody> accountsBeforeRequest,
                                           List<AccountResponseBody> accountsAfterRequest,
                                           AccountResponseBody account,
-                                          long depositAmount) {
+                                          double transactionAmount) {
 
         assertions.assertThatAccounts(accountsAfterRequest)
                 .containsAccountWithNumber(account.getAccountNumber())
                 .accountWithNumber(account.getAccountNumber())
-                .wasDencreasedBy(depositAmount,
+                .wasDencreasedBy(transactionAmount,
                         findAccountByNumber(accountsBeforeRequest, account.getAccountNumber())
                                 .orElseThrow(() -> new AssertionError("Account not found in before request"))
                 );
     }
 
-    public void assertAccountHasLatestTransferOut(AccountResponseBody senderAccountAfter, int amount, Long id) {
+    public void assertAccountHasLatestTransferOut(AccountResponseBody senderAccountAfter, double amount, Long id) {
         assertions.assertThat(senderAccountAfter).hasLatestTransferOut(amount, id);
     }
 
-    public void assertAccountHasLatestTransferIn(AccountResponseBody receiverAccountAfter, int amount, Long id) {
+    public void assertAccountHasLatestTransferIn(AccountResponseBody receiverAccountAfter, double amount, Long id) {
         assertions.assertThat(receiverAccountAfter).hasLatestTransferIn(amount, id);
     }
 

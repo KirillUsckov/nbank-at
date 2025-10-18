@@ -1,10 +1,13 @@
 package ru.kduskov.steps;
 
 
+import io.restassured.specification.ResponseSpecification;
 import ru.kduskov.enums.Endpoint;
 import ru.kduskov.enums.Role;
 import ru.kduskov.generators.RequestDataGenerator;
+import ru.kduskov.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.models.body.request.CreateUserRequestBody;
+import ru.kduskov.models.body.request.TransferRequestBody;
 import ru.kduskov.models.body.response.general.AccountResponseBody;
 import ru.kduskov.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.requests.skelethon.requesters.CrudRequester;
@@ -15,6 +18,14 @@ import ru.kduskov.specs.ResponseSpecs;
 import java.util.List;
 
 public class UserSteps {
+
+    public String getChangeUserProfileStringResponse(ChangeUserProfileRequestBody body, String userAuthToken, ResponseSpecification responseSpecification) {
+        return new CrudRequester(RequestSpecs.userSpec(userAuthToken), responseSpecification, Endpoint.CHANGE_USER_PROFILE)
+                .put(body)
+                .extract()
+                .body()
+                .asString();
+    }
 
     public static String createRandomUser() {
         var requestBody = RequestDataGenerator.generateFilledObject(CreateUserRequestBody.class);

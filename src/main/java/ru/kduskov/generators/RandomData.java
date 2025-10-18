@@ -28,14 +28,6 @@ public final class RandomData {
         return RandomStringUtils.randomAlphabetic(length);
     }
 
-    public static int getValidDepositAmount() {
-        return new Random().nextInt(1,5000);
-    }
-
-    public static int getValidTransferAmount() {
-        return new Random().nextInt(1,10000);
-    }
-
     public static long getId() {
         return new Random().nextLong();
     }
