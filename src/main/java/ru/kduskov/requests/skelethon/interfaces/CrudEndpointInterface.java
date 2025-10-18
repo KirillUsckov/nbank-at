@@ -1,11 +1,13 @@
-package ru.kduskov.requests.skelethon;
+package ru.kduskov.requests.skelethon.interfaces;
 
-import ru.kduskov.models.body.BaseModel;
+import ru.kduskov.models.body.request.BaseRequest;
 
 public interface CrudEndpointInterface {
-    Object post(BaseModel model);
-    Object get(long id);
-    Object update(long id, BaseModel model);
+    Object post(BaseRequest model);
+    Object post();
+    Object put(BaseRequest model);
+    Object get();
+    Object update(long id, BaseRequest model);
     Object delete(long id);
 
 }
