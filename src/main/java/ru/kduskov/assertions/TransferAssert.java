@@ -34,7 +34,7 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
         return this;
     }
 
-    public TransferAssert hasAmount(double expectedAmount) {
+    public TransferAssert matchAmount(double expectedAmount) {
         softly(() ->
                 softly.assertThat(actual.getAmount())
                         .withFailMessage("Expected amount %s but was %s",
@@ -57,7 +57,7 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
     public TransferAssert matchesRequest(TransferRequestBody request) {
         return hasReceiverAccountId(request.getReceiverAccountId())
                         .hasSenderAccountId(request.getSenderAccountId())
-                        .hasAmount(request.getAmount())
+                        .matchAmount(request.getAmount())
                         .hasMessage("Transfer successful");
     }
 }

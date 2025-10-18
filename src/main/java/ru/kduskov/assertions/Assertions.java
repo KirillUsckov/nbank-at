@@ -39,4 +39,8 @@ public class Assertions {
     public UserProfileAssert assertThat(UserProfileResponseBody userProfile) {
         return UserProfileAssert.assertThat(userProfile, softly);
     }
+
+    public StringAssert assertThat(String string) {
+        return StringAssert.assertThat(string, softly);
+    }
 }

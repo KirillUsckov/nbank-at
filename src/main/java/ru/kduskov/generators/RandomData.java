@@ -1,9 +1,6 @@
 package ru.kduskov.generators;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-
-import java.util.Random;
 
 public final class RandomData {
     public static String getValidName() {
@@ -26,9 +23,5 @@ public final class RandomData {
 
     public static String getAlphabeticString(int length) {
         return RandomStringUtils.randomAlphabetic(length);
-    }
-
-    public static long getId() {
-        return new Random().nextLong();
     }
 }

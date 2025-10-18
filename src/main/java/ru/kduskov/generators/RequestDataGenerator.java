@@ -26,7 +26,6 @@ public final class RequestDataGenerator {
     }
 
     private static Object generateFromRegex(String regex) {
-        // Используем RGXGen для надежной генерации по regex
         return RgxGen.parse(regex).generate();
     }
 
@@ -43,7 +42,7 @@ public final class RequestDataGenerator {
         var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         var lower = "abcdefghijklmnopqrstuvwxyz";
         var digits = "0123456789";
-        var special = "@$!%-+?&"; // Только эти специальные символы
+        var special = "@$!%-+?&";
 
         var random = new Random();
         var password = new StringBuilder();
@@ -58,7 +57,6 @@ public final class RequestDataGenerator {
         for (int i = 4; i < length; i++) {
             password.append(allChars.charAt(random.nextInt(allChars.length())));
         }
-
 
         // Перемешиваем символы
         var chars = password.toString().toCharArray();

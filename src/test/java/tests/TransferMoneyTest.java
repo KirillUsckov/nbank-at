@@ -100,9 +100,7 @@ public class TransferMoneyTest extends BaseTest {
                 receiverAccountsAfter, secondUserAccount);
         this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderAccountAfter, amount, secondUserAccount.getId());
         this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverAccountAfter, amount, firstUserFirstAccount.getId());
-
     }
-
 
     @ParameterizedTest
     @ValueSource(doubles = {0.01, 9999.99, 10_000})

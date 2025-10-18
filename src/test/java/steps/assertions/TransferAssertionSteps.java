@@ -1,7 +1,6 @@
 package steps.assertions;
 
 import org.assertj.core.api.SoftAssertions;
-import ru.kduskov.assertions.Assertions;
 import ru.kduskov.models.body.request.TransferRequestBody;
 import ru.kduskov.models.body.response.accounts.transfer.TransferResponseBody;
 

@@ -1,7 +1,6 @@
 package ru.kduskov.generators;
 
 import ru.kduskov.models.body.request.DepositRequestBody;
-import ru.kduskov.models.body.response.general.AccountResponseBody;
 
 public class DepositRequestGenerator {
     public static DepositRequestBody generate() {
