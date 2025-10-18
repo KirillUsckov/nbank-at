@@ -1,31 +1,19 @@
 package ru.kduskov.generators;
 
+import com.github.curiousoddman.rgxgen.RgxGen;
 import net.datafaker.Faker;
 import ru.kduskov.annotations.GeneratingRule;
+import ru.kduskov.enums.GenerationsRules;
 import ru.kduskov.models.body.request.BaseRequest;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.regex.Pattern;
 
-public class RequestDataGenerator {
-    private final Faker faker;
-    private final Random random;
+public final class RequestDataGenerator {
+    private static final Faker faker = new Faker();
+    private static final Random random = new Random();
 
-    public RequestDataGenerator() {
-        this.faker = new Faker();
-        this.random = new Random();
-    }
-
-    public RequestDataGenerator(Locale locale) {
-        this.faker = new Faker(locale);
-        this.random = new Random();
-    }
-
-    /**
-     * Заполняет все поля объекта случайными данными
-     */
-    public <T extends BaseRequest> T generateFilledObject(Class<T> clazz) {
+    public static <T extends BaseRequest> T generateFilledObject(Class<T> clazz) {
         try {
             T instance = clazz.getDeclaredConstructor().newInstance();
             fillFields(instance);
@@ -35,118 +23,83 @@ public class RequestDataGenerator {
         }
     }
 
-    /**
-     * Рекурсивно заполняет все поля объекта
-     */
-    private void fillFields(Object obj) throws IllegalAccessException {
-        Class<?> clazz = obj.getClass();
-
-        // Поднимаемся по иерархии наследования до BaseRequest
-        while (clazz != null && clazz != Object.class) {
-            Field[] fields = clazz.getDeclaredFields();
-
-            for (Field field : fields) {
-                field.setAccessible(true);
-
-                // Пропускаем статические поля
-                if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                    continue;
-                }
-
-                // Если поле уже заполнено - пропускаем
-                if (field.get(obj) != null) {
-                    continue;
-                }
-
-                Object value = generateValueForField(field);
-                field.set(obj, value);
-            }
-
-            // Переходим к родительскому классу
-            clazz = clazz.getSuperclass();
-            if (clazz == BaseRequest.class) {
-                break;
-            }
-        }
+    private static Object generateFromRegex(String regex) {
+        // Используем RGXGen для надежной генерации по regex
+        return RgxGen.parse(regex).generate();
     }
 
-    /**
-     * Генерирует значение для конкретного поля
-     */
-    private Object generateValueForField(Field field) {
-        // Проверяем наличие аннотации GeneratingRule
-        GeneratingRule rule = field.getAnnotation(GeneratingRule.class);
-
-        if (rule != null && !rule.regex().isEmpty()) {
-            return generateFromRegex(rule.regex());
-        }
-
-        // Генерация на основе типа поля
-        return generateByType(field.getType());
+    private static Object generateFromValueKey(GenerationsRules rule) {
+        return switch (rule) {
+            case DEPOSIT_BALANCE -> faker.number().numberBetween(1, 5_001);
+            case TRANSFER_AMOUNT -> faker.number().numberBetween(1, 10_001);
+            case PASSWORD -> generateSecurePassword();
+            default -> null;
+        };
     }
 
-    /**
-     * Генерация значения по regex с помощью Data Faker
-     */
-    private String generateFromRegex(String regex) {
-        try {
-            // Data Faker умеет генерировать данные по regex
-            return faker.expression("#{regexify '" + regex + "'}");
-        } catch (Exception e) {
-            // Fallback: простая генерация если Data Faker не справляется
-            return generateSimpleRegex(regex);
-        }
-    }
+    private static String generateSecurePassword() {
+        var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var lower = "abcdefghijklmnopqrstuvwxyz";
+        var digits = "0123456789";
+        var special = "@$!%-_+?&"; // Только эти специальные символы
 
-    /**
-     * Простая генерация для базовых regex паттернов
-     */
-    private String generateSimpleRegex(String regex) {
-        // Упрощенные паттерны для часто используемых случаев
-        if (regex.equals("[a-zA-Z0-9]{8,16}")) {
-            return faker.regexify("[a-zA-Z0-9]{8,16}");
-        } else if (regex.equals("[a-z]+")) {
-            return faker.lorem().word().toLowerCase();
-        } else if (regex.equals("[A-Z]+")) {
-            return faker.lorem().word().toUpperCase();
-        } else if (regex.equals("\\d+")) {
-            return String.valueOf(faker.number().randomNumber(6, true));
-        } else if (regex.equals("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) {
-            return faker.internet().emailAddress();
+        var random = new Random();
+        var password = new StringBuilder();
+
+        password.append(lower.charAt(random.nextInt(lower.length())));
+        password.append(upper.charAt(random.nextInt(upper.length())));
+        password.append(digits.charAt(random.nextInt(digits.length())));
+        password.append(special.charAt(random.nextInt(special.length())));
+
+        String allChars = upper + lower + digits + special;
+        int length = 8 + random.nextInt(117); // 8-128 символов
+        for (int i = 4; i < length; i++) {
+            password.append(allChars.charAt(random.nextInt(allChars.length())));
         }
 
-        // Общий случай
-        return faker.regexify(regex);
+
+        // Перемешиваем символы
+        char[] chars = password.toString().toCharArray();
+        for (int i = chars.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char temp = chars[i];
+            chars[i] = chars[j];
+            chars[j] = temp;
+        }
+
+        return new String(chars);
     }
 
-    /**
-     * Генерация значения на основе типа поля
-     */
-    private Object generateByType(Class<?> type) {
+    private static Object generateByType(Class<?> type) {
+        // Используем DataFaker для реалистичных данных
         if (type == String.class) {
             return faker.lorem().word();
         } else if (type == int.class || type == Integer.class) {
-            return faker.number().numberBetween(1, 1000);
+            return faker.number().numberBetween(1, 99999999);
         } else if (type == long.class || type == Long.class) {
             return faker.number().randomNumber();
         } else if (type == double.class || type == Double.class) {
-            return faker.number().randomDouble(2, 1, 1000);
+            return faker.number().randomDouble(2, 1, 999999999);
         } else if (type == boolean.class || type == Boolean.class) {
             return faker.bool().bool();
         } else if (type == Date.class) {
             return faker.date().birthday();
         } else if (type.isEnum()) {
             return generateEnumValue(type);
-        } else if (List.class.isAssignableFrom(type)) {
+        } else if (type == List.class) {
             return new ArrayList<>();
-        } else if (Map.class.isAssignableFrom(type)) {
+        } else if (type == Map.class) {
             return new HashMap<>();
-        } else if (type.getPackage() != null &&
+        }
+
+        // Для кастомных классов - рекурсивное заполнение
+        if (type.getPackage() != null &&
                 type.getPackage().getName().startsWith("ru.kduskov")) {
-            // Рекурсивная генерация для кастомных классов
             try {
                 Object nestedInstance = type.getDeclaredConstructor().newInstance();
-                fillFields(nestedInstance);
+                if (nestedInstance instanceof BaseRequest) {
+                    fillFields(nestedInstance);
+                }
                 return nestedInstance;
             } catch (Exception e) {
                 return null;
@@ -156,14 +109,38 @@ public class RequestDataGenerator {
         return null;
     }
 
-    /**
-     * Генерация случайного значения enum
-     */
-    private Object generateEnumValue(Class<?> enumClass) {
-        Object[] enumConstants = enumClass.getEnumConstants();
-        if (enumConstants.length > 0) {
-            return enumConstants[random.nextInt(enumConstants.length)];
+    // Остальные методы остаются без изменений
+    private static Object generateEnumValue(Class<?> enumClass) {
+        var enumConstants = enumClass.getEnumConstants();
+        return enumConstants.length > 0 ?
+                enumConstants[random.nextInt(enumConstants.length)] : null;
+    }
+
+    private static void fillFields(Object obj) throws IllegalAccessException {
+        var clazz = obj.getClass();
+        while (clazz != null && clazz != Object.class) {
+            for (Field field : clazz.getDeclaredFields()) {
+                field.setAccessible(true);
+                if (!java.lang.reflect.Modifier.isStatic(field.getModifiers()) &&
+                        field.get(obj) == null) {
+                    Object value = generateValueForField(field);
+                    field.set(obj, value);
+                }
+            }
+            clazz = clazz.getSuperclass();
+            if (clazz == BaseRequest.class) break;
         }
-        return null;
+    }
+
+    private static Object generateValueForField(Field field) {
+        GeneratingRule rule = field.getAnnotation(GeneratingRule.class);
+        if (rule != null) {
+            if (!rule.regex().isEmpty())
+                return generateFromRegex(rule.regex());
+            else if (rule.valueKey() != GenerationsRules.DEFAULT)
+                return generateFromValueKey(rule.valueKey());
+        }
+
+        return generateByType(field.getType());
     }
 }

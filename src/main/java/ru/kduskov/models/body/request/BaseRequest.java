@@ -1,10 +1,4 @@
-package ru.kduskov.models.body;
+package ru.kduskov.models.body.request;
 
-import lombok.Data;
-import lombok.experimental.SuperBuilder;
-
-@Data
-@SuperBuilder
-public class BaseModel {
-    protected String message;
+public abstract class BaseRequest {
 }

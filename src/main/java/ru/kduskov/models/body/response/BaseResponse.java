@@ -1,10 +1,10 @@
-package ru.kduskov.models.body;
+package ru.kduskov.models.body.response;
 
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
 @Data
 @SuperBuilder
-public class BaseModel {
+public class BaseResponse {
     protected String message;
 }

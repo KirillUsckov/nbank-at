@@ -1,13 +1,13 @@
 package ru.kduskov.utils;
 
-import ru.kduskov.models.body.response.Account;
+import ru.kduskov.models.body.response.general.AccountResponseBody;
 
 import java.util.List;
 
 public final class AccountsListUtils {
-    public static Account findAccountByAccountNumberOrElseThrow(
-            List<Account> accounts,
-            Account expectedAccount) {
+    public static AccountResponseBody findAccountByAccountNumberOrElseThrow(
+            List<AccountResponseBody> accounts,
+            AccountResponseBody expectedAccount) {
         return accounts.stream().filter(acc -> acc.getAccountNumber().equals(expectedAccount.getAccountNumber())).findFirst().orElseThrow();
     }
 }

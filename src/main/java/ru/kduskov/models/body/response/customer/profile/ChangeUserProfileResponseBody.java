@@ -1,17 +1,16 @@
 package ru.kduskov.models.body.response.customer.profile;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-import ru.kduskov.models.body.BaseModel;
-import ru.kduskov.models.body.response.Customer;
+import ru.kduskov.models.body.response.BaseResponse;
+import ru.kduskov.models.body.response.general.UserProfileResponseBody;
 
 @Data
 @SuperBuilder
 @Jacksonized
-public class ChangeUserProfileResponseBody extends BaseModel {
-    private Customer customer;
+@EqualsAndHashCode(callSuper = true)
+public class ChangeUserProfileResponseBody extends BaseResponse {
+    private UserProfileResponseBody customer;
 }

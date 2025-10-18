@@ -4,18 +4,16 @@ import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.models.body.response.customer.profile.ChangeUserProfileResponseBody;
 
-import java.util.List;
-
-public class UserProfileAssert extends BaseAssert<UserProfileAssert, ChangeUserProfileResponseBody> {
-    protected UserProfileAssert(ChangeUserProfileResponseBody userProfileResponseBody, SoftAssertions softly) {
-        super(userProfileResponseBody, UserProfileAssert.class, softly);
+public class ChangeUserProfileAssert extends BaseAssert<ChangeUserProfileAssert, ChangeUserProfileResponseBody> {
+    protected ChangeUserProfileAssert(ChangeUserProfileResponseBody userProfileResponseBody, SoftAssertions softly) {
+        super(userProfileResponseBody, ChangeUserProfileAssert.class, softly);
     }
 
-    public static UserProfileAssert assertThat(ChangeUserProfileResponseBody actual, SoftAssertions softly) {
-        return new UserProfileAssert(actual, softly);
+    public static ChangeUserProfileAssert assertThat(ChangeUserProfileResponseBody actual, SoftAssertions softly) {
+        return new ChangeUserProfileAssert(actual, softly);
     }
 
-    public UserProfileAssert hasName(String expectedName) {
+    public ChangeUserProfileAssert hasName(String expectedName) {
         softly(() ->
                 softly.assertThat(actual.getCustomer().getName())
                         .withFailMessage("Expected name %s but was %s",
@@ -25,7 +23,7 @@ public class UserProfileAssert extends BaseAssert<UserProfileAssert, ChangeUserP
         return this;
     }
 
-    public UserProfileAssert hasMessage(String expectedMessage) {
+    public ChangeUserProfileAssert hasMessage(String expectedMessage) {
         softly(() ->
                 softly.assertThat(actual.getMessage())
                         .withFailMessage("Expected message '%s' but was '%s'",
@@ -35,7 +33,7 @@ public class UserProfileAssert extends BaseAssert<UserProfileAssert, ChangeUserP
         return this;
     }
 
-    public UserProfileAssert matchesRequest(ChangeUserProfileRequestBody request) {
+    public ChangeUserProfileAssert matchesRequest(ChangeUserProfileRequestBody request) {
         return hasName(request.getName())
                 .hasMessage("Profile updated successfully");
     }

@@ -1,17 +1,23 @@
 package ru.kduskov.models.body.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
+import ru.kduskov.annotations.GeneratingRule;
 import ru.kduskov.enums.Role;
 
+import static ru.kduskov.enums.GenerationsRules.PASSWORD;
+
+
 @Data
+@Jacksonized
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class CreateUserRequestBody {
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class CreateUserRequestBody extends BaseRequest {
+    @GeneratingRule(regex = "^[a-zA-Z0-9._-]{3,15}$")
     private String username;
+    @GeneratingRule(valueKey = PASSWORD)
     private String password;
     private Role role;
 }
