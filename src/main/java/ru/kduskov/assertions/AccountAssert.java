@@ -22,7 +22,6 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return new AccountAssert(actual, softly);
     }
 
-    // Базовые проверки полей
     public AccountAssert hasId(long expectedId) {
         softly(() ->
                 softly.assertThat(actual.getId())
@@ -51,7 +50,6 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return this;
     }
 
-    // Проверки транзакций
     public AccountAssert hasTransactions() {
         softly(() ->
                 softly.assertThat(actual.getTransactions())
@@ -71,14 +69,13 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return this;
     }
 
-    // Универсальная проверка последней транзакции
     public AccountAssert hasLatestTransaction(double expectedAmount,
                                               TransactionType expectedType,
                                               Long expectedRelatedAccountId) {
         isNotNull();
         hasTransactions();
 
-        Optional<Transaction> latestTransaction = actual.getTransactions().stream()
+        var latestTransaction = actual.getTransactions().stream()
                 .max(Comparator.comparing(Transaction::getId));
 
         softly(() -> {
@@ -94,7 +91,6 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return this;
     }
 
-    // Специализированные методы для удобства
     public AccountAssert hasLatestDeposit(double expectedAmount, long expectedAccountId) {
         return hasLatestTransaction(expectedAmount, TransactionType.DEPOSIT, expectedAccountId);
     }
@@ -107,7 +103,6 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return hasLatestTransaction(expectedAmount, TransactionType.TRANSFER_OUT, expectedRelatedAccountId);
     }
 
-    // Комплексные проверки
     public AccountAssert matches(AccountResponseBody expectedAccount) {
         return hasId(expectedAccount.getId())
                 .hasBalance(expectedAccount.getBalance())
@@ -142,7 +137,6 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
                                      double expectedAmount,
                                      TransactionType expectedType,
                                      Long expectedRelatedAccountId) {
-
         softly.assertThat(transaction.getAmount())
                 .withFailMessage("Expected transaction amount %s but was %s",
                         expectedAmount, transaction.getAmount())
@@ -176,7 +170,6 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
                 .isLessThanOrEqualTo(30);
     }
 
-    // TODO: use it in negative cases
     public AccountAssert hasNoTransactionOfType(TransactionType unexpectedType) {
         softly(() -> {
             boolean hasType = actual.getTransactions().stream()

@@ -2,6 +2,7 @@ package ru.kduskov.steps.assertions;
 
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.assertions.AccountAssert;
+import ru.kduskov.enums.TransactionType;
 import ru.kduskov.models.body.response.general.AccountResponseBody;
 
 import java.util.List;
@@ -59,6 +60,10 @@ public class AccountAssertionSteps extends BaseAssertionsSteps {
         assertions.assertThat(receiverAccountAfter).hasLatestTransferIn(amount, id);
     }
 
+    public void assertAccountHasNoTransactionsWithType(AccountResponseBody account, TransactionType type) {
+        assertions.assertThat(account).hasNoTransactionOfType(type);
+
+    }
     private AccountAssert assertAccountExistInList(List<AccountResponseBody> accountsAfterRequest,
                                                    AccountResponseBody account) {
         return assertions.assertThatAccounts(accountsAfterRequest)

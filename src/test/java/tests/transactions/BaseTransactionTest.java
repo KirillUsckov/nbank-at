@@ -1,5 +1,6 @@
 package tests.transactions;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import ru.kduskov.models.body.response.general.AccountResponseBody;
 import ru.kduskov.steps.AccountSteps;
@@ -13,5 +14,11 @@ public class BaseTransactionTest extends BaseTest {
     public static void setUpAccounts() {
         firstUserAccount = AccountSteps.createAccount(firstUserAuthToken);
         secondUserAccount = AccountSteps.createAccount(secondUserAuthToken);
+    }
+
+    @AfterAll
+    public static void deleteAccounts() {
+        AccountSteps.deleteAccount(firstUserAuthToken, firstUserAccount.getId());
+        AccountSteps.deleteAccount(secondUserAuthToken, secondUserAccount.getId());
     }
 }
