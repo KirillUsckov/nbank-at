@@ -6,7 +6,6 @@ import ru.kduskov.models.body.response.BaseResponse;
 import ru.kduskov.models.body.request.*;
 import ru.kduskov.models.body.response.accounts.DeleteAccountResponse;
 import ru.kduskov.models.body.response.accounts.transfer.TransferResponseBody;
-import ru.kduskov.models.body.response.admin.users.UsersListResponse;
 import ru.kduskov.models.body.response.general.AccountResponseBody;
 import ru.kduskov.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.models.body.response.customer.profile.ChangeUserProfileResponseBody;
@@ -22,7 +21,7 @@ public enum Endpoint {
     GET_USER_PROFILE("/customer/profile", null, UserProfileResponseBody.class),
     MAKE_DEPOSIT("/accounts/deposit", DepositRequestBody.class, AccountResponseBody.class),
     TRANSFER("/accounts/transfer", TransferRequestBody.class, TransferResponseBody.class),
-    GET_ALL_USERS("/admin/users", null, UsersListResponse.class);
+    GET_ALL_USERS("/admin/users", null, null);
 
     private final String endpoint;
     private final Class<? extends BaseRequest> requestClass;
