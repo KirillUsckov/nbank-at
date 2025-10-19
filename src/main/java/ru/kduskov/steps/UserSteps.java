@@ -18,7 +18,7 @@ import ru.kduskov.specs.ResponseSpecs;
 import java.util.List;
 
 public class UserSteps {
-    public static String createRandomUser() {
+    public String createRandomUser() {
         var requestBody = RequestDataGenerator.generateFilledObject(CreateUserRequestBody.class);
         requestBody.setRole(Role.USER);
         return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.entityWasCreated(), Endpoint.CREATE_USER)
@@ -27,7 +27,7 @@ public class UserSteps {
                 .header("Authorization");
     }
 
-    public static List<UserProfileResponseBody> getAllUsers() {
+    public List<UserProfileResponseBody> getAllUsers() {
         return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.ok(), Endpoint.GET_ALL_USERS)
                 .get()
                 .extract()
@@ -35,7 +35,7 @@ public class UserSteps {
                 .getList("", UserProfileResponseBody.class);
     }
 
-    public static String deleteUser(long userId) {
+    public String deleteUser(long userId) {
         return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.ok(), Endpoint.DELETE_USER)
                 .delete(userId)
                 .extract()

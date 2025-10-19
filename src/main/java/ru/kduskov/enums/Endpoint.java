@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import ru.kduskov.models.body.response.BaseResponse;
 import ru.kduskov.models.body.request.*;
-//import ru.kduskov.models.body.response.accounts.CreateAccountResponseBody;
-//import ru.kduskov.models.body.response.accounts.deposit.MakeDepositResponseBody;
 import ru.kduskov.models.body.response.accounts.DeleteAccountResponse;
 import ru.kduskov.models.body.response.accounts.transfer.TransferResponseBody;
 import ru.kduskov.models.body.response.admin.users.UsersListResponse;

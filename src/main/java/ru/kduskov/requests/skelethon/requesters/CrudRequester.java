@@ -28,7 +28,7 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
     }
 
     @Override
-    public Object post() {
+    public ValidatableResponse post() {
         return post(null);
     }
 

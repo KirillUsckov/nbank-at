@@ -18,7 +18,7 @@ public final class RequestDataGenerator {
 
     public static <T extends BaseRequest> T generateFilledObject(Class<T> clazz) {
         try {
-            T instance = clazz.getDeclaredConstructor().newInstance();
+            var instance = clazz.getDeclaredConstructor().newInstance();
             fillFields(instance);
             return instance;
         } catch (Exception e) {
@@ -125,7 +125,7 @@ public final class RequestDataGenerator {
                 field.setAccessible(true);
                 if (!java.lang.reflect.Modifier.isStatic(field.getModifiers()) &&
                         field.get(obj) == null) {
-                    Object value = generateValueForField(field);
+                    var value = generateValueForField(field);
                     field.set(obj, value);
                 }
             }
@@ -135,7 +135,7 @@ public final class RequestDataGenerator {
     }
 
     private static Object generateValueForField(Field field) {
-        GeneratingRule rule = field.getAnnotation(GeneratingRule.class);
+        var rule = field.getAnnotation(GeneratingRule.class);
         if (rule != null) {
             if (!rule.regex().isEmpty())
                 return generateFromRegex(rule.regex());

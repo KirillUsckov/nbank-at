@@ -10,23 +10,22 @@ import ru.kduskov.steps.AccountSteps;
 import ru.kduskov.steps.UserSteps;
 
 public class BaseTest {
-    protected static UserSteps userSteps;
+    protected static final UserSteps userSteps = new UserSteps();
     protected static String firstUserAuthToken;
     protected static String secondUserAuthToken;
     protected SoftAssertions softly;
 
     @BeforeAll
     public static void setUpTestUser() {
-        firstUserAuthToken = UserSteps.createRandomUser();
-        secondUserAuthToken = UserSteps.createRandomUser();
-        userSteps = new UserSteps();
+        firstUserAuthToken = userSteps.createRandomUser();
+        secondUserAuthToken = userSteps.createRandomUser();
     }
 
     @AfterAll
     public static void deleteUsers() {
-        var users = UserSteps.getAllUsers();
+        var users = userSteps.getAllUsers();
         for(var user : users) {
-            UserSteps.deleteUser(user.getId());
+            userSteps.deleteUser(user.getId());
         }
         firstUserAuthToken = null;
         secondUserAuthToken = null;
