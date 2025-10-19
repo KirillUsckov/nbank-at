@@ -1,11 +1,9 @@
-package steps.assertions;
+package ru.kduskov.steps.assertions;
 
 import org.assertj.core.api.SoftAssertions;
-import ru.kduskov.assertions.Assertions;
 import ru.kduskov.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.models.body.response.customer.profile.ChangeUserProfileResponseBody;
 import ru.kduskov.models.body.response.general.UserProfileResponseBody;
-import ru.kduskov.steps.UserSteps;
 
 public class UserProfileAssertionSteps extends  BaseAssertionsSteps{
 

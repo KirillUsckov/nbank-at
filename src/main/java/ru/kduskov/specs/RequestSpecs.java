@@ -36,11 +36,4 @@ public final class RequestSpecs {
                 .addHeader("Authorization", token)
                 .build();
     }
-
-    // TODO: доделать
-    public static RequestSpecification userSpec() {
-        return defaultRequestBuilder()
-                .addHeader("Authorization", "Basic YWRtaW46YWRtaW4=")
-                .build();
-    }
 }

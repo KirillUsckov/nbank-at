@@ -14,5 +14,15 @@ import static ru.kduskov.enums.GenerationsRules.DEFAULT;
 @Target(ElementType.FIELD)
 public @interface GeneratingRule {
     String regex() default "";
+
     GenerationsRules valueKey() default DEFAULT;
+
+    /**
+     * minLength - используется в связке с valueKey
+     */
+    int minLength() default -1;
+    /**
+     * maxLength - используется в связке с valueKey
+     */
+    int maxLength() default -1;
 }

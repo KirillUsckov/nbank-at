@@ -1,13 +1,13 @@
 package ru.kduskov.steps;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.specification.ResponseSpecification;
 import ru.kduskov.enums.Endpoint;
 import ru.kduskov.enums.Role;
-import ru.kduskov.generators.RequestDataGenerator;
+import ru.kduskov.generators.common.RequestDataGenerator;
 import ru.kduskov.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.models.body.request.CreateUserRequestBody;
-import ru.kduskov.models.body.request.TransferRequestBody;
 import ru.kduskov.models.body.response.general.AccountResponseBody;
 import ru.kduskov.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.requests.skelethon.requesters.CrudRequester;
@@ -18,6 +18,29 @@ import ru.kduskov.specs.ResponseSpecs;
 import java.util.List;
 
 public class UserSteps {
+    public static String createRandomUser() {
+        var requestBody = RequestDataGenerator.generateFilledObject(CreateUserRequestBody.class);
+        requestBody.setRole(Role.USER);
+        return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.entityWasCreated(), Endpoint.CREATE_USER)
+                .post(requestBody)
+                .extract()
+                .header("Authorization");
+    }
+
+    public static List<UserProfileResponseBody> getAllUsers() {
+        return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.ok(), Endpoint.GET_ALL_USERS)
+                .get()
+                .extract()
+                .jsonPath()
+                .getList("", UserProfileResponseBody.class);
+    }
+
+    public static String deleteUser(long userId) {
+        return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.ok(), Endpoint.DELETE_USER)
+                .delete(userId)
+                .extract()
+                .asString();
+    }
 
     public String getChangeUserProfileStringResponse(ChangeUserProfileRequestBody body, String userAuthToken, ResponseSpecification responseSpecification) {
         return new CrudRequester(RequestSpecs.userSpec(userAuthToken), responseSpecification, Endpoint.CHANGE_USER_PROFILE)
@@ -25,22 +48,6 @@ public class UserSteps {
                 .extract()
                 .body()
                 .asString();
-    }
-
-    public static String createRandomUser() {
-        var requestBody = RequestDataGenerator.generateFilledObject(CreateUserRequestBody.class);
-        requestBody.setRole(Role.USER);
-        return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.entityWasCreated(), Endpoint.CREATE_USER)
-                .post(requestBody)
-                .extract().header("Authorization");
-    }
-
-    public static AccountResponseBody createAccount(String userAuthToken) {
-        return new ValidatedCrudRequested<AccountResponseBody>(
-                RequestSpecs.userSpec(userAuthToken),
-                ResponseSpecs.entityWasCreated(),
-                Endpoint.CREATE_ACCOUNT)
-                .post();
     }
 
     public UserProfileResponseBody getCustomer(String userAuthToken) {

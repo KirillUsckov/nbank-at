@@ -28,6 +28,11 @@ Authorization:  Basic a2lyaWxsOm15UGFzczI1IQ==
 
 ###
 
+GET http://localhost:4111/api/v1/admin/users
+Content-Type: application/json
+Authorization:  Basic YWRtaW46YWRtaW4=
+###
+
 # POSITIVE TEST Admin can create User
 POST http://localhost:4111/api/v1/admin/users
 Content-Type: application/json

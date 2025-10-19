@@ -37,12 +37,7 @@ public class ValidatedCrudRequested<M extends BaseResponse> extends HttpRequest 
     }
 
     @Override
-    public Object update(long id, BaseRequest model) {
-        return null;
-    }
-
-    @Override
-    public Object delete(long id) {
-        return null;
+    public M delete(long id) {
+        return (M) crudRequester.delete(id).extract().as(endpoint.getResponseClass());
     }
 }

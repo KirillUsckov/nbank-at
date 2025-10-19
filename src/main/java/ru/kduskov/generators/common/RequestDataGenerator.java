@@ -1,4 +1,4 @@
-package ru.kduskov.generators;
+package ru.kduskov.generators.common;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
 import net.datafaker.Faker;
@@ -8,6 +8,7 @@ import ru.kduskov.models.body.request.BaseRequest;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public final class RequestDataGenerator {
@@ -29,16 +30,16 @@ public final class RequestDataGenerator {
         return RgxGen.parse(regex).generate();
     }
 
-    private static Object generateFromValueKey(GenerationsRules rule) {
+    private static Object generateFromValueKey(GenerationsRules rule, int minLength, int maxLength) {
         return switch (rule) {
             case DEPOSIT_BALANCE -> Double.parseDouble(df.format(new Random().nextDouble(0.01, 5_001)));
             case TRANSFER_AMOUNT -> Double.parseDouble(df.format(new Random().nextDouble(0.01, 10_001)));
-            case PASSWORD -> generateSecurePassword();
+            case PASSWORD -> generateSecurePassword(minLength, maxLength);
             default -> null;
         };
     }
 
-    private static String generateSecurePassword() {
+    private static String generateSecurePassword(int minLength, int maxLength) {
         var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         var lower = "abcdefghijklmnopqrstuvwxyz";
         var digits = "0123456789";
@@ -53,7 +54,9 @@ public final class RequestDataGenerator {
         password.append(special.charAt(random.nextInt(special.length())));
 
         var allChars = upper + lower + digits + special;
-        var length = 8 + random.nextInt(117); // 8-128 символов
+        minLength = minLength < 0 ? 0 : maxLength;
+        maxLength = maxLength < 0 ? Integer.MAX_VALUE : maxLength;
+        var length = minLength + random.nextInt(maxLength - 1);
         for (int i = 4; i < length; i++) {
             password.append(allChars.charAt(random.nextInt(allChars.length())));
         }
@@ -71,7 +74,6 @@ public final class RequestDataGenerator {
     }
 
     private static Object generateByType(Class<?> type) {
-        // Используем DataFaker для реалистичных данных
         if (type == String.class) {
             return faker.lorem().word();
         } else if (type == int.class || type == Integer.class) {
@@ -82,8 +84,8 @@ public final class RequestDataGenerator {
             return faker.number().randomDouble(2, 1, 999999999);
         } else if (type == boolean.class || type == Boolean.class) {
             return faker.bool().bool();
-        } else if (type == Date.class) {
-            return faker.date().birthday();
+        } else if (type == LocalDateTime.class) {
+            return LocalDateTime.now();
         } else if (type.isEnum()) {
             return generateEnumValue(type);
         } else if (type == List.class) {
@@ -138,7 +140,7 @@ public final class RequestDataGenerator {
             if (!rule.regex().isEmpty())
                 return generateFromRegex(rule.regex());
             else if (rule.valueKey() != GenerationsRules.DEFAULT)
-                return generateFromValueKey(rule.valueKey());
+                return generateFromValueKey(rule.valueKey(), rule.minLength(), rule.maxLength());
         }
 
         return generateByType(field.getType());

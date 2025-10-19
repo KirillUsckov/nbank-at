@@ -17,7 +17,7 @@ import static ru.kduskov.enums.GenerationsRules.PASSWORD;
 public class CreateUserRequestBody extends BaseRequest {
     @GeneratingRule(regex = "^[a-zA-Z0-9._-]{3,15}$")
     private String username;
-    @GeneratingRule(valueKey = PASSWORD)
+    @GeneratingRule(valueKey = PASSWORD, minLength = 8, maxLength = 128)
     private String password;
     private Role role;
 }

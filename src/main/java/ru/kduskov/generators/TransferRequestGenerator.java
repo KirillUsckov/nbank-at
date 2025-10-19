@@ -1,5 +1,6 @@
 package ru.kduskov.generators;
 
+import ru.kduskov.generators.common.RequestDataGenerator;
 import ru.kduskov.models.body.request.TransferRequestBody;
 
 public class TransferRequestGenerator {

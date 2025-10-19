@@ -1,15 +1,11 @@
-package steps.assertions;
+package ru.kduskov.steps.assertions;
 
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.assertions.AccountAssert;
-import ru.kduskov.assertions.Assertions;
 import ru.kduskov.models.body.response.general.AccountResponseBody;
-import ru.kduskov.steps.UserSteps;
 
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AccountAssertionSteps extends BaseAssertionsSteps {
 
@@ -62,7 +58,6 @@ public class AccountAssertionSteps extends BaseAssertionsSteps {
     public void assertAccountHasLatestTransferIn(AccountResponseBody receiverAccountAfter, double amount, Long id) {
         assertions.assertThat(receiverAccountAfter).hasLatestTransferIn(amount, id);
     }
-
 
     private AccountAssert assertAccountExistInList(List<AccountResponseBody> accountsAfterRequest,
                                                    AccountResponseBody account) {

@@ -1,4 +1,4 @@
-package ru.kduskov.generators;
+package ru.kduskov.generators.common;
 
 import org.apache.commons.lang3.RandomStringUtils;
 

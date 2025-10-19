@@ -1,4 +1,4 @@
-package steps.assertions;
+package ru.kduskov.steps.assertions;
 
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.assertions.Assertions;

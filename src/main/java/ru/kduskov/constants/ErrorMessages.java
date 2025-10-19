@@ -1,4 +1,4 @@
-package constants;
+package ru.kduskov.constants;
 
 public class ErrorMessages {
     public static class UserProfile {
