@@ -5,8 +5,12 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import ru.kduskov.confs.Config;
 
 import java.util.List;
+
+import static ru.kduskov.enums.ConfigParams.API_VERSION;
+import static ru.kduskov.enums.ConfigParams.SERVER;
 
 public final class RequestSpecs {
     private static RequestSpecBuilder defaultRequestBuilder() {
@@ -14,7 +18,7 @@ public final class RequestSpecs {
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .addFilters(List.of(new RequestLoggingFilter(), new ResponseLoggingFilter()))
-                .setBaseUri("http://localhost:4111");
+                .setBaseUri(Config.getProperty(SERVER.getValue()) + Config.getProperty(API_VERSION.getValue()));
     }
 
     public static RequestSpecification unauthSpec() {
@@ -30,13 +34,6 @@ public final class RequestSpecs {
     public static RequestSpecification userSpec(String token) {
         return defaultRequestBuilder()
                 .addHeader("Authorization", token)
-                .build();
-    }
-
-    // TODO: доделать
-    public static RequestSpecification userSpec() {
-        return defaultRequestBuilder()
-                .addHeader("Authorization", "Basic YWRtaW46YWRtaW4=")
                 .build();
     }
 }

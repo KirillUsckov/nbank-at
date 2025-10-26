@@ -1,36 +1,44 @@
 package tests;
 
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import ru.kduskov.enums.Role;
-import ru.kduskov.generators.RandomData;
-import ru.kduskov.models.body.request.CreateUserRequestBody;
-import ru.kduskov.requests.CreateUserRequest;
-import ru.kduskov.specs.RequestSpecs;
-import ru.kduskov.specs.ResponseSpecs;
-import steps.UserSteps;
+import ru.kduskov.models.body.response.general.AccountResponseBody;
+import ru.kduskov.steps.AccountSteps;
+import ru.kduskov.steps.UserSteps;
 
 public class BaseTest {
-
-    protected UserSteps userSteps;
-    protected static String userAuthToken;
+    protected static final UserSteps userSteps = new UserSteps();
+    protected static String firstUserAuthToken;
+    protected static String secondUserAuthToken;
     protected SoftAssertions softly;
 
     @BeforeAll
     public static void setUpTestUser() {
-        userAuthToken = UserSteps.createRandomUser();
+        firstUserAuthToken = userSteps.createRandomUser();
+        secondUserAuthToken = userSteps.createRandomUser();
+    }
+
+    @AfterAll
+    public static void deleteUsers() {
+        var users = userSteps.getAllUsers();
+        for(var user : users) {
+            userSteps.deleteUser(user.getId());
+        }
+        firstUserAuthToken = null;
+        secondUserAuthToken = null;
     }
 
     @BeforeEach
     public void setUpTest() {
         this.softly = new SoftAssertions();
-        this.userSteps = new UserSteps(softly);
     }
 
     @AfterEach
-    public void afterTest() {
+    public void assertSoftAssertions() {
         this.softly.assertAll();
     }
+
 }

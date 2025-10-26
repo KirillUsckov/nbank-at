@@ -1,14 +1,14 @@
 package ru.kduskov.models.body.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import ru.kduskov.models.body.BaseModel;
+import lombok.*;
+import ru.kduskov.annotations.GeneratingRule;
 
 @Data
-@SuperBuilder
-public class ChangeUserProfileRequestBody extends BaseModel {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class ChangeUserProfileRequestBody extends BaseRequest {
+    @GeneratingRule(regex = "^[A-Za-z]+\\s{1}[A-Za-z]+$")
     private String name;
 }

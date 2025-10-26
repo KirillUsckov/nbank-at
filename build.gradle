@@ -5,6 +5,18 @@ plugins {
 group = 'ru.kduskov'
 version = '1.0-SNAPSHOT'
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+    systemProperty "file.encoding", "UTF-8"
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+}
+
 repositories {
     mavenCentral()
 }
@@ -14,6 +26,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.19.2")
 
     testImplementation("org.assertj:assertj-core:3.27.3")
+    implementation("org.assertj:assertj-core:3.27.3")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.12.2")
     testImplementation 'org.junit.jupiter:junit-jupiter:5.12.2'
@@ -21,6 +34,9 @@ dependencies {
 
     implementation 'org.projectlombok:lombok:1.18.38'
     annotationProcessor 'org.projectlombok:lombok:1.18.38'
+
+    implementation 'com.github.curious-odd-man:rgxgen:2.0'
+    implementation 'net.datafaker:datafaker:2.0.2'
 }
 
 test {

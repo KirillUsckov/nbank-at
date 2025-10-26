@@ -1,16 +1,15 @@
-package ru.kduskov.models.body.response.customer.profile;
+package ru.kduskov.models.body.response.accounts;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import ru.kduskov.models.body.response.BaseResponse;
-import ru.kduskov.models.body.response.general.UserProfileResponseBody;
 
 @Data
 @SuperBuilder
 @Jacksonized
 @EqualsAndHashCode(callSuper = true)
-public class ChangeUserProfileResponseBody extends BaseResponse {
-    private UserProfileResponseBody customer;
+public class DeleteAccountResponse extends BaseResponse {
+    private Long accountId;
 }
