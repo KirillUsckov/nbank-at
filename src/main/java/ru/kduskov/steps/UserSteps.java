@@ -18,13 +18,16 @@ import ru.kduskov.specs.ResponseSpecs;
 import java.util.List;
 
 public class UserSteps {
-    public String createRandomUser() {
-        var requestBody = RequestDataGenerator.generateFilledObject(CreateUserRequestBody.class);
-        requestBody.setRole(Role.USER);
+    public String createUser(CreateUserRequestBody requestBody) {
         return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.entityWasCreated(), Endpoint.CREATE_USER)
                 .post(requestBody)
                 .extract()
                 .header("Authorization");
+    }
+    public String createRandomUser() {
+        var requestBody = RequestDataGenerator.generateFilledObject(CreateUserRequestBody.class);
+        requestBody.setRole(Role.USER);
+        return this.createUser(requestBody);
     }
 
     public List<UserProfileResponseBody> getAllUsers() {

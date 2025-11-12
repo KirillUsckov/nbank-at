@@ -1,4 +1,4 @@
-package tests.transactions;
+package api.transactions;
 
 import ru.kduskov.constants.ErrorMessages;
 import org.junit.jupiter.api.AfterAll;

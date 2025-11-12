@@ -1,11 +1,10 @@
-package tests.transactions;
+package api.transactions;
 
 import ru.kduskov.constants.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import ru.kduskov.enums.TransactionType;
 import ru.kduskov.generators.DepositRequestGenerator;
 import ru.kduskov.models.body.request.DepositRequestBody;
 import ru.kduskov.specs.RequestSpecs;

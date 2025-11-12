@@ -1,4 +1,4 @@
-package tests;
+package api;
 
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.AfterAll;
@@ -9,7 +9,7 @@ import ru.kduskov.models.body.response.general.AccountResponseBody;
 import ru.kduskov.steps.AccountSteps;
 import ru.kduskov.steps.UserSteps;
 
-public class BaseTest {
+public abstract class BaseTest {
     protected static final UserSteps userSteps = new UserSteps();
     protected static String firstUserAuthToken;
     protected static String secondUserAuthToken;
