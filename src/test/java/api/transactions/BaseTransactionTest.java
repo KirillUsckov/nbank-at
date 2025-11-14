@@ -2,8 +2,8 @@ package api.transactions;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import ru.kduskov.models.body.response.general.AccountResponseBody;
-import ru.kduskov.steps.AccountSteps;
+import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.api.steps.AccountSteps;
 import api.BaseTest;
 
 public class BaseTransactionTest extends BaseTest {

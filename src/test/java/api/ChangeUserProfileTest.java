@@ -4,19 +4,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import ru.kduskov.enums.Endpoint;
-import ru.kduskov.generators.common.RandomData;
-import ru.kduskov.generators.common.RequestDataGenerator;
-import ru.kduskov.models.body.request.ChangeUserProfileRequestBody;
-import ru.kduskov.models.body.response.customer.profile.ChangeUserProfileResponseBody;
-import ru.kduskov.requests.skelethon.requesters.ValidatedCrudRequested;
-import ru.kduskov.specs.RequestSpecs;
-import ru.kduskov.specs.ResponseSpecs;
-import ru.kduskov.steps.assertions.UserProfileAssertionSteps;
+import ru.kduskov.api.enums.Endpoint;
+import ru.kduskov.api.generators.common.RandomData;
+import ru.kduskov.api.generators.common.RequestDataGenerator;
+import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
+import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
+import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
+import ru.kduskov.api.specs.RequestSpecs;
+import ru.kduskov.api.specs.ResponseSpecs;
+import ru.kduskov.api.steps.assertions.UserProfileAssertionSteps;
 
 import java.util.stream.Stream;
 
-import static ru.kduskov.constants.ErrorMessages.UserProfile.NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY;
+import static ru.kduskov.api.constants.ErrorMessages.UserProfile.NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ChangeUserProfileTest extends BaseTest {

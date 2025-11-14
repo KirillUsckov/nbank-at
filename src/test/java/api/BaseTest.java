@@ -5,9 +5,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import ru.kduskov.models.body.response.general.AccountResponseBody;
-import ru.kduskov.steps.AccountSteps;
-import ru.kduskov.steps.UserSteps;
+import ru.kduskov.api.steps.UserSteps;
 
 public abstract class BaseTest {
     protected static final UserSteps userSteps = new UserSteps();

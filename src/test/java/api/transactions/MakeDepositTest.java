@@ -1,19 +1,19 @@
 package api.transactions;
 
-import ru.kduskov.constants.ErrorMessages;
+import ru.kduskov.api.constants.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import ru.kduskov.generators.DepositRequestGenerator;
-import ru.kduskov.models.body.request.DepositRequestBody;
-import ru.kduskov.specs.RequestSpecs;
-import ru.kduskov.specs.ResponseSpecs;
-import ru.kduskov.steps.DepositSteps;
-import ru.kduskov.steps.assertions.AccountAssertionSteps;
-import ru.kduskov.steps.assertions.DepositAssertionSteps;
+import ru.kduskov.api.generators.DepositRequestGenerator;
+import ru.kduskov.api.models.body.request.DepositRequestBody;
+import ru.kduskov.api.specs.RequestSpecs;
+import ru.kduskov.api.specs.ResponseSpecs;
+import ru.kduskov.api.steps.DepositSteps;
+import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
+import ru.kduskov.api.steps.assertions.DepositAssertionSteps;
 
-import static ru.kduskov.constants.ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT;
+import static ru.kduskov.api.constants.ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT;
 
 public class MakeDepositTest extends BaseTransactionTest {
     private final DepositSteps depositSteps = new DepositSteps();

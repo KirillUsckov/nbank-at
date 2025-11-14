@@ -1,26 +1,26 @@
 package api.transactions;
 
-import ru.kduskov.constants.ErrorMessages;
+import ru.kduskov.api.constants.ErrorMessages;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import ru.kduskov.enums.Endpoint;
-import ru.kduskov.enums.TransactionType;
-import ru.kduskov.generators.TransferRequestGenerator;
-import ru.kduskov.models.body.response.accounts.transfer.TransferResponseBody;
-import ru.kduskov.models.body.response.general.AccountResponseBody;
-import ru.kduskov.requests.skelethon.requesters.ValidatedCrudRequested;
-import ru.kduskov.specs.RequestSpecs;
-import ru.kduskov.specs.ResponseSpecs;
-import ru.kduskov.steps.AccountSteps;
-import ru.kduskov.steps.DepositSteps;
-import ru.kduskov.steps.TransferSteps;
-import ru.kduskov.utils.AccountsListUtils;
-import ru.kduskov.steps.assertions.AccountAssertionSteps;
-import ru.kduskov.steps.assertions.TransferAssertionSteps;
+import ru.kduskov.api.enums.Endpoint;
+import ru.kduskov.api.enums.TransactionType;
+import ru.kduskov.api.generators.TransferRequestGenerator;
+import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBody;
+import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
+import ru.kduskov.api.specs.RequestSpecs;
+import ru.kduskov.api.specs.ResponseSpecs;
+import ru.kduskov.api.steps.AccountSteps;
+import ru.kduskov.api.steps.DepositSteps;
+import ru.kduskov.api.steps.TransferSteps;
+import ru.kduskov.api.utils.AccountsListUtils;
+import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
+import ru.kduskov.api.steps.assertions.TransferAssertionSteps;
 
 public class TransferMoneyTest extends BaseTransactionTest {
     private static AccountResponseBody firstUserSecondAccount;
