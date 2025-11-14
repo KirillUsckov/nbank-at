@@ -9,6 +9,6 @@ import ru.kduskov.annotations.GeneratingRule;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ChangeUserProfileRequestBody extends BaseRequest {
-    @GeneratingRule(regex = "^[A-Za-z]+\\s{1}[A-Za-z]+$")
+    @GeneratingRule(regex = "^[A-Za-z]+ [A-Za-z]+$")
     private String name;
 }
