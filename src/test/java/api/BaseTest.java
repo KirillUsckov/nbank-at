@@ -5,28 +5,22 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import ru.kduskov.api.steps.AdminSteps;
 import ru.kduskov.api.steps.UserSteps;
+import ru.kduskov.common.annotations.UserSession;
+import ru.kduskov.common.extensions.UserSessionExtension;
 
+@ExtendWith(UserSessionExtension.class)
 public abstract class BaseTest {
-    protected static final UserSteps userSteps = new UserSteps();
-    protected static String firstUserAuthToken;
-    protected static String secondUserAuthToken;
     protected SoftAssertions softly;
-
-    @BeforeAll
-    public static void setUpTestUser() {
-        firstUserAuthToken = userSteps.createRandomUser();
-        secondUserAuthToken = userSteps.createRandomUser();
-    }
 
     @AfterAll
     public static void deleteUsers() {
-        var users = userSteps.getAllUsers();
+        var users = AdminSteps.getAllUsers();
         for(var user : users) {
-            userSteps.deleteUser(user.getId());
+            AdminSteps.deleteUser(user.getId());
         }
-        firstUserAuthToken = null;
-        secondUserAuthToken = null;
     }
 
     @BeforeEach

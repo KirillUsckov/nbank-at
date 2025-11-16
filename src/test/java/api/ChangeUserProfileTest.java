@@ -4,20 +4,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import ru.kduskov.api.enums.Endpoint;
 import ru.kduskov.api.generators.common.RandomData;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
-import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
-import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
-import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.specs.ResponseSpecs;
 import ru.kduskov.api.steps.assertions.UserProfileAssertionSteps;
+import ru.kduskov.common.annotations.UserSession;
+import ru.kduskov.common.storage.SessionStorage;
 
 import java.util.stream.Stream;
 
+import static common.Constans.FIRST_USER_ID;
 import static ru.kduskov.api.constants.ErrorMessages.UserProfile.NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ChangeUserProfileTest extends BaseTest {
     private UserProfileAssertionSteps userProfileAssertionSteps;
@@ -28,36 +26,33 @@ public class ChangeUserProfileTest extends BaseTest {
     }
 
     @Test
+    @UserSession
     public void checkUserCanChangeProfileNameByValidName() {
         var requestBody = RequestDataGenerator.generateFilledObject(ChangeUserProfileRequestBody.class);
 
-        var changeUserProfileResponse =
-                new ValidatedCrudRequested<ChangeUserProfileResponseBody>(
-                        RequestSpecs.userSpec(firstUserAuthToken),
-                        ResponseSpecs.ok(),
-                        Endpoint.CHANGE_USER_PROFILE
-                )
-                        .put(requestBody);
+        var changeUserProfileResponse = SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfile(requestBody);
+
         this.userProfileAssertionSteps.assertChangeUserProfileResponse(requestBody, changeUserProfileResponse);
 
-        var customerAfterRequest = userSteps.getCustomer(firstUserAuthToken);
+        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
         this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(requestBody, customerAfterRequest);
     }
 
 
     @ParameterizedTest
+    @UserSession
     @MethodSource("invalidNames")
     public void checkUserCantChangeProfileNameByInvalidName(String name) {
-        var customerBeforeRequest = userSteps.getCustomer(firstUserAuthToken);
+        var customerBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
 
         var requestBody = ChangeUserProfileRequestBody.builder()
                 .name(name)
                 .build();
 
-        var message = userSteps.getChangeUserProfileStringResponse(requestBody, firstUserAuthToken, ResponseSpecs.badRequest());
+        var message = SessionStorage.getUserSteps(FIRST_USER_ID).getChangeUserProfileStringResponse(requestBody, ResponseSpecs.badRequest());
         this.userProfileAssertionSteps.assertMessage(NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY, message);
 
-        var customerAfterRequest = userSteps.getCustomer(firstUserAuthToken);
+        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
 
         this.userProfileAssertionSteps.assertCustomerNameMatchesPrevious(customerBeforeRequest,customerAfterRequest);
     }

@@ -16,7 +16,7 @@ public class SelectElement extends BaseElement{
     }
 
     public void waitOptionsWithValue() {
-        $(locator).find(Selectors.byXpath("./option[@value>0]")).shouldBe(Condition.visible);
+        find(Selectors.byXpath("./option[@value>0]")).shouldBe(Condition.visible);
     }
 
     public List<String> getOptionsText() {

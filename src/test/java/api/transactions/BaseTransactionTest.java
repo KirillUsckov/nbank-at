@@ -5,20 +5,16 @@ import org.junit.jupiter.api.BeforeAll;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.steps.AccountSteps;
 import api.BaseTest;
+import ru.kduskov.common.annotations.UserSession;
+import ru.kduskov.common.storage.SessionStorage;
 
 public class BaseTransactionTest extends BaseTest {
-    protected static AccountResponseBody firstUserAccount;
-    protected static AccountResponseBody secondUserAccount;
-
-    @BeforeAll
-    public static void setUpAccounts() {
-        firstUserAccount = AccountSteps.createAccount(firstUserAuthToken);
-        secondUserAccount = AccountSteps.createAccount(secondUserAuthToken);
-    }
 
     @AfterAll
     public static void deleteAccounts() {
-        AccountSteps.deleteAccount(firstUserAuthToken, firstUserAccount.getId());
-        AccountSteps.deleteAccount(secondUserAuthToken, secondUserAccount.getId());
+        for (var user : SessionStorage.getAllUsers()) {
+            for(var account : SessionStorage.getUserSteps(user.getUsername()).getUserAccounts())
+                AccountSteps.deleteAccount(user.getToken(), account.getId());
+        }
     }
 }

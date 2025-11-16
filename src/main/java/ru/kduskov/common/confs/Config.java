@@ -1,5 +1,7 @@
 package ru.kduskov.common.confs;
 
+import ru.kduskov.common.enums.ConfigParams;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -18,7 +20,8 @@ public final class Config {
         }
     }
 
-    public static String getProperty(String key) {
-        return INSTANCE.properties.getProperty(key);
+
+    public static String getProperty(ConfigParams configParam) {
+        return INSTANCE.properties.getProperty(configParam.getValue());
     }
 }

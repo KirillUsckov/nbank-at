@@ -2,13 +2,13 @@ package ru.kduskov.ui.steps;
 
 import com.codeborne.selenide.Selenide;
 
-public class BrowserSteps {
-    public String getAlertText() {
+public final class BrowserSteps {
+    public static String getAlertText() {
         var alert = Selenide.switchTo().alert();
         return alert.getText();
     }
 
-    public void refresh() {
+    public static void refresh() {
         Selenide.refresh();
     }
 }

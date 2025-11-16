@@ -9,6 +9,7 @@ import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.specs.ResponseSpecs;
 
 public class AccountSteps {
+
     public static AccountResponseBody createAccount(String userAuthToken) {
         return new ValidatedCrudRequested<AccountResponseBody>(
                 RequestSpecs.userSpec(userAuthToken),

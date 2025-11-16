@@ -3,6 +3,7 @@ package ru.kduskov.ui.pages;
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
+import ru.kduskov.ui.elements.ButtonElement;
 import ru.kduskov.ui.elements.InputElement;
 import ru.kduskov.ui.elements.SelectElement;
 
@@ -11,8 +12,8 @@ import java.util.stream.Collectors;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
-public class MakeDepositPage extends BasePage{
-    private final SelenideElement depositButton = $(Selectors.byText("\uD83D\uDCB5 Deposit"));
+public class MakeDepositPage extends BasePage {
+    private final ButtonElement depositButton = new ButtonElement(Selectors.byText("\uD83D\uDCB5 Deposit"));
     private final SelectElement accountsSelect = new SelectElement(Selectors.byXpath("//*[contains(@class,'account-selector')]"));
     private final InputElement amountInput = new InputElement(Selectors.byAttribute("placeholder","Enter amount"));
 

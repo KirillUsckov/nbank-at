@@ -5,6 +5,12 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import ru.kduskov.api.enums.Endpoint;
+import ru.kduskov.api.generators.common.RequestDataGenerator;
+import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
+import ru.kduskov.api.models.body.request.CreateUserRequestBody;
+import ru.kduskov.api.requests.skelethon.requesters.CrudRequester;
+import ru.kduskov.api.steps.AdminSteps;
 import ru.kduskov.common.confs.Config;
 import ru.kduskov.ui.utils.TestDataReader;
 
@@ -15,12 +21,13 @@ import static ru.kduskov.common.enums.ConfigParams.API_VERSION;
 import static ru.kduskov.common.enums.ConfigParams.SERVER;
 
 public final class RequestSpecs {
+    private static String userToken;
     private static RequestSpecBuilder defaultRequestBuilder() {
         return new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .addFilters(List.of(new RequestLoggingFilter(), new ResponseLoggingFilter()))
-                .setBaseUri(Config.getProperty(SERVER.getValue()) + Config.getProperty(API_VERSION.getValue()));
+                .setBaseUri(Config.getProperty(SERVER) + Config.getProperty(API_VERSION));
     }
 
     public static RequestSpecification unauthSpec() {
@@ -37,5 +44,18 @@ public final class RequestSpecs {
         return defaultRequestBuilder()
                 .addHeader("Authorization", token)
                 .build();
+    }
+
+    public static String getUserToken(CreateUserRequestBody user) {
+        if(userToken == null) {
+            userToken = AdminSteps.createUser(user);
+            new CrudRequester(
+                    RequestSpecs.userSpec(userToken),
+                    ResponseSpecs.ok(),
+                    Endpoint.CHANGE_USER_PROFILE
+            )
+                    .put(RequestDataGenerator.generateFilledObject(ChangeUserProfileRequestBody.class));
+        }
+        return userToken;
     }
 }
