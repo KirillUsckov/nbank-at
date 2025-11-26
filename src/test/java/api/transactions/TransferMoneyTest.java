@@ -1,42 +1,43 @@
 package api.transactions;
 
-import ru.kduskov.constants.ErrorMessages;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import ru.kduskov.api.constants.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import ru.kduskov.enums.Endpoint;
-import ru.kduskov.enums.TransactionType;
-import ru.kduskov.generators.TransferRequestGenerator;
-import ru.kduskov.models.body.response.accounts.transfer.TransferResponseBody;
-import ru.kduskov.models.body.response.general.AccountResponseBody;
-import ru.kduskov.requests.skelethon.requesters.ValidatedCrudRequested;
-import ru.kduskov.specs.RequestSpecs;
-import ru.kduskov.specs.ResponseSpecs;
-import ru.kduskov.steps.AccountSteps;
-import ru.kduskov.steps.DepositSteps;
-import ru.kduskov.steps.TransferSteps;
-import ru.kduskov.utils.AccountsListUtils;
-import ru.kduskov.steps.assertions.AccountAssertionSteps;
-import ru.kduskov.steps.assertions.TransferAssertionSteps;
+import ru.kduskov.api.enums.Endpoint;
+import ru.kduskov.api.enums.TransactionType;
+import ru.kduskov.api.generators.TransferRequestGenerator;
+import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBody;
+import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
+import ru.kduskov.api.specs.RequestSpecs;
+import ru.kduskov.api.specs.ResponseSpecs;
+import ru.kduskov.api.steps.AccountSteps;
+import ru.kduskov.api.steps.DepositSteps;
+import ru.kduskov.api.steps.TransferSteps;
+import ru.kduskov.api.utils.AccountsListUtils;
+import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
+import ru.kduskov.api.steps.assertions.TransferAssertionSteps;
+import ru.kduskov.common.annotations.UserSession;
+import ru.kduskov.common.storage.SessionStorage;
+import ru.kduskov.ui.models.UserModel;
+
+import static common.Constans.*;
 
 public class TransferMoneyTest extends BaseTransactionTest {
-    private static AccountResponseBody firstUserSecondAccount;
+    private AccountResponseBody firstUserAccount;
+    private AccountResponseBody firstUserSecondAccount;
+    private UserModel firstUser;
     private final TransferSteps transferSteps = new TransferSteps();
     private TransferAssertionSteps transferAssertionSteps;
     private AccountAssertionSteps accountAssertionSteps;
 
-    @BeforeAll
-    public static void createAccounts() {
-        DepositSteps.sendDepositWithAmountValidation(firstUserAccount, firstUserAuthToken, 50_000);
-        firstUserSecondAccount = AccountSteps.createAccount(firstUserAuthToken);
-    }
-    
-    @AfterAll
-    public static void deleteAdditionalAccounts() {
-        AccountSteps.deleteAccount(firstUserAuthToken, firstUserSecondAccount.getId());
+    public void setUpTestData() {
+        firstUser = SessionStorage.getUser(FIRST_USER_ID);
+        firstUserAccount = SessionStorage.getUserAccount(firstUser.getUsername(), FIRST_ACC_ID);
+        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
+        DepositSteps.sendDepositWithAmountValidation(firstUserAccount, firstUser.getToken(), 50_000);
     }
 
     @BeforeEach
@@ -46,18 +47,21 @@ public class TransferMoneyTest extends BaseTransactionTest {
     }
 
     @ParameterizedTest
+    @UserSession(accountsNumber = 2)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
     public void checkUserCanMakeTransferToHisAnotherAccountWithValidAmountIfMoneyEnough(double amount) {
-        var accountsBeforeRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        setUpTestData();
+        var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
+        var accountsBeforeRequest = userSteps.getUserAccounts();
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
 
         var transferResponse = new ValidatedCrudRequested<TransferResponseBody>(
-                RequestSpecs.userSpec(firstUserAuthToken), ResponseSpecs.ok(), Endpoint.TRANSFER)
+                RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok(), Endpoint.TRANSFER)
                 .post(transferRequestBody);
 
         this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse);
 
-        var accountsAfterRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
                 accountsBeforeRequest, accountsAfterRequest, firstUserSecondAccount, amount);
         this.accountAssertionSteps.assertBalanceWasDecreased(
@@ -72,24 +76,27 @@ public class TransferMoneyTest extends BaseTransactionTest {
     }
 
     @ParameterizedTest
+    @UserSession(usersNumber = 2, accountsNumber = 2)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
     public void checkUserCanMakeTransferToAnotherUserAccountWithValidAmountIfMoneyEnough(double amount) {
-        var senderAccountsBefore = userSteps.getUserAccounts(firstUserAuthToken);
-        var receiverAccountsBefore = userSteps.getUserAccounts(secondUserAuthToken);
+        setUpTestData();
+        var senderAccountsBefore = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
+        var receiverAccountsBefore = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
+        var secondUserAccount = SessionStorage.getUserAccounts(SECOND_USER_ID).stream().findFirst().orElseThrow();
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), secondUserAccount.getId(), amount);
 
         var transferResponse = new ValidatedCrudRequested<TransferResponseBody>(
-                RequestSpecs.userSpec(firstUserAuthToken), ResponseSpecs.ok(), Endpoint.TRANSFER)
+                RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok(), Endpoint.TRANSFER)
                 .post(transferRequestBody);
 
         this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse);
 
-        var senderAccountsAfter = userSteps.getUserAccounts(firstUserAuthToken);
-        var receiverAccountsAfter = userSteps.getUserAccounts(secondUserAuthToken);
+        var senderAccountsAfter = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
+        var receiverAccountsAfter = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
 
-        this.accountAssertionSteps.assertBalanceWasIncreased(
-                senderAccountsBefore, senderAccountsAfter, firstUserAccount, -amount);
+        this.accountAssertionSteps.assertBalanceWasDecreased(
+                senderAccountsBefore, senderAccountsAfter, firstUserAccount, amount);
         this.accountAssertionSteps.assertBalanceWasIncreased(
                 receiverAccountsBefore, receiverAccountsAfter, secondUserAccount, amount);
 
@@ -102,19 +109,22 @@ public class TransferMoneyTest extends BaseTransactionTest {
     }
 
     @ParameterizedTest
+    @UserSession(usersNumber = 2, accountsNumber = 1)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
     public void checkUserCantMakeTransferToAnotherUserAccountWithValidAmountIfMoneyNotEnough(double amount) {
-        var accountWithNoMoney = AccountSteps.createAccount(firstUserAuthToken);
-        var senderAccountsBefore = userSteps.getUserAccounts(firstUserAuthToken);
-        var receiverAccountsBefore = userSteps.getUserAccounts(secondUserAuthToken);
+        setUpTestData();
+        var accountWithNoMoney = AccountSteps.createAccount(firstUser.getToken());
+        var senderAccountsBefore = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
+        var receiverAccountsBefore = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
+        var secondUserAccount = SessionStorage.getUserAccounts(SECOND_USER_ID).stream().findFirst().orElseThrow();
 
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), secondUserAccount.getId(), amount);
 
-        var message = this.transferSteps.sendTransferRequestWithStringResponse(transferRequestBody, firstUserAuthToken, ResponseSpecs.badRequest());
+        var message = this.transferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
         this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, message);
 
-        var senderAccountsAfter = userSteps.getUserAccounts(firstUserAuthToken);
-        var receiverAccountsAfter = userSteps.getUserAccounts(secondUserAuthToken);
+        var senderAccountsAfter = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
+        var receiverAccountsAfter = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
 
         this.accountAssertionSteps.assertBalanceWasNotChanged(
                 senderAccountsBefore, senderAccountsAfter, accountWithNoMoney);
@@ -125,16 +135,18 @@ public class TransferMoneyTest extends BaseTransactionTest {
     }
 
     @ParameterizedTest
+    @UserSession(accountsNumber = 2)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
     public void checkUserCantMakeTransferToOwnUserAccountWithValidAmountIfMoneyNotEnough(double amount) {
-        var accountWithNoMoney = AccountSteps.createAccount(firstUserAuthToken);
-        var accountsBeforeRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        setUpTestData();
+        var accountWithNoMoney = AccountSteps.createAccount(firstUser.getToken());
+        var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), firstUserSecondAccount.getId(), amount);
-        var message = this.transferSteps.sendTransferRequestWithStringResponse(transferRequestBody, firstUserAuthToken, ResponseSpecs.badRequest());
+        var message = this.transferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
         this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, message);
 
-        var accountsAfterRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
                 accountsBeforeRequest, accountsAfterRequest, accountWithNoMoney);
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -144,15 +156,17 @@ public class TransferMoneyTest extends BaseTransactionTest {
     }
 
     @ParameterizedTest
+    @UserSession(accountsNumber = 2)
     @ValueSource(doubles = {-0.01, 0})
     public void checkUserCantMakeTransferWithTooLowAmount(double amount) {
-        var accountsBeforeRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        setUpTestData();
+        var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
 
-        var message = this.transferSteps.sendTransferRequestWithStringResponse(transferRequestBody, firstUserAuthToken, ResponseSpecs.badRequest());
+        var message = this.transferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
         this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.TRANSFER_AMOUNT_MUST_BE_AT_LEAST_MIN, message);
 
-        var accountsAfterRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
                 accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -160,15 +174,17 @@ public class TransferMoneyTest extends BaseTransactionTest {
     }
 
     @Test
+    @UserSession(accountsNumber = 2)
     public void checkUserCantMakeTransferWithTooBigAmount() {
-        var accountsBeforeRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        setUpTestData();
+        var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), 10_000.01);
 
-        var message = this.transferSteps.sendTransferRequestWithStringResponse(transferRequestBody, firstUserAuthToken, ResponseSpecs.badRequest());
+        var message = this.transferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
         this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.TRANSFER_AMOUNT_CANNOT_EXCEED_MAX, message);
 
-        var accountsAfterRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
                 accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -176,29 +192,33 @@ public class TransferMoneyTest extends BaseTransactionTest {
     }
 
     @Test
+    @UserSession(accountsNumber = 2)
     public void checkUserCantMakeTransferToNotExistedAccount() {
-        var accountsBeforeRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        setUpTestData();
+        var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), 100000000L);
 
-        var message = this.transferSteps.sendTransferRequestWithStringResponse(transferRequestBody, firstUserAuthToken, ResponseSpecs.badRequest());
+        var message = this.transferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
         this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, message);
 
-        var accountsAfterRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
                 accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
     }
 
     @Test
+    @UserSession(accountsNumber = 2)
     public void checkUserCantMakeTransferFromNotExistedAccount() {
-        var accountsBeforeRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        setUpTestData();
+        var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
         var transferRequestBody = TransferRequestGenerator.generateWithReceiver(firstUserSecondAccount.getId());
 
-        var message = this.transferSteps.sendTransferRequestWithStringResponse(transferRequestBody, firstUserAuthToken, ResponseSpecs.accessForbidden());
+        var message = this.transferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.accessForbidden());
         this.accountAssertionSteps.assertMessage(ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT, message);
 
-        var accountsAfterRequest = userSteps.getUserAccounts(firstUserAuthToken);
+        var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
                 accountsBeforeRequest, accountsAfterRequest, firstUserSecondAccount);
     }

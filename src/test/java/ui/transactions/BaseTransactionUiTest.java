@@ -1,15 +1,12 @@
-package api.transactions;
+package ui.transactions;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import ru.kduskov.api.models.body.response.general.AccountResponseBody;
-import ru.kduskov.api.steps.AccountSteps;
-import api.BaseTest;
-import ru.kduskov.common.annotations.UserSession;
+import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.common.storage.SessionStorage;
+import ui.BaseUiTest;
+import org.junit.jupiter.api.AfterAll;
+import ru.kduskov.api.steps.AccountSteps;
 
-public class BaseTransactionTest extends BaseTest {
-
+public class BaseTransactionUiTest extends BaseUiTest {
     @AfterAll
     public static void deleteAccounts() {
         for (var user : SessionStorage.getAllUsers()) {
