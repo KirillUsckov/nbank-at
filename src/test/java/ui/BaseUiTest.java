@@ -15,19 +15,17 @@ import ru.kduskov.api.models.body.request.CreateUserRequestBody;
 import ru.kduskov.api.requests.skelethon.requesters.CrudRequester;
 import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.specs.ResponseSpecs;
+import ru.kduskov.api.steps.AccountSteps;
 import ru.kduskov.api.steps.AdminSteps;
 import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.common.confs.Config;
 import ru.kduskov.common.enums.ConfigParams;
 import ru.kduskov.common.extensions.BrowserMatchExtension;
 import ru.kduskov.common.extensions.UserSessionExtension;
-import ru.kduskov.ui.pages.DashboardPage;
-import ru.kduskov.ui.steps.BrowserSteps;
+import ru.kduskov.common.storage.SessionStorage;
 
 import java.util.Map;
 
-import static com.codeborne.selenide.Selenide.*;
-import static ru.kduskov.common.enums.ConfigParams.*;
 
 @ExtendWith({UserSessionExtension.class, BrowserMatchExtension.class})
 public abstract class BaseUiTest {
@@ -52,5 +50,17 @@ public abstract class BaseUiTest {
     @AfterEach
     public void assertSoftAssertions() {
         this.softly.assertAll();
+    }
+
+    @AfterEach
+    public void deleteTestData() {
+        for (var user : SessionStorage.getAllUsers()) {
+            for (var account : SessionStorage.getUserSteps(user.getUsername()).getUserAccounts())
+                AccountSteps.deleteAccount(user.getToken(), account.getId());
+        }
+        for (var user : AdminSteps.getAllUsers()) {
+            AdminSteps.deleteUser(user.getId());
+        }
+        SessionStorage.clear();
     }
 }

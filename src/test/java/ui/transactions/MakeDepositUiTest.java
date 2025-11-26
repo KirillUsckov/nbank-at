@@ -3,13 +3,13 @@ package ui.transactions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.kduskov.api.generators.DepositRequestGenerator;
-import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
 import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.ui.pages.DashboardPage;
 import ru.kduskov.ui.pages.MakeDepositPage;
 import ru.kduskov.ui.steps.BrowserSteps;
+import ui.BaseUiTest;
 
 import static common.Constans.FIRST_ACC_ID;
 import static common.Constans.FIRST_USER_ID;
@@ -17,7 +17,7 @@ import static ru.kduskov.api.enums.BankAlerts.DEPOSIT_LESS_OR_EQUAL_TO_5000;
 import static ru.kduskov.api.enums.BankAlerts.SUCCESSFULLY_DEPOSITED_TO_ACCOUNT;
 import static ru.kduskov.ui.pages.BasePage.loginWithUserCredentials;
 
-public class MakeDepositUiTest extends BaseTransactionUiTest {
+public class MakeDepositUiTest extends BaseUiTest {
     private AccountAssertionSteps accountAssertionSteps;
     private final DashboardPage dashboardPage = new DashboardPage();
     private final MakeDepositPage makeDepositPage = new MakeDepositPage();
@@ -37,6 +37,7 @@ public class MakeDepositUiTest extends BaseTransactionUiTest {
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(userAccount.getId());
         dashboardPage.clickDepositMoneyButton();
+
         makeDepositPage.waitPageOpened();
 
         makeDepositPage.selectAccount(userAccount.getAccountNumber());
@@ -65,9 +66,8 @@ public class MakeDepositUiTest extends BaseTransactionUiTest {
 
         dashboardPage.clickDepositMoneyButton();
         makeDepositPage.waitPageOpened();
-
         makeDepositPage.selectAccount(userAccount.getAccountNumber());
-        makeDepositPage.setAmount("5001");
+        makeDepositPage.setAmount("5000.01");
         makeDepositPage.clickDepositButton();
 
         var errorMessage = BrowserSteps.getAlertText();

@@ -1,14 +1,12 @@
 package ui.transactions;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.kduskov.api.generators.common.RandomData;
+import ru.kduskov.api.generators.common.RequestDataGenerator;
+import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
-import ru.kduskov.api.steps.AccountSteps;
 import ru.kduskov.api.steps.DepositSteps;
-import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.api.utils.AccountsListUtils;
 import ru.kduskov.common.annotations.UserSession;
@@ -17,11 +15,12 @@ import ru.kduskov.ui.models.UserModel;
 import ru.kduskov.ui.pages.DashboardPage;
 import ru.kduskov.ui.pages.TransferPage;
 import ru.kduskov.ui.steps.BrowserSteps;
+import ui.BaseUiTest;
 
 import static common.Constans.*;
 import static ru.kduskov.api.enums.BankAlerts.*;
 
-public class TransferMoneyUiTest extends BaseTransactionUiTest {
+public class TransferMoneyUiTest extends BaseUiTest {
     private AccountResponseBody firstUserAccount;
     private AccountResponseBody firstUserSecondAccount;
     private UserModel firstUser;
@@ -114,6 +113,9 @@ public class TransferMoneyUiTest extends BaseTransactionUiTest {
     @UserSession(accountsNumber = 2, isUi = true)
     public void transferMoneyErrorWithMismatchedReceiverName() {
         setUpTestData();
+        var requestBody = RequestDataGenerator.generateFilledObject(ChangeUserProfileRequestBody.class);
+        SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfile(requestBody);
+
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts();
         var amount = RandomData.getNumericString(4);

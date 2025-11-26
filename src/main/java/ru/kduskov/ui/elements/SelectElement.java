@@ -16,6 +16,7 @@ public class SelectElement extends BaseElement{
     }
 
     public void waitOptionsWithValue() {
+        click();
         find(Selectors.byXpath("./option[@value>0]")).shouldBe(Condition.visible);
     }
 

@@ -34,6 +34,7 @@ public class UserSessionExtension implements BeforeEachCallback {
             }
             if(annotation.isUi())
                 loginWithUserCredentials(SessionStorage.getUser(annotation.userForLogin()).getToken());
+
         }
     }
 }
