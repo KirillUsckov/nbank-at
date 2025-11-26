@@ -1,5 +1,6 @@
 package api.transactions;
 
+import api.BaseTest;
 import ru.kduskov.api.constants.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import ru.kduskov.ui.models.UserModel;
 
 import static common.Constans.*;
 
-public class TransferMoneyTest extends BaseTransactionTest {
+public class TransferMoneyTest extends BaseTest {
     private AccountResponseBody firstUserAccount;
     private AccountResponseBody firstUserSecondAccount;
     private UserModel firstUser;
