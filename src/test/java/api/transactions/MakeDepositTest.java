@@ -21,7 +21,6 @@ import ru.kduskov.ui.models.UserModel;
 import static common.Constans.*;
 import static ru.kduskov.api.constants.ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT;
 
-
 public class MakeDepositTest extends BaseTest {
     private final DepositSteps depositSteps = new DepositSteps();
     private DepositAssertionSteps depositAssertionSteps;

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import ru.kduskov.api.generators.common.RandomData;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
-import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.api.steps.assertions.UserProfileAssertionSteps;
 import ru.kduskov.common.annotations.Browser;
 import ru.kduskov.common.annotations.UserSession;
