@@ -4,10 +4,8 @@ import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.ui.models.UserModel;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class SessionStorage {
@@ -63,11 +61,6 @@ public class SessionStorage {
     }
 
     public static AccountResponseBody getUserAccount(String username, int accId) {
-        System.out.println("getUserAccount");
-        System.out.println("username: " + username);
-        System.out.println("accId: " + accId);
-        System.out.println("accounts keys: " + String.join(", ", INSTANCE.accountMap.keySet()));
-        System.out.println("accounts values: " + INSTANCE.accountMap.values().stream().map(el-> el.stream().map(AccountResponseBody::getAccountNumber).collect(Collectors.joining(", "))).collect(Collectors.joining("; ")));
         var accs = INSTANCE.accountMap.get(username);
         return accs.get(accId - 1);
 
