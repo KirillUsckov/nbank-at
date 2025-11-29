@@ -4,7 +4,6 @@ import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.ui.models.UserModel;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,14 +14,15 @@ public class SessionStorage {
     private final LinkedHashMap<String, UserSteps> userStepsMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, List<AccountResponseBody>> accountMap = new LinkedHashMap<>();
 
-    private SessionStorage() {}
+    private SessionStorage() {
+    }
 
-    public static SessionStorage getInstance(){
+    public static SessionStorage getInstance() {
         return INSTANCE;
     }
 
     public static void insertUserAccounts(String username, List<AccountResponseBody> accounts) {
-       INSTANCE.accountMap.put(username, accounts);
+        INSTANCE.accountMap.put(username, accounts);
     }
 
     public static List<AccountResponseBody> getUserAccounts(int idx) {
@@ -47,7 +47,7 @@ public class SessionStorage {
     }
 
     public static UserModel getUser(int idx) {
-        var key = new ArrayList<>(INSTANCE.userMap.keySet()).get(idx - 1);
+        var key = INSTANCE.userMap.keySet().toArray()[idx-1];
         return INSTANCE.userMap.get(key);
     }
 
@@ -66,7 +66,9 @@ public class SessionStorage {
 
     }
 
-    public void clear() {
-        userMap.clear();
+    public static void clear() {
+        INSTANCE.userMap.clear();
+        INSTANCE.accountMap.clear();
+        INSTANCE.userStepsMap.clear();
     }
 }

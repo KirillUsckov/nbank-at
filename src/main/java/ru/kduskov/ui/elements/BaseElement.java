@@ -1,5 +1,6 @@
 package ru.kduskov.ui.elements;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,14 @@ import static com.codeborne.selenide.Selenide.$;
 @AllArgsConstructor
 public abstract class BaseElement {
     protected By locator;
+
+    public void click() {
+        $(locator)
+                .shouldBe(Condition.exist)
+                .scrollTo()
+                .shouldBe(Condition.clickable)
+                .click();
+    }
 
     protected SelenideElement find(By selector) {
         return $(locator).find(selector);

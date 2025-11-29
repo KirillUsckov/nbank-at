@@ -22,6 +22,10 @@ public abstract class BasePage<T extends BasePage> {
         $(pageLocator()).shouldBe(Condition.visible);
     }
 
+    public void refresh() {
+        Selenide.refresh();
+    }
+
     public static void loginWithUserCredentials(String userToken) {
         Selenide.open("/");
         executeJavaScript("localStorage.setItem('authToken', arguments[0])", userToken);

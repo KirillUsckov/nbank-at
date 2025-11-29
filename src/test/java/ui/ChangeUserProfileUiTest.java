@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import ru.kduskov.api.generators.common.RandomData;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
-import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.api.steps.assertions.UserProfileAssertionSteps;
 import ru.kduskov.common.annotations.Browser;
 import ru.kduskov.common.annotations.UserSession;
@@ -57,6 +56,7 @@ public class ChangeUserProfileUiTest extends BaseUiTest {
         var oldName = headerPanel.getUserNameFromUserInfo();
         headerPanel.clickUserInfo();
         changeNamePage.waitPageOpened();
+        var customerBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
 
         var newName = RandomData.getStringAndNumericString(10);
 
@@ -69,6 +69,6 @@ public class ChangeUserProfileUiTest extends BaseUiTest {
         var headerUsername = headerPanel.getUserNameFromUserInfo();
         softly.assertThat(headerUsername).withFailMessage("New username is not equal old name").isEqualTo(oldName);
         var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
-        this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(new ChangeUserProfileRequestBody(oldName), customerAfterRequest);
+        this.userProfileAssertionSteps.assertCustomerNameMatchesPrevious(customerBeforeRequest, customerAfterRequest);
     }
 }

@@ -1,5 +1,6 @@
 package api.transactions;
 
+import api.BaseTest;
 import ru.kduskov.api.constants.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,6 @@ import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.specs.ResponseSpecs;
 import ru.kduskov.api.steps.DepositSteps;
-import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.api.steps.assertions.DepositAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
@@ -21,8 +21,7 @@ import ru.kduskov.ui.models.UserModel;
 import static common.Constans.*;
 import static ru.kduskov.api.constants.ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT;
 
-
-public class MakeDepositTest extends BaseTransactionTest {
+public class MakeDepositTest extends BaseTest {
     private final DepositSteps depositSteps = new DepositSteps();
     private DepositAssertionSteps depositAssertionSteps;
     private AccountAssertionSteps accountAssertionSteps;
