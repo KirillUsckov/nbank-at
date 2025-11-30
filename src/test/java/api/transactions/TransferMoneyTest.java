@@ -37,7 +37,6 @@ public class TransferMoneyTest extends BaseTest {
     public void setUpTestData() {
         firstUser = SessionStorage.getUser(FIRST_USER_ID);
         firstUserAccount = SessionStorage.getUserAccount(firstUser.getUsername(), FIRST_ACC_ID);
-        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         DepositSteps.sendDepositWithAmountValidation(firstUserAccount, firstUser.getToken(), 50_000);
     }
 
@@ -52,6 +51,7 @@ public class TransferMoneyTest extends BaseTest {
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
     public void checkUserCanMakeTransferToHisAnotherAccountWithValidAmountIfMoneyEnough(double amount) {
         setUpTestData();
+        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts();
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
@@ -81,6 +81,7 @@ public class TransferMoneyTest extends BaseTest {
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
     public void checkUserCanMakeTransferToAnotherUserAccountWithValidAmountIfMoneyEnough(double amount) {
         setUpTestData();
+        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var senderAccountsBefore = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var receiverAccountsBefore = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
         var secondUserAccount = SessionStorage.getUserAccounts(SECOND_USER_ID).stream().findFirst().orElseThrow();
@@ -140,6 +141,7 @@ public class TransferMoneyTest extends BaseTest {
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
     public void checkUserCantMakeTransferToOwnUserAccountWithValidAmountIfMoneyNotEnough(double amount) {
         setUpTestData();
+        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountWithNoMoney = AccountSteps.createAccount(firstUser.getToken());
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
@@ -161,6 +163,7 @@ public class TransferMoneyTest extends BaseTest {
     @ValueSource(doubles = {-0.01, 0})
     public void checkUserCantMakeTransferWithTooLowAmount(double amount) {
         setUpTestData();
+        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
 
@@ -178,6 +181,7 @@ public class TransferMoneyTest extends BaseTest {
     @UserSession(accountsNumber = 2)
     public void checkUserCantMakeTransferWithTooBigAmount() {
         setUpTestData();
+        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), 10_000.01);
@@ -196,6 +200,7 @@ public class TransferMoneyTest extends BaseTest {
     @UserSession(accountsNumber = 2)
     public void checkUserCantMakeTransferToNotExistedAccount() {
         setUpTestData();
+        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), 100000000L);
@@ -212,6 +217,7 @@ public class TransferMoneyTest extends BaseTest {
     @UserSession(accountsNumber = 2)
     public void checkUserCantMakeTransferFromNotExistedAccount() {
         setUpTestData();
+        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
         var transferRequestBody = TransferRequestGenerator.generateWithReceiver(firstUserSecondAccount.getId());

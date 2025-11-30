@@ -9,16 +9,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.MutableCapabilities;
 import ru.kduskov.api.steps.AccountSteps;
 import ru.kduskov.api.steps.AdminSteps;
+import ru.kduskov.api.steps.UserSteps;
 import ru.kduskov.common.confs.Config;
 import ru.kduskov.common.enums.ConfigParams;
 import ru.kduskov.common.extensions.BrowserMatchExtension;
+import ru.kduskov.common.extensions.DeleteUserTestDataExtension;
+import ru.kduskov.common.extensions.TimerExtension;
 import ru.kduskov.common.extensions.UserSessionExtension;
 import ru.kduskov.common.storage.SessionStorage;
 
 import java.util.Map;
 
 
-@ExtendWith({UserSessionExtension.class, BrowserMatchExtension.class})
+@ExtendWith({UserSessionExtension.class, BrowserMatchExtension.class, TimerExtension.class, DeleteUserTestDataExtension.class})
 public abstract class BaseUiTest {
     protected SoftAssertions softly;
 
@@ -43,15 +46,16 @@ public abstract class BaseUiTest {
         this.softly.assertAll();
     }
 
-    @AfterEach
-    public void deleteTestData() {
-        for (var user : SessionStorage.getAllUsers()) {
-            for (var account : SessionStorage.getUserSteps(user.getUsername()).getUserAccounts())
-                AccountSteps.deleteAccount(user.getToken(), account.getId());
-        }
-        for (var user : AdminSteps.getAllUsers()) {
-            AdminSteps.deleteUser(user.getId());
-        }
-        SessionStorage.clear();
-    }
+//    @AfterEach
+//    public void deleteTestData() {
+//        for (var user : SessionStorage.getAllUsers()) {
+//            for (var account : SessionStorage.getUserSteps(user.getUsername()).getUserAccounts())
+//                AccountSteps.deleteAccount(user.getToken(), account.getId());
+//        }
+//        for (var user : SessionStorage.getAllUsers()) {
+//            var id = new UserSteps(user.getToken()).getCustomer().getId();
+//            AdminSteps.deleteUser(id);
+//        }
+//        SessionStorage.clear();
+//    }
 }

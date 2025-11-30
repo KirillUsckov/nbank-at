@@ -90,7 +90,7 @@ public class MakeDepositTest extends BaseTest {
     }
 
     @Test
-    @UserSession
+    @UserSession(accountsNumber = 1)
     public void checkUserCantMakeDepositToNotExistedAccount() {
         setUpTestData();
         var depositRequestBody = DepositRequestGenerator.generate();
