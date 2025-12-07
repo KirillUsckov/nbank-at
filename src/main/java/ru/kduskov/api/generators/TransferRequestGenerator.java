@@ -3,7 +3,7 @@ package ru.kduskov.api.generators;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.TransferRequestBody;
 
-public class TransferRequestGenerator {
+public final class TransferRequestGenerator {
     public static TransferRequestBody generate() {
         return RequestDataGenerator.generateFilledObject(TransferRequestBody.class);
     }

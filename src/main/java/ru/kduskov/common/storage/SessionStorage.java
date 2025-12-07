@@ -70,10 +70,7 @@ public class SessionStorage {
     }
 
     public static AccountResponseBody getUserAccount(String username, int accId) {
-        System.out.println("AccountMap:" + String.join(", ", getInstance().accountMap.keySet()));
-        var map =    getInstance().accountMap;
         var accs = getInstance().accountMap.get(username);
-        System.out.println("Accounts : " + accs.stream().map(AccountResponseBody::getAccountNumber).collect(Collectors.joining(", ")));
         return accs.get(accId - 1);
 
     }

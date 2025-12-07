@@ -10,7 +10,7 @@ import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
 import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.specs.ResponseSpecs;
 
-public class DepositSteps {
+public final class DepositSteps {
     private static final int MAX_DEPOSIT_PER_DEPOSIT_TRANSACTION = 5_000;
 
     /**
