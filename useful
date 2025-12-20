@@ -1,0 +1,2 @@
+Для запуска sh скриптов
+& "C:\Program Files\Git\bin\bash.exe" .\run-tests.sh

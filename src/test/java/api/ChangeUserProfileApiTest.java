@@ -12,6 +12,7 @@ import ru.kduskov.api.specs.ResponseSpecs;
 import ru.kduskov.api.steps.assertions.UserProfileAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
 import ru.kduskov.common.storage.SessionStorage;
+import ru.kduskov.steps.SqlSteps;
 
 import java.util.stream.Stream;
 
@@ -37,6 +38,7 @@ public class ChangeUserProfileApiTest extends BaseTest {
 
         var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
         this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(requestBody, customerAfterRequest);
+//        var es = SqlSteps.select();
     }
 
 

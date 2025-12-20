@@ -18,7 +18,7 @@ import javax.swing.plaf.PanelUI;
 import java.util.List;
 
 import static ru.kduskov.common.enums.ConfigParams.API_VERSION;
-import static ru.kduskov.common.enums.ConfigParams.SERVER;
+import static ru.kduskov.common.enums.ConfigParams.API_BASE_URL;
 
 public final class RequestSpecs {
     private static String userToken;
@@ -26,8 +26,7 @@ public final class RequestSpecs {
         return new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
-//                .addFilters(List.of(new RequestLoggingFilter(), new ResponseLoggingFilter()))
-                .setBaseUri(Config.getProperty(SERVER) + Config.getProperty(API_VERSION));
+                .setBaseUri(Config.getProperty(API_BASE_URL) + Config.getProperty(API_VERSION));
     }
 
     public static RequestSpecification unauthSpec() {
