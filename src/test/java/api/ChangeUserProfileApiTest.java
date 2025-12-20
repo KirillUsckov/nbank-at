@@ -12,7 +12,6 @@ import ru.kduskov.api.specs.ResponseSpecs;
 import ru.kduskov.api.steps.assertions.UserProfileAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
 import ru.kduskov.common.storage.SessionStorage;
-import ru.kduskov.steps.SqlSteps;
 
 import java.util.stream.Stream;
 

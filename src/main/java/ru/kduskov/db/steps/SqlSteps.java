@@ -1,4 +1,4 @@
-package ru.kduskov.steps;
+package ru.kduskov.db.steps;
 
 import ru.kduskov.db.DBRequest;
 import ru.kduskov.db.models.Condition;

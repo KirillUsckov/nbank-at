@@ -2,6 +2,7 @@ services:
   backend:
     image: nobugsme/nbank:with_database
     ports:
+      #Порт_внутри:Порт_снаружи
       - "4111:4111"
     environment:
       - SPRING_DATASOURCE=jdbc:postgresql://postgres:5432/nbank
@@ -11,12 +12,14 @@ services:
     depends_on:
       - postgres
     networks:
+      #Общая сеть для того, чтобы сервисы взаимодействовали друг с другом
       - nbank-network
 
   frontend:
     image: nobugsme/nbank-ui:with_nginx
-    ports:
-      - "3000:80"
+    expose:
+      # не открываем порт наружу, а даем доступ внутри сети
+      - "80"
     depends_on:
       - backend
     networks:
