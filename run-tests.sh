@@ -4,15 +4,6 @@ IMAGE_NAME=nbank-at
 TEST_PROFILE=${1:-ui}
 TIMESTAMP=$(date +"%Y%m%d_%H%M")
 
-
-# Для Windows: используем правильные пути для bash
-#if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
-    # Git Bash на Windows
- #   TEST_RESULTS_OUTPUT_DIR="$(pwd)/test-results/$TIMESTAMP"
-#else
-    # Linux/Mac
- #   TEST_RESULTS_OUTPUT_DIR="$(pwd)/test-results/$TIMESTAMP"
-#fi
 TEST_RESULTS_OUTPUT_DIR="$(pwd)/test-results/$TIMESTAMP"
 
 
@@ -38,8 +29,8 @@ if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
       -v "${WIN_PATH}/results:/app/target/surefire-reports" \
       -v "${WIN_PATH}/report:/app/target/site" \
       -e "TEST_PROFILE=$TEST_PROFILE" \
-      -e "API_BASE_URL=http://192.168.2.110:4111" \
-      -e "UI_BASE_URL=http://192.168.2.110:3000" \
+      -e "API_BASE_URL=" \
+      -e "UI_BASE_URL=" \
       $IMAGE_NAME
 else
     docker run --rm \
@@ -47,8 +38,8 @@ else
       -v "$TEST_RESULTS_OUTPUT_DIR/results:/app/target/surefire-reports" \
       -v "$TEST_RESULTS_OUTPUT_DIR/report:/app/target/site" \
       -e "TEST_PROFILE=$TEST_PROFILE" \
-      -e "API_BASE_URL=http://192.168.2.110:4111" \
-      -e "UI_BASE_URL=http://192.168.2.110:3000" \
+      -e "API_BASE_URL=" \
+      -e "UI_BASE_URL=" \
       $IMAGE_NAME
 fi
 
