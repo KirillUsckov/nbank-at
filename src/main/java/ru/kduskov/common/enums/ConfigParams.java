@@ -16,7 +16,9 @@ public enum ConfigParams {
     ADMIN_TOKEN("admin.token"),
     DB_URL("db.url"),
     DB_USERNAME("db.username"),
-    DB_PASSWORD("db.password");
+    DB_PASSWORD("db.password"),
+    SELENOID_URL("selenoid.url"),
+    SELENOID_UI_URL("selenoid.ui.url"),;
     @Getter
     private String value;
 }

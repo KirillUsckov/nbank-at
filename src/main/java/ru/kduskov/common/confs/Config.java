@@ -30,7 +30,7 @@ public final class Config {
         if (property != null) {
             return property;
         }
-        return INSTANCE.properties.getProperty(configParam.getValue());
-
+        property = INSTANCE.properties.getProperty(configParam.getValue());
+        return property;
     }
 }
