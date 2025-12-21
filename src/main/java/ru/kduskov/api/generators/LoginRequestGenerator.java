@@ -1,0 +1,13 @@
+package ru.kduskov.api.generators;
+
+import ru.kduskov.api.models.body.request.LoginRequestBody;
+import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
+
+public final class LoginRequestGenerator {
+    public static LoginRequestBody generate(UserProfileResponseBody user) {
+        return LoginRequestBody.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .build();
+    }
+}

@@ -1,5 +1,6 @@
 package api;
 
+import common.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
 import static common.Constans.FIRST_USER_ID;
 import static ru.kduskov.api.constants.ErrorMessages.UserProfile.NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY;
 
-public class ChangeUserProfileTest extends BaseTest {
+public class ChangeUserProfileApiTest extends BaseTest {
     private UserProfileAssertionSteps userProfileAssertionSteps;
 
     @BeforeEach

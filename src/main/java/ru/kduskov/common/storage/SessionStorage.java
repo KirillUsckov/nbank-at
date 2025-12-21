@@ -9,7 +9,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SessionStorage {
-    private static final SessionStorage INSTANCE = new SessionStorage();
+    /*
+        ThreadLocal даёт каждому потоку свою отдельную копию значения - при первом вызове INSTANCE.get()
+        в этом потоке будет вызван supplier from withInitial и создан отдельный SessionStorage для этого потока:
+            ThreadLocal.withInitial принимает Supplier<T> и запоминает его.
+            При первом вызове INSTANCE.get() в конкретном потоке JUnit/Java вызывает этот supplier
+            и сохраняет возвращённое значение в ThreadLocalMap этого потока.
+        Реализация: у объекта Thread есть поле ThreadLocalMap; в этой map ключи -
+        слабые ссылки на объекты ThreadLocal, значения - сильные ссылки на соответствующие объекты SessionStorage
+    */
+    private static final ThreadLocal<SessionStorage> INSTANCE = ThreadLocal.withInitial(SessionStorage::new);
     private final LinkedHashMap<String, UserModel> userMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, UserSteps> userStepsMap = new LinkedHashMap<>();
     private final LinkedHashMap<String, List<AccountResponseBody>> accountMap = new LinkedHashMap<>();
@@ -18,24 +27,24 @@ public class SessionStorage {
     }
 
     public static SessionStorage getInstance() {
-        return INSTANCE;
+        return INSTANCE.get();
     }
 
     public static void insertUserAccounts(String username, List<AccountResponseBody> accounts) {
-        INSTANCE.accountMap.put(username, accounts);
+        getInstance().accountMap.put(username, accounts);
     }
 
     public static List<AccountResponseBody> getUserAccounts(int idx) {
-        return INSTANCE.accountMap.get(INSTANCE.accountMap.keySet().stream().toList().get(idx - 1));
+        return getInstance().accountMap.get(getInstance().accountMap.keySet().stream().toList().get(idx - 1));
     }
 
     public static List<AccountResponseBody> getUserAccounts(String username) {
-        return INSTANCE.accountMap.get(username);
+        return getInstance().accountMap.get(username);
     }
 
     public static void insertUser(UserModel userModel) {
-        INSTANCE.userMap.put(userModel.getUsername(), userModel);
-        INSTANCE.userStepsMap.put(userModel.getUsername(), new UserSteps(userModel.getToken()));
+        getInstance().userMap.put(userModel.getUsername(), userModel);
+        getInstance().userStepsMap.put(userModel.getUsername(), new UserSteps(userModel.getToken()));
     }
 
     public static void insertUsers(List<UserModel> userModels) {
@@ -43,32 +52,32 @@ public class SessionStorage {
     }
 
     public static List<UserModel> getAllUsers() {
-        return INSTANCE.userMap.values().stream().toList();
+        return getInstance().userMap.values().stream().toList();
     }
 
     public static UserModel getUser(int idx) {
-        var key = INSTANCE.userMap.keySet().toArray()[idx-1];
-        return INSTANCE.userMap.get(key);
+        var key = getInstance().userMap.keySet().toArray()[idx-1];
+        return getInstance().userMap.get(key);
     }
 
     public static UserSteps getUserSteps(int idx) {
-        return INSTANCE.userStepsMap.get(INSTANCE.userStepsMap.keySet().stream().toList().get(idx - 1));
+        return getInstance().userStepsMap.get(getInstance().userStepsMap.keySet().stream().toList().get(idx - 1));
     }
 
 
     public static UserSteps getUserSteps(String username) {
-        return INSTANCE.userStepsMap.get(username);
+        return getInstance().userStepsMap.get(username);
     }
 
     public static AccountResponseBody getUserAccount(String username, int accId) {
-        var accs = INSTANCE.accountMap.get(username);
+        var accs = getInstance().accountMap.get(username);
         return accs.get(accId - 1);
 
     }
 
     public static void clear() {
-        INSTANCE.userMap.clear();
-        INSTANCE.accountMap.clear();
-        INSTANCE.userStepsMap.clear();
+        getInstance().userMap.clear();
+        getInstance().accountMap.clear();
+        getInstance().userStepsMap.clear();
     }
 }

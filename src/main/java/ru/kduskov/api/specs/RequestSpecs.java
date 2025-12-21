@@ -26,7 +26,7 @@ public final class RequestSpecs {
         return new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
-                .addFilters(List.of(new RequestLoggingFilter(), new ResponseLoggingFilter()))
+//                .addFilters(List.of(new RequestLoggingFilter(), new ResponseLoggingFilter()))
                 .setBaseUri(Config.getProperty(SERVER) + Config.getProperty(API_VERSION));
     }
 
@@ -44,18 +44,5 @@ public final class RequestSpecs {
         return defaultRequestBuilder()
                 .addHeader("Authorization", token)
                 .build();
-    }
-
-    public static String getUserToken(CreateUserRequestBody user) {
-        if(userToken == null) {
-            userToken = AdminSteps.createUser(user);
-            new CrudRequester(
-                    RequestSpecs.userSpec(userToken),
-                    ResponseSpecs.ok(),
-                    Endpoint.CHANGE_USER_PROFILE
-            )
-                    .put(RequestDataGenerator.generateFilledObject(ChangeUserProfileRequestBody.class));
-        }
-        return userToken;
     }
 }

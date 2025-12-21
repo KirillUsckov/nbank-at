@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import ru.kduskov.api.models.body.request.*;
 import ru.kduskov.api.models.body.response.BaseResponse;
+import ru.kduskov.api.models.body.response.LoginResponseBody;
 import ru.kduskov.api.models.body.response.accounts.DeleteAccountResponse;
 import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
@@ -21,7 +22,8 @@ public enum Endpoint {
     GET_USER_PROFILE("/customer/profile", null, UserProfileResponseBody.class),
     MAKE_DEPOSIT("/accounts/deposit", DepositRequestBody.class, AccountResponseBody.class),
     TRANSFER("/accounts/transfer", TransferRequestBody.class, TransferResponseBody.class),
-    GET_ALL_USERS("/admin/users", null, null);
+    GET_ALL_USERS("/admin/users", null, null),
+    AUTH_LOGIN("/auth/login", LoginRequestBody.class, LoginResponseBody.class);
 
     private final String endpoint;
     private final Class<? extends BaseRequest> requestClass;
