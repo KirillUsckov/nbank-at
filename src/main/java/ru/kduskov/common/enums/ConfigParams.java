@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum ConfigParams {
-    SERVER("api.server"),
+    API_BASE_URL("api.baseUrl"),
     API_VERSION("api.version"),
     UI_REMOTE("ui.remote"),
     UI_BASE_URL("ui.baseUrl"),
@@ -13,7 +13,10 @@ public enum ConfigParams {
     UI_BROWSER_SIZE("ui.browserSize"),
     ADMIN_USERNAME("admin.username"),
     ADMIN_PASSWORD("admin.password"),
-    ADMIN_TOKEN("admin.token");
+    ADMIN_TOKEN("admin.token"),
+    DB_URL("db.url"),
+    DB_USERNAME("db.username"),
+    DB_PASSWORD("db.password");
     @Getter
     private String value;
 }
