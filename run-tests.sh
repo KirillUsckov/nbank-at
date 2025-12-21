@@ -9,8 +9,8 @@ TEST_RESULTS_OUTPUT_DIR="$(pwd)/test-results/$TIMESTAMP"
 
 API_BASE_URL="http://localhost:4111"
 UI_BASE_URL="http://localhost:3000"
-#SELENOID_URL="http://localhost:4444"
-#SELENOID_UI_URL="http://localhost:8080"
+SELENOID_URL="http://localhost:4444"
+SELENOID_UI_URL="http://localhost:8080"
 
 # Определяем сеть
 NETWORK_NAME="nbank-network"
@@ -28,9 +28,6 @@ else
     SELENOID_UI_URL="http://selenoid-ui:8080"
     NETWORK_ARG="--network $NETWORK_NAME"
 fi
-
-
-echo "!!!!!!!!${SELENOID_URL}/wd/hub"
 
 echo ">>> Результаты тестов в папке: $TEST_RESULTS_OUTPUT_DIR"
 

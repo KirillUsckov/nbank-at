@@ -22,12 +22,6 @@ echo "  ЗАПУСК ТЕСТОВ"
 echo "========================================"
 echo ""
 
-#docker run --rm \
-#  -e API_BASE_URL=http://localhost:4111 \
-#  -e UI_BASE_URL=http://localhost:3000 \
-#  -e SELENOID_URL=http://localhost:4444 \
-#  -e SELENOID_UI_URL=http://localhost:8080 \
-#  kirberia/nbank-at:latest
 
 # Если хотите использовать ваш существующий скрипт
 bash "$RUN_TESTS_FILE" "${1:-all}"

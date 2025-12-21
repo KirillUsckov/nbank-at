@@ -45,9 +45,6 @@ CMD /bin/sh -c " \
     mkdir -p /app/logs ; \
     { \
         export UI_REMOTE="${SELENOID_URL}/wd/hub" ;\
-        echo '!!!!!!!!!!! selenoid url - ${SELENOID_URL}' ;\
-        echo '!!!!!!!!!!! selenoid config - ${UI_REMOTE}' ;\
-        echo '!!!!!!!!!!! $SELENOID_URL/wd/hub - $SELENOID_URL/wd/hub' ;\
         echo '>>> Running test with profile: ${TEST_PROFILE}' ; \
         mvn test -P ${TEST_PROFILE} ; \
         \
