@@ -9,9 +9,11 @@ import ru.kduskov.api.generators.common.RandomData;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.specs.ResponseSpecs;
+import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.api.steps.assertions.UserProfileAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
 import ru.kduskov.common.storage.SessionStorage;
+import ru.kduskov.db.steps.SqlSteps;
 
 import java.util.stream.Stream;
 
@@ -20,10 +22,12 @@ import static ru.kduskov.api.constants.ErrorMessages.UserProfile.NAME_MUST_CONTA
 
 public class ChangeUserProfileApiTest extends BaseTest {
     private UserProfileAssertionSteps userProfileAssertionSteps;
+    private DbAssertionSteps dbAssertionSteps;
 
     @BeforeEach
     public void initAssertionClasses() {
         this.userProfileAssertionSteps = new UserProfileAssertionSteps(softly);
+        this.dbAssertionSteps = new DbAssertionSteps(softly);
     }
 
     @Test
@@ -37,6 +41,12 @@ public class ChangeUserProfileApiTest extends BaseTest {
 
         var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
         this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(requestBody, customerAfterRequest);
+
+        var expectedCustomerOpt = SqlSteps.findCustomerByUsername(changeUserProfileResponse.getCustomer().getUsername());
+        this.userProfileAssertionSteps.assertOptionalIsPresent(expectedCustomerOpt);
+        var expectedCustomer = expectedCustomerOpt.get();
+
+        this.dbAssertionSteps.assertCustomerDaoMatchChangeUserProfileResponse(expectedCustomer, changeUserProfileResponse);
     }
 
 
@@ -56,6 +66,13 @@ public class ChangeUserProfileApiTest extends BaseTest {
         var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
 
         this.userProfileAssertionSteps.assertCustomerNameMatchesPrevious(customerBeforeRequest,customerAfterRequest);
+
+        var expectedCustomerOpt = SqlSteps.findCustomerByUsername(customerBeforeRequest.getUsername());
+        this.userProfileAssertionSteps.assertOptionalIsPresent(expectedCustomerOpt);
+        var expectedCustomer = expectedCustomerOpt.get();
+
+        this.dbAssertionSteps.assertCustomerDaoMatchUserProfileResponse(expectedCustomer, customerBeforeRequest);
+
     }
 
     private static Stream<String> invalidNames() {

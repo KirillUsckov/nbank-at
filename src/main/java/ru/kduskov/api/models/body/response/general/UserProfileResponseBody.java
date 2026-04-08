@@ -17,9 +17,6 @@ import java.util.List;
 public class UserProfileResponseBody extends BaseResponse {
     private Long id;
     private String username;
-    private String password;
     private String name;
     private Role role;
-    @Nullable
-    private List<AccountResponseBody> accounts;
 }

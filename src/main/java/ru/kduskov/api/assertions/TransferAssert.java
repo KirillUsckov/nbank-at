@@ -14,7 +14,7 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
         return new TransferAssert(actual, softly);
     }
 
-    public TransferAssert hasReceiverAccountId(long expectedReceiverAccountId) {
+    public TransferAssert receiverAccountIdEquals(long expectedReceiverAccountId) {
         softly(() ->
                 softly.assertThat(actual.getReceiverAccountId())
                         .withFailMessage("Expected receiver account id %s but was %s",
@@ -24,7 +24,7 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
         return this;
     }
 
-    public TransferAssert hasSenderAccountId(long expectedSenderAccountId) {
+    public TransferAssert senderAccountIdEquals(long expectedSenderAccountId) {
         softly(() ->
                 softly.assertThat(actual.getSenderAccountId())
                         .withFailMessage("Expected sender account id %s but was %s",
@@ -34,7 +34,7 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
         return this;
     }
 
-    public TransferAssert matchAmount(double expectedAmount) {
+    public TransferAssert amountEquals(double expectedAmount) {
         softly(() ->
                 softly.assertThat(actual.getAmount())
                         .withFailMessage("Expected amount %s but was %s",
@@ -44,7 +44,7 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
         return this;
     }
 
-    public TransferAssert hasMessage(String expectedMessage) {
+    public TransferAssert messageEquals(String expectedMessage) {
         softly(() ->
                 softly.assertThat(actual.getMessage())
                         .withFailMessage("Expected message '%s' but was '%s'",
@@ -55,9 +55,9 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
     }
 
     public TransferAssert matchesRequest(TransferRequestBody request) {
-        return hasReceiverAccountId(request.getReceiverAccountId())
-                        .hasSenderAccountId(request.getSenderAccountId())
-                        .matchAmount(request.getAmount())
-                        .hasMessage("Transfer successful");
+        return receiverAccountIdEquals(request.getReceiverAccountId())
+                        .senderAccountIdEquals(request.getSenderAccountId())
+                        .amountEquals(request.getAmount())
+                        .messageEquals("Transfer successful");
     }
 }

@@ -4,20 +4,15 @@ package ru.kduskov.api.steps;
 import io.restassured.specification.ResponseSpecification;
 import lombok.AllArgsConstructor;
 import ru.kduskov.api.enums.Endpoint;
-import ru.kduskov.api.enums.Role;
-import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
-import ru.kduskov.api.models.body.request.CreateUserRequestBody;
+import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
 import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
-import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.api.models.body.response.customer.profile.CustomerAccountsResponseBody;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.api.requests.skelethon.requesters.CrudRequester;
 import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
 import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.specs.ResponseSpecs;
-import ru.kduskov.ui.models.UserModel;
-
-import java.util.List;
 
 @AllArgsConstructor
 public class UserSteps {
@@ -39,8 +34,23 @@ public class UserSteps {
                 .get();
     }
 
-    public List<AccountResponseBody> getUserAccounts() {
-        return getCustomer().getAccounts();
+
+    public CustomerAccountsResponseBody getUserAccounts() {
+        return new ValidatedCrudRequested<CustomerAccountsResponseBody>(
+                RequestSpecs.userSpec(authToken),
+                ResponseSpecs.ok(),
+                Endpoint.GET_CUSTOMER_ACCOUNTS)
+                .get();
+
+    }
+
+    public TransactionsResponseBody getAccountTransactions(Long id) {
+        return new ValidatedCrudRequested<TransactionsResponseBody>(
+                RequestSpecs.userSpec(authToken),
+                ResponseSpecs.ok(),
+                Endpoint.GET_ACCOUNT_TRANSACTIONS)
+                .get(String.valueOf(id));
+
     }
 
     public ChangeUserProfileResponseBody changeUserProfile(ChangeUserProfileRequestBody requestBody) {

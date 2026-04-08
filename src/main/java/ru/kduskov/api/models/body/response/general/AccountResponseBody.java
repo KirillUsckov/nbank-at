@@ -17,5 +17,5 @@ public class AccountResponseBody extends BaseResponse {
     private Long id;
     private String accountNumber;
     private Double balance;
-    private List<Transaction> transactions;
+    private Double depositAmount;
 }

@@ -45,7 +45,7 @@ public class TransferMoneyUiTest extends BaseUiTest {
     public void transferMoneySuccessfully() {
         setUpTestData();
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
-        var accountsBeforeRequest = userSteps.getUserAccounts();
+        var accountsBeforeRequest = userSteps.getUserAccounts().getAccounts();
         var amount = RandomData.getNumericString(4);
         var customer = userSteps.getCustomer();
         var name = customer.getName();
@@ -65,18 +65,16 @@ public class TransferMoneyUiTest extends BaseUiTest {
         var expectedMessage = String.format(SUCCESSFULLY_TRANSFERRED_TO_ACCOUNT.getMessage(), amount, recipientAccountNumber);
         softly.assertThat(successfulTransferAlertText).isEqualTo(expectedMessage);
 
-        var accountsAfterRequest = userSteps.getUserAccounts();
+        var accountsAfterRequest = userSteps.getUserAccounts().getAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
                 accountsBeforeRequest, accountsAfterRequest, firstUserSecondAccount, Double.parseDouble(amount));
         this.accountAssertionSteps.assertBalanceWasDecreased(
                 accountsBeforeRequest, accountsAfterRequest, firstUserAccount, Double.parseDouble(amount));
 
-        var senderAccountAfter = AccountsListUtils.findAccountByAccountNumberOrElseThrow(
-                accountsAfterRequest, firstUserAccount);
-        var receiverAccountAfter = AccountsListUtils.findAccountByAccountNumberOrElseThrow(
-                accountsAfterRequest, firstUserSecondAccount);
-        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderAccountAfter, Double.parseDouble(amount), firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverAccountAfter, Double.parseDouble(amount), firstUserAccount.getId());
+        var senderTransactions = userSteps.getAccountTransactions(firstUserAccount.getId());
+        var receiverTransactions = userSteps.getAccountTransactions(firstUserSecondAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, Double.parseDouble(amount), firstUserSecondAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, Double.parseDouble(amount), firstUserAccount.getId());
     }
 
     @Test

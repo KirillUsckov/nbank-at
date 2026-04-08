@@ -3,6 +3,8 @@ package ru.kduskov.api.steps.assertions;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.assertions.AccountAssert;
 import ru.kduskov.api.enums.TransactionType;
+import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
+import ru.kduskov.api.models.body.response.customer.profile.CustomerAccountsResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 
 import java.util.List;
@@ -14,15 +16,15 @@ public class AccountAssertionSteps extends BaseAssertionsSteps {
         super(softly);
     }
 
-    public void assertBalanceWasNotChanged(List<AccountResponseBody> accountsBeforeRequest,
-                                           List<AccountResponseBody> accountsAfterRequest,
+    public void assertBalanceWasNotChanged(CustomerAccountsResponseBody accountsBeforeRequest,
+                                           CustomerAccountsResponseBody accountsAfterRequest,
                                            AccountResponseBody account) {
 
-        assertions.assertThatAccounts(accountsAfterRequest)
+        assertions.assertThatAccounts(accountsAfterRequest.getAccounts())
                 .containsAccountWithNumber(account.getAccountNumber())
                 .accountWithNumber(account.getAccountNumber())
                 .wasNotChangedComparedTo(
-                        findAccountByNumber(accountsBeforeRequest, account.getAccountNumber())
+                        findAccountByNumber(accountsBeforeRequest.getAccounts(), account.getAccountNumber())
                                 .orElseThrow(() -> new AssertionError("Account not found in before request"))
                 );
     }
@@ -52,15 +54,15 @@ public class AccountAssertionSteps extends BaseAssertionsSteps {
                 );
     }
 
-    public void assertAccountHasLatestTransferOut(AccountResponseBody senderAccountAfter, double amount, Long id) {
+    public void assertAccountHasLatestTransferOut(TransactionsResponseBody senderAccountAfter, double amount, Long id) {
         assertions.assertThat(senderAccountAfter).hasLatestTransferOut(amount, id);
     }
 
-    public void assertAccountHasLatestTransferIn(AccountResponseBody receiverAccountAfter, double amount, Long id) {
+    public void assertAccountHasLatestTransferIn(TransactionsResponseBody receiverAccountAfter, double amount, Long id) {
         assertions.assertThat(receiverAccountAfter).hasLatestTransferIn(amount, id);
     }
 
-    public void assertAccountHasNoTransactionsWithType(AccountResponseBody account, TransactionType type) {
+    public void assertAccountHasNoTransactionsWithType(TransactionsResponseBody account, TransactionType type) {
         assertions.assertThat(account).hasNoTransactionOfType(type);
 
     }

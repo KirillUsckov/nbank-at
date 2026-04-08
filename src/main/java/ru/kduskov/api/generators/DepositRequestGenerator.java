@@ -10,14 +10,14 @@ public class DepositRequestGenerator {
 
     public static DepositRequestBody generate(Long accountId) {
         var request = generate();
-        request.setId(accountId);
+        request.setAccountId(accountId);
         return request;
     }
 
     public static DepositRequestBody generate(Long accountID, double balance) {
         return DepositRequestBody.builder()
-                .id(accountID)
-                .balance(balance)
+                .accountId(accountID)
+                .amount(balance)
                 .build();
     }
 }

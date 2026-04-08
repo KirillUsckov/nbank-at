@@ -37,7 +37,7 @@ public class TransferMoneyApiTest extends BaseTest {
         firstUser = SessionStorage.getUser(FIRST_USER_ID);
         firstUserAccount = SessionStorage.getUserAccount(firstUser.getUsername(), FIRST_ACC_ID);
         DepositSteps.sendDepositWithAmountValidation(firstUserAccount, firstUser.getToken(), 50_000);
-}
+    }
 
     @BeforeEach
     public void initAssertionClasses() {
@@ -52,27 +52,23 @@ public class TransferMoneyApiTest extends BaseTest {
         setUpTestData();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
-        var accountsBeforeRequest = userSteps.getUserAccounts();
+        var accountsBeforeRequest = userSteps.getUserAccounts().getAccounts();
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
 
-        var transferResponse = new ValidatedCrudRequested<TransferResponseBody>(
-                RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok(), Endpoint.TRANSFER)
-                .post(transferRequestBody);
+        var transferResponse = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
 
         this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse);
 
-        var accountsAfterRequest = userSteps.getUserAccounts();
+        var accountsAfterRequest = userSteps.getUserAccounts().getAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
                 accountsBeforeRequest, accountsAfterRequest, firstUserSecondAccount, amount);
         this.accountAssertionSteps.assertBalanceWasDecreased(
                 accountsBeforeRequest, accountsAfterRequest, firstUserAccount, amount);
 
-        var senderAccountAfter = AccountsListUtils.findAccountByAccountNumberOrElseThrow(
-                accountsAfterRequest, firstUserAccount);
-        var receiverAccountAfter = AccountsListUtils.findAccountByAccountNumberOrElseThrow(
-                accountsAfterRequest, firstUserSecondAccount);
-        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderAccountAfter, amount, firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverAccountAfter, amount, firstUserAccount.getId());
+        var senderTransactions = userSteps.getAccountTransactions(firstUserAccount.getId());
+        var receiverTransactions = userSteps.getAccountTransactions(firstUserSecondAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, amount, firstUserSecondAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, amount, firstUserAccount.getId());
     }
 
     @ParameterizedTest
@@ -81,8 +77,8 @@ public class TransferMoneyApiTest extends BaseTest {
     public void checkUserCanMakeTransferToAnotherUserAccountWithValidAmountIfMoneyEnough(double amount) {
         setUpTestData();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
-        var senderAccountsBefore = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
-        var receiverAccountsBefore = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
+        var senderAccountsBefore = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts().getAccounts();
+        var receiverAccountsBefore = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts().getAccounts();
         var secondUserAccount = SessionStorage.getUserAccounts(SECOND_USER_ID).stream().findFirst().orElseThrow();
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), secondUserAccount.getId(), amount);
@@ -93,20 +89,19 @@ public class TransferMoneyApiTest extends BaseTest {
 
         this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse);
 
-        var senderAccountsAfter = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
-        var receiverAccountsAfter = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
+        var senderAccountsAfter = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts().getAccounts();
+        var receiverAccountsAfter = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts().getAccounts();
 
         this.accountAssertionSteps.assertBalanceWasDecreased(
                 senderAccountsBefore, senderAccountsAfter, firstUserAccount, amount);
         this.accountAssertionSteps.assertBalanceWasIncreased(
                 receiverAccountsBefore, receiverAccountsAfter, secondUserAccount, amount);
 
-        var senderAccountAfter = AccountsListUtils.findAccountByAccountNumberOrElseThrow(
-                senderAccountsAfter, firstUserAccount);
-        var receiverAccountAfter = AccountsListUtils.findAccountByAccountNumberOrElseThrow(
-                receiverAccountsAfter, secondUserAccount);
-        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderAccountAfter, amount, secondUserAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverAccountAfter, amount, firstUserAccount.getId());
+        var senderTransactions = SessionStorage.getUserSteps(FIRST_USER_ID).getAccountTransactions(firstUserAccount.getId());
+        var receiverTransactions = SessionStorage.getUserSteps(SECOND_USER_ID).getAccountTransactions(secondUserAccount.getId());
+
+        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, amount, secondUserAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, amount, firstUserAccount.getId());
     }
 
     @ParameterizedTest
@@ -121,8 +116,8 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), secondUserAccount.getId(), amount);
 
-        var message = TransferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, message);
+        var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
+        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, response.getMessage());
 
         var senderAccountsAfter = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var receiverAccountsAfter = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
@@ -132,7 +127,8 @@ public class TransferMoneyApiTest extends BaseTest {
         this.accountAssertionSteps.assertBalanceWasNotChanged(
                 receiverAccountsBefore, receiverAccountsAfter, secondUserAccount);
 
-        this.accountAssertionSteps.assertAccountHasNoTransactionsWithType(accountWithNoMoney, TransactionType.TRANSFER_OUT);
+        var accountWithNoMoneyTransactions = SessionStorage.getUserSteps(FIRST_USER_ID).getAccountTransactions(accountWithNoMoney.getId());
+        this.accountAssertionSteps.assertAccountHasNoTransactionsWithType(accountWithNoMoneyTransactions, TransactionType.TRANSFER_OUT);
     }
 
     @ParameterizedTest
@@ -145,8 +141,8 @@ public class TransferMoneyApiTest extends BaseTest {
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), firstUserSecondAccount.getId(), amount);
-        var message = TransferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, message);
+        var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
+        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, response.getMessage());
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -154,7 +150,8 @@ public class TransferMoneyApiTest extends BaseTest {
         this.accountAssertionSteps.assertBalanceWasNotChanged(
                 accountsBeforeRequest, accountsAfterRequest, firstUserSecondAccount);
 
-        this.accountAssertionSteps.assertAccountHasNoTransactionsWithType(accountWithNoMoney, TransactionType.TRANSFER_OUT);
+        var accountWithNoMoneyTransactions = SessionStorage.getUserSteps(FIRST_USER_ID).getAccountTransactions(accountWithNoMoney.getId());
+        this.accountAssertionSteps.assertAccountHasNoTransactionsWithType(accountWithNoMoneyTransactions, TransactionType.TRANSFER_OUT);
     }
 
     @ParameterizedTest
@@ -166,8 +163,8 @@ public class TransferMoneyApiTest extends BaseTest {
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
 
-        var message = TransferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.TRANSFER_AMOUNT_MUST_BE_AT_LEAST_MIN, message);
+        var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
+        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, response.getMessage());
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -185,8 +182,8 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), 10_000.01);
 
-        var message = TransferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.TRANSFER_AMOUNT_CANNOT_EXCEED_MAX, message);
+        var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
+        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.TRANSFER_AMOUNT_CANNOT_EXCEED_MAX, response.getMessage());
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -204,8 +201,8 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), 100000000L);
 
-        var message = TransferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, message);
+        var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
+        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, response.getMessage());
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -221,8 +218,8 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var transferRequestBody = TransferRequestGenerator.generateWithReceiver(firstUserSecondAccount.getId());
 
-        var message = TransferSteps.sendTransferRequestWithStringResponse(firstUser.getToken(), transferRequestBody, ResponseSpecs.accessForbidden());
-        this.accountAssertionSteps.assertMessage(ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT, message);
+        var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.accessForbidden());
+        this.accountAssertionSteps.assertMessage(ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT, response.getMessage());
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(

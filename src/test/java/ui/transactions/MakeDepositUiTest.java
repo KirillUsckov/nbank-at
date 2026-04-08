@@ -34,26 +34,26 @@ public class MakeDepositUiTest extends BaseUiTest {
         var userAccount = SessionStorage.getUserAccount(user.getUsername(), FIRST_ACC_ID);
 
         loginWithUserCredentials(user.getToken());
-        var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
+        var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts().getAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(userAccount.getId());
         dashboardPage.clickDepositMoneyButton();
 
         makeDepositPage.waitPageOpened();
 
         makeDepositPage.selectAccount(userAccount.getAccountNumber());
-        makeDepositPage.setAmount(String.valueOf(depositRequestBody.getBalance()));
+        makeDepositPage.setAmount(String.valueOf(depositRequestBody.getAmount()));
         makeDepositPage.clickDepositButton();
 
         var successfulMessage = BrowserSteps.getAlertText();
-        var expectedMessage = String.format(SUCCESSFULLY_DEPOSITED_TO_ACCOUNT.getMessage(), depositRequestBody.getBalance(), userAccount.getAccountNumber());
+        var expectedMessage = String.format(SUCCESSFULLY_DEPOSITED_TO_ACCOUNT.getMessage(), depositRequestBody.getAmount(), userAccount.getAccountNumber());
         softly.assertThat(successfulMessage).withFailMessage("Alert message is not equal expected").isEqualTo(expectedMessage);
 
-        var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
+        var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts().getAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
                 accountsBeforeRequest,
                 accountsAfterRequest,
                 userAccount,
-                depositRequestBody.getBalance());
+                depositRequestBody.getAmount());
 
     }
 

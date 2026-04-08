@@ -37,6 +37,11 @@ public class ValidatedCrudRequested<M extends BaseResponse> extends HttpRequest 
     }
 
     @Override
+    public M get(String urlParam) {
+        return (M) crudRequester.get(urlParam).extract().as(endpoint.getResponseClass());
+    }
+
+    @Override
     public M delete(long id) {
         return (M) crudRequester.delete(id).extract().as(endpoint.getResponseClass());
     }

@@ -1,6 +1,8 @@
 Для запуска sh скриптов
-& "C:\Program Files\Git\bin\bash.exe" .\run-tests.sh
+& "C:\Program Files\Git\bin\bash.exe" .\run-tests-with-docker-compose.sh
 
+Установка окружения
+& "C:\Program Files\Git\bin\bash.exe"  C:/IdeaProjects/nbank-at/infra/docker_compose/restart_docker.sh
 
 Перед запуском push-tests:
 docker build -t nbank-at .

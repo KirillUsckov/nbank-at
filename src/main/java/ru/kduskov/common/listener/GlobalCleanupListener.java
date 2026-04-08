@@ -19,13 +19,15 @@ public class GlobalCleanupListener implements TestExecutionListener {
     public void testPlanExecutionFinished(TestPlan testPlan) {
         long setupStart = System.currentTimeMillis();
         CompletableFuture<Void> cleanup = CompletableFuture.runAsync(() -> {
-            for (var user : AdminSteps.getAllUsers()) {
+            for (var user : AdminSteps.getAllUsers().getData()) {
                 try {
                     var userToken = LoginSteps.login(LoginRequestGenerator.generate(user));
-                    var customer = new UserSteps(userToken).getCustomer();
+                    var userSteps = new UserSteps(userToken);
+                    var customer = userSteps.getCustomer();
                     var id = customer.getId();
                     // Параллельное удаление аккаунтов
-                    customer.getAccounts().parallelStream()
+
+                    userSteps.getUserAccounts().getAccounts().parallelStream()
                             .forEach(account ->
                                     AccountSteps.deleteAccount(userToken, account.getId()));
 
