@@ -37,7 +37,6 @@ public class ChangeUserProfileApiTest extends BaseTest {
 
         var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
         this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(requestBody, customerAfterRequest);
-//        var es = SqlSteps.select();
     }
 
 
