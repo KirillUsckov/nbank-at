@@ -7,12 +7,15 @@ FROM maven:3.9.12-eclipse-temurin-21-alpine
 ARG TEST_PROFILE=api
 ARG API_BASE_URL=http://localhost:4111
 ARG UI_BASE_URL=http://localhost:3000
+ARG SELENOID_URL
+ARG SELENOID_UI_URL
 
 # Переменные окружения внутри контейнера
 ENV TEST_PROFILE=${TEST_PROFILE}
 ENV API_BASE_URL=${API_BASE_URL}
 ENV UI_BASE_URL=${UI_BASE_URL}
-
+ENV SELENOID_URL=${SELENOID_URL}
+ENV SELENOID_UI_URL=${SELENOID_UI_URL}
 
 # Рабочая директория
 WORKDIR /app
@@ -41,8 +44,9 @@ USER root
 CMD /bin/sh -c " \
     mkdir -p /app/logs ; \
     { \
+        export UI_REMOTE="${SELENOID_URL}/wd/hub" ;\
         echo '>>> Running test with profile: ${TEST_PROFILE}' ; \
-        mvn test -P ${TEST_PROFILE}; \
+        mvn test -P ${TEST_PROFILE} ; \
         \
         echo '>>> Running surfire-report:report' ; \
         mvn -DskipTests=true surefire-report:report ; \

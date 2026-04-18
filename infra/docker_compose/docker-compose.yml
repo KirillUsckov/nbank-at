@@ -1,0 +1,75 @@
+services:
+  backend:
+#    image: nobugsme/nbank:with_database
+    image: nobugsme/nbank:with_validation_fix
+    container_name: backend
+    ports:
+      #Порт_снаружи:Порт_внутри
+      - "4111:4111"
+    healthcheck: # ← ДОБАВЬТЕ healthcheck
+      test: [ "CMD", "curl", "-f", "http://localhost:4111/health || exit 1" ]
+      interval: 5s
+      timeout: 1s
+      retries: 3
+      start_period: 5s #время, которое даем контейнеру на поднятие, после чего начинаются проверки healthcheck
+    networks:
+      #Общая сеть для того, чтобы сервисы взаимодействовали друг с другом
+      - nbank-network
+
+  frontend:
+    image: nobugsme/nbank-ui:with_nginx
+    container_name: frontend
+    expose:
+      # не открываем порт наружу, а даем доступ внутри сети
+      - "3000"
+    depends_on:
+      - backend
+    networks:
+      - nbank-network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "3000:80"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - nbank-network
+
+  selenoid:
+    image: aerokube/selenoid:latest-release
+    container_name: selenoid
+    ports:
+      - "4444:4444"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/:/etc/selenoid/:ro
+      - /dev/shm:/dev/shm
+    command: ["-container-network", "nbank-network"] #Нужно, что был доступ к контейнерам браузеров, которые создает selenoid
+    depends_on:
+      - frontend
+    networks:
+      - nbank-network
+
+  selenoid-ui:
+    image: aerokube/selenoid-ui:latest
+    container_name: selenoid-ui
+    ports:
+      - "2508:8080"
+    command: [ "--selenoid-uri", "http://selenoid:4444" ] #Указываем адрес контейнера, в котором открыт селеноид
+    depends_on:
+      - selenoid
+    networks:
+      - nbank-network
+
+networks:
+  nbank-network:
+    name: nbank-network
+
+volumes:
+  postgres_data:
+    driver: local

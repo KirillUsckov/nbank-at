@@ -1,0 +1,11 @@
+1. Контейнер бекэнда nobugsme/nbank:with_validation_fix - порт 4111 ->4111
+2. Контейнер фронтенда nobugsme/nbank-ui:latest - порт 80
+3. Контейнер Selenoid aerokube/selenoid:latest-release - порт 4444-4444
+4. Контейнер SelenoidUI aerokube/selenoid-ui:latest - 2508->8080 (любой порт снаружи)
+5. Контейнер Nginx nginx:latest - порт 80 -> 80
+Фронтенд не открываем наружу, чтобы к нему не могли получить доступ, вместо этого используем Nginx
+
+Шаги по внедрению:
+1. Создать docker-compose.yml
+2. Описать каждый контейнер (образ, порт, последовательность, общая докер сеть)
+3. Срипт по поднятию контейнеров с помощью docker-compose

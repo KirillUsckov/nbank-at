@@ -31,6 +31,5 @@ public final class Config {
             return property;
         }
         return INSTANCE.properties.getProperty(configParam.getValue());
-
     }
 }

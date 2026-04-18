@@ -18,12 +18,9 @@ public class UserSessionExtension implements BeforeEachCallback {
         var annotation = context.getRequiredTestMethod().getAnnotation(UserSession.class);
         if(annotation != null){
             for(int i = 0; i < annotation.usersNumber(); i++) {
-                System.out.println("Create user");
                 var userModel = AdminSteps.createRandomUser();
-                System.out.printf("User created: %s%n", userModel.getUsername());
                 var accounts = new ArrayList<AccountResponseBody>();
                 for(int j = 0; j < annotation.accountsNumber(); j++) {
-                    System.out.println("Create account");
                     accounts.add(AccountSteps.createAccount(userModel.getToken()));
                 }
                 SessionStorage.insertUserAccounts(userModel.getUsername(), accounts);
@@ -31,7 +28,6 @@ public class UserSessionExtension implements BeforeEachCallback {
             }
             if(annotation.isUi())
                 loginWithUserCredentials(SessionStorage.getUser(annotation.userForLogin()).getToken());
-
         }
     }
 }
