@@ -18,12 +18,9 @@ import ru.kduskov.api.specs.ResponseSpecs;
 public class UserSteps {
     private String authToken;
 
-    public String getChangeUserProfileStringResponse(ChangeUserProfileRequestBody body, ResponseSpecification responseSpecification) {
-        return new CrudRequester(RequestSpecs.userSpec(authToken), responseSpecification, Endpoint.CHANGE_USER_PROFILE)
-                .put(body)
-                .extract()
-                .body()
-                .asString();
+    public ChangeUserProfileResponseBody getChangeUserProfileStringResponse(ChangeUserProfileRequestBody body, ResponseSpecification responseSpecification) {
+        return new ValidatedCrudRequested<ChangeUserProfileResponseBody>(RequestSpecs.userSpec(authToken), responseSpecification, Endpoint.CHANGE_USER_PROFILE)
+                .put(body);
     }
 
     public UserProfileResponseBody getCustomer() {

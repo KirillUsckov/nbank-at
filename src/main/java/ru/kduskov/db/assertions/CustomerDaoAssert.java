@@ -17,10 +17,10 @@ public class CustomerDaoAssert extends BaseDbAssert<CustomerDaoAssert, CustomerD
 
 
     public CustomerDaoAssert matches(ChangeUserProfileResponseBody changeUserResponse) {
-        return (CustomerDaoAssert) nameEquals(changeUserResponse.getCustomer().getName())
-                .usernameEquals(changeUserResponse.getCustomer().getUsername())
-                .roleEquals(changeUserResponse.getCustomer().getRole())
-                .idEquals(changeUserResponse.getCustomer().getId());
+        return (CustomerDaoAssert) nameEquals(changeUserResponse.getName())
+                .usernameEquals(changeUserResponse.getUsername())
+                .roleEquals(changeUserResponse.getRole())
+                .idEquals(changeUserResponse.getId());
     }
 
     public CustomerDaoAssert matches(UserProfileResponseBody userResponse) {

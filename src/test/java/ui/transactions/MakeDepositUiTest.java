@@ -54,7 +54,6 @@ public class MakeDepositUiTest extends BaseUiTest {
                 accountsAfterRequest,
                 userAccount,
                 depositRequestBody.getAmount());
-
     }
 
     @Test

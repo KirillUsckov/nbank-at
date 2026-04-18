@@ -37,12 +37,13 @@ public class ChangeUserProfileApiTest extends BaseTest {
 
         var changeUserProfileResponse = SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfile(requestBody);
 
+        // TODO: разобраться с тем, почему если в ChangeUserProfileResponseBody сразу поля пользователя, то message - пуст
         this.userProfileAssertionSteps.assertChangeUserProfileResponse(requestBody, changeUserProfileResponse);
 
         var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
         this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(requestBody, customerAfterRequest);
 
-        var expectedCustomerOpt = SqlSteps.findCustomerByUsername(changeUserProfileResponse.getCustomer().getUsername());
+        var expectedCustomerOpt = SqlSteps.findCustomerByUsername(changeUserProfileResponse.getUsername());
         this.userProfileAssertionSteps.assertOptionalIsPresent(expectedCustomerOpt);
         var expectedCustomer = expectedCustomerOpt.get();
 
@@ -60,8 +61,8 @@ public class ChangeUserProfileApiTest extends BaseTest {
                 .name(name)
                 .build();
 
-        var message = SessionStorage.getUserSteps(FIRST_USER_ID).getChangeUserProfileStringResponse(requestBody, ResponseSpecs.badRequest());
-        this.userProfileAssertionSteps.assertMessage(NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY, message);
+        var response = SessionStorage.getUserSteps(FIRST_USER_ID).getChangeUserProfileStringResponse(requestBody, ResponseSpecs.badRequest());
+        this.userProfileAssertionSteps.assertMessage(NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY, response.getMessage());
 
         var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
 

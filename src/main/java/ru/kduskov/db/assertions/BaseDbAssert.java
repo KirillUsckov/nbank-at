@@ -41,6 +41,21 @@ public abstract class BaseDbAssert<S extends BaseDbAssert<S, A>, A extends BaseD
         return this;
     }
 
+    protected BaseDbAssert<S, A> dateUpdatedAfter(LocalDateTime expected) {
+        softly.assertThat(actual.getUpdatedAt()).withFailMessage(String.format("Expected date updated %s should be before %s", expected, actual.getUpdatedAt())).isAfter(expected);
+        return this;
+    }
+
+    protected BaseDbAssert<S, A> dateCreatedAfter(LocalDateTime expected) {
+        softly.assertThat(actual.getCreatedAt()).withFailMessage(String.format("Expected date created %s should be before %s", expected, actual.getCreatedAt())).isAfter(expected);
+        return this;
+    }
+
+    protected BaseDbAssert<S, A> dateCreatedBefore(LocalDateTime expected) {
+        softly.assertThat(actual.getCreatedAt()).withFailMessage(String.format("Expected date created %s should be after %s", expected, actual.getCreatedAt())).isBefore(expected);
+        return this;
+    }
+
     protected BaseDbAssert<S, A> idEquals(Long expectedId) {
         isEqualTo(actual.getId(), expectedId, String.format("Expected id %s but was %s", expectedId, actual.getId()));
         return this;

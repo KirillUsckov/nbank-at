@@ -15,10 +15,13 @@ import ru.kduskov.api.steps.DepositSteps;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.api.steps.assertions.DepositAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
+import ru.kduskov.common.assertions.OptionalAssert;
 import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
+
+import java.math.BigDecimal;
 
 import static common.Constans.*;
 import static ru.kduskov.api.constants.ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT;
@@ -48,8 +51,7 @@ public class MakeDepositApiTest extends BaseTest {
     public void checkAdminCannotMakeDeposit() {
         setUpTestData();
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
-        var user = userSteps.getCustomer();
-        var dbAccountsBeforeRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
+        var dbAccountBeforeRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
 
         var apiAccountsBeforeRequest = userSteps.getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId());
@@ -59,8 +61,8 @@ public class MakeDepositApiTest extends BaseTest {
         var apiAccountsAfterRequest = SessionStorage.getUserSteps(FIRST_ACC_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(apiAccountsBeforeRequest, apiAccountsAfterRequest, firstUserAccount);
 
-        var dbAccountsAfterRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
-        this.dbAssertionSteps.assertAccountDaoListEquals(dbAccountsAfterRequest, dbAccountsBeforeRequest);
+        var dbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+        this.dbAssertionSteps.assertAccountDaoEquals(dbAccountAfterRequest, dbAccountBeforeRequest);
     }
 
     @Test
@@ -69,6 +71,8 @@ public class MakeDepositApiTest extends BaseTest {
         setUpTestData();
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_ACC_ID).getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId());
+        var expectedAccountDao = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+        var totalBalance = firstUserAccount.getBalance() + depositRequestBody.getAmount();
 
         var depositResponseBody = this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok());
         firstUserAccount.setBalance(firstUserAccount.getBalance() + depositRequestBody.getAmount());
@@ -82,17 +86,20 @@ public class MakeDepositApiTest extends BaseTest {
                 accountsAfterRequest.getAccounts(),
                 firstUserAccount,
                 depositRequestBody.getAmount());
-        //TODO: add db assertions
+
+        var accountDaoAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+        expectedAccountDao.setBalance(BigDecimal.valueOf(totalBalance));
+
+        this.dbAssertionSteps.assertAccountDaoEqualsWithDiffDateUpdated(accountDaoAfterRequest, expectedAccountDao);
+
     }
 
     @Test
     @UserSession(usersNumber = 2, accountsNumber = 1)
     public void checkUserCantMakeDepositToOthersAccount() {
         setUpTestData();
-
         var userSteps = SessionStorage.getUserSteps(SECOND_USER_ID);
-        var user = userSteps.getCustomer();
-        var dbAccountsBeforeRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
+        var dbAccountBeforeRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
 
         var secondUser = SessionStorage.getUser(SECOND_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts();
@@ -106,9 +113,8 @@ public class MakeDepositApiTest extends BaseTest {
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, secondUserAccount);
 
-        var dbAccountsAfterRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
-        this.dbAssertionSteps.assertAccountDaoListEquals(dbAccountsAfterRequest, dbAccountsBeforeRequest);
-
+        var dbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+        this.dbAssertionSteps.assertAccountDaoEquals(dbAccountAfterRequest, dbAccountBeforeRequest);
     }
 
     @Test
@@ -136,6 +142,9 @@ public class MakeDepositApiTest extends BaseTest {
         setUpTestData();
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId(), balance);
+
+        var expectedAccountDao = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+
         var depositResponseBody =  this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok());
 
         var totalBalance = firstUserAccount.getBalance() + balance;
@@ -150,7 +159,11 @@ public class MakeDepositApiTest extends BaseTest {
                 accountsAfterRequest.getAccounts(),
                 firstUserAccount,
                 depositRequestBody.getAmount());
-        // TODO: add db assertion
+
+        var accountDaoAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+        expectedAccountDao.setBalance(BigDecimal.valueOf(totalBalance));
+
+        this.dbAssertionSteps.assertAccountDaoEqualsWithDiffDateUpdated(accountDaoAfterRequest, expectedAccountDao);
     }
 
     @ParameterizedTest
@@ -160,8 +173,7 @@ public class MakeDepositApiTest extends BaseTest {
         setUpTestData();
 
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
-        var user = userSteps.getCustomer();
-        var dbAccountsBeforeRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
+        var dbAccountBeforeRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
 
         var accountsBeforeRequest = userSteps.getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId(), balance);
@@ -172,9 +184,8 @@ public class MakeDepositApiTest extends BaseTest {
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
 
-        var dbAccountsAfterRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
-        this.dbAssertionSteps.assertAccountDaoListEquals(dbAccountsAfterRequest, dbAccountsBeforeRequest);
-
+        var dbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+        this.dbAssertionSteps.assertAccountDaoEquals(dbAccountAfterRequest, dbAccountBeforeRequest);
     }
 
     @Test
@@ -183,8 +194,7 @@ public class MakeDepositApiTest extends BaseTest {
         setUpTestData();
 
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
-        var user = userSteps.getCustomer();
-        var dbAccountsBeforeRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
+        var dbAccountBeforeRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
 
         var accountsBeforeRequest = userSteps.getUserAccounts();
         var depositRequestBody =
@@ -200,8 +210,8 @@ public class MakeDepositApiTest extends BaseTest {
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
 
-        var dbAccountsAfterRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
-        this.dbAssertionSteps.assertAccountDaoListEquals(dbAccountsAfterRequest, dbAccountsBeforeRequest);
+        var dbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+        this.dbAssertionSteps.assertAccountDaoEquals(dbAccountAfterRequest, dbAccountBeforeRequest);
     }
 }
 

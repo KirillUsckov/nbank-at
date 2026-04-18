@@ -11,6 +11,7 @@ import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.db.models.dao.AccountDao;
 import ru.kduskov.db.models.dao.CustomerDao;
+import ru.kduskov.db.models.dao.TransactionDao;
 
 import java.util.List;
 
@@ -27,5 +28,13 @@ public class DbAssertions {
 
     public AccountDaoListAssert assertThat(List<AccountDao> accountDaoList) {
         return AccountDaoListAssert.assertThat(accountDaoList, softly);
+    }
+
+    public AccountDaoAssert assertThat(AccountDao accountDao) {
+        return AccountDaoAssert.assertThat(accountDao, softly);
+    }
+
+    public TransactionDaoAssert assertThat(TransactionDao transactionDao) {
+        return TransactionDaoAssert.assertThat(transactionDao, softly);
     }
 }

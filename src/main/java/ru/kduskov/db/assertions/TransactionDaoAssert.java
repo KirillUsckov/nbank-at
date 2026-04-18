@@ -1,54 +1,70 @@
 package ru.kduskov.db.assertions;
 
 import org.assertj.core.api.SoftAssertions;
+import ru.kduskov.api.enums.TransactionType;
 import ru.kduskov.db.models.dao.AccountDao;
+import ru.kduskov.db.models.dao.BaseDao;
+import ru.kduskov.db.models.dao.TransactionDao;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-public class AccountDaoAssert extends BaseDbAssert<AccountDaoAssert, AccountDao> {
-    public AccountDaoAssert(AccountDao actual, SoftAssertions softly) {
-        super(actual, AccountDaoAssert.class, softly);
+public class TransactionDaoAssert extends BaseDbAssert<TransactionDaoAssert, TransactionDao> {
+    public TransactionDaoAssert(TransactionDao actual, SoftAssertions softly) {
+        super(actual, TransactionDaoAssert.class, softly);
     }
 
-    public static AccountDaoAssert assertThat(AccountDao actual, SoftAssertions softly) {
-        return new AccountDaoAssert(actual,  softly);
+    public static TransactionDaoAssert assertThat(TransactionDao actual, SoftAssertions softly) {
+        return new TransactionDaoAssert(actual, softly);
     }
 
-    public AccountDaoAssert isEqualTo(AccountDao expected, boolean isDateUpdatedEquals) {
-        var assertion = (AccountDaoAssert) customerIdEquals(expected.getCustomerId())
-                .accountNumberEquals(expected.getAccountNumber())
-                .balanceEquals(expected.getBalance())
+    public TransactionDaoAssert isEqualTo(TransactionDao expected) {
+        return (TransactionDaoAssert) accountIdEquals(expected.getAccountId())
+                .amountEquals(expected.getAmount().doubleValue())
+                .typeEquals(expected.getType())
+                .timestampEquals(expected.getTimestamp())
+                .relatedAccountIdEquals(expected.getRelatedAccountId())
                 .idEquals(expected.getId())
                 .dateCreatedEquals(expected.getCreatedAt());
-        if(isDateUpdatedEquals) {
-            assertion.dateUpdatedEquals(expected.getUpdatedAt());
-        } else {
-            assertion.dateUpdatedAfter(expected.getUpdatedAt());
-        }
-        return assertion;
     }
 
-    /**
-     * isEqualTo with different date updated (actual is after expected)
-     * @param expected
-     * @return
-     */
-    public AccountDaoAssert isEqualTo(AccountDao expected) {
-        return isEqualTo(expected, false);
+    public TransactionDaoAssert isEqualTo(Long id, Long senderAccId, Long receiverAccId, double amount, TransactionType type) {
+        return (TransactionDaoAssert) accountIdEquals(senderAccId)
+                .amountEquals(amount)
+                .typeEquals(type)
+                .timestampBefore(LocalDateTime.now())
+                .relatedAccountIdEquals(receiverAccId)
+                .idEquals(id)
+                .dateCreatedBefore(LocalDateTime.now());
     }
 
-    public AccountDaoAssert customerIdEquals(Long expectedCustomerId) {
-        isEqualTo(actual.getCustomerId(), expectedCustomerId, String.format("Expected customerId %s but was %s", expectedCustomerId, actual.getCustomerId()));
+    private TransactionDaoAssert timestampBefore(LocalDateTime expectedTimestamp) {
+        softly.assertThat(actual.getTimestamp()).withFailMessage(String.format("Expected timestamp %s should be after %s", expectedTimestamp, actual.getTimestamp())).isBefore(expectedTimestamp);
         return this;
     }
 
-    public AccountDaoAssert accountNumberEquals(String expectedAccNumber) {
-        isEqualTo(actual.getAccountNumber(), expectedAccNumber, String.format("Expected account number %s but was %s", expectedAccNumber, actual.getAccountNumber()));
+    private TransactionDaoAssert timestampEquals(LocalDateTime expectedTimestamp) {
+        isEqualTo(actual.getTimestamp(), expectedTimestamp, String.format("Expected timestamp %s, but was %s", expectedTimestamp, actual.getTimestamp()));
         return this;
     }
 
-    public AccountDaoAssert balanceEquals(BigDecimal expectedBalance) {
-        isEqualTo(actual.getBalance().doubleValue(), expectedBalance.doubleValue(), String.format("Expected balance %s but was %s", expectedBalance, actual.getBalance()));
+    public TransactionDaoAssert relatedAccountIdEquals(Long expectedRelatedAccId) {
+        isEqualTo(actual.getRelatedAccountId(), expectedRelatedAccId, String.format("Expected related account id %s, but was %s", expectedRelatedAccId, actual.getRelatedAccountId()));
+        return this;
+    }
+
+    public TransactionDaoAssert typeEquals(TransactionType expectedType) {
+        isEqualTo(actual.getType(), expectedType, String.format("Expected type %s, but was %s", expectedType, actual.getType()));
+        return this;
+    }
+
+    public TransactionDaoAssert accountIdEquals(Long expectedAccId) {
+        isEqualTo(actual.getAccountId(), expectedAccId, String.format("Expected account id %s, but was %s", expectedAccId, actual.getAccountId()));
+        return this;
+    }
+
+    public TransactionDaoAssert amountEquals(double expectedAmount) {
+        isEqualTo(actual.getAmount().doubleValue(), expectedAmount, String.format("Expected amount %s, but was %s", expectedAmount, actual.getAmount()));
         return this;
     }
 }

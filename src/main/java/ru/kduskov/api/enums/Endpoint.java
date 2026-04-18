@@ -37,7 +37,6 @@ public enum Endpoint {
     private final Class<? extends BaseResponse> responseClass;
 
     public String getUrlWithParam(String param) {
-        var url = this.endpoint.replace(this.replacement, param);
-        return url;
+        return this.endpoint.replace(this.replacement, param);
     }
 }

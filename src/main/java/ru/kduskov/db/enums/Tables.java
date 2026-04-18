@@ -5,6 +5,7 @@ import lombok.Getter;
 public enum Tables {
     CUSTOMERS("customers"),
     ACCOUNTS("accounts"),
+    TRANSACTIONS("transactions"),
     USERS("users");
     @Getter
     private final String tableName;
