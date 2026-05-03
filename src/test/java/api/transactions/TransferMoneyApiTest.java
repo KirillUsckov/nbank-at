@@ -22,6 +22,7 @@ import ru.kduskov.api.steps.assertions.TransferAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
 import ru.kduskov.common.assertions.OptionalAssert;
 import ru.kduskov.common.storage.SessionStorage;
+import ru.kduskov.db.models.dao.TransactionDao;
 import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
@@ -90,14 +91,14 @@ public class TransferMoneyApiTest extends BaseTest {
         OptionalAssert.assertThat(senderTransactionOpt).isPresent();
         OptionalAssert.assertThat(receiverTransactionOpt).isPresent();
 
-        this.dbAssertionSteps.assertTransactionDaoEquals(senderTransactionOpt.get(), senderTrxId, transferResponse, TransactionType.TRANSFER_OUT);
-        this.dbAssertionSteps.assertTransactionDaoEquals(receiverTransactionOpt.get(), receiverTrxId, transferResponse, TransactionType.TRANSFER_IN);
+       this.dbAssertionSteps.assertTransactionDaoEquals(senderTransactionOpt.get(), senderTrxId, transferResponse.getSenderAccountId(), transferResponse.getReceiverAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_OUT);
+        this.dbAssertionSteps.assertTransactionDaoEquals(receiverTransactionOpt.get(), receiverTrxId, transferResponse.getReceiverAccountId(), transferResponse.getSenderAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_IN);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        this.dbAssertionSteps.assertAccountDaoEqualsWithDiffDateUpdated(senderDbAccountAfterRequest, expectedSenderDbAccount);
+        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, false);
 
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
-        this.dbAssertionSteps.assertAccountDaoEqualsWithDiffDateUpdated(receiverDbAccountAfterRequest, expectedReceiverDbAccount);
+        this.dbAssertionSteps.assertAccountDaoEquals(receiverDbAccountAfterRequest, expectedReceiverDbAccount, false);
     }
 
     @ParameterizedTest
@@ -144,14 +145,14 @@ public class TransferMoneyApiTest extends BaseTest {
         OptionalAssert.assertThat(senderTransactionOpt).isPresent();
         OptionalAssert.assertThat(receiverTransactionOpt).isPresent();
 
-        this.dbAssertionSteps.assertTransactionDaoEquals(senderTransactionOpt.get(), senderTrxId, transferResponse, TransactionType.TRANSFER_OUT);
-        this.dbAssertionSteps.assertTransactionDaoEquals(receiverTransactionOpt.get(), receiverTrxId, transferResponse, TransactionType.TRANSFER_IN);
+        this.dbAssertionSteps.assertTransactionDaoEquals(senderTransactionOpt.get(), senderTrxId, transferResponse.getSenderAccountId(), transferResponse.getReceiverAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_OUT);
+        this.dbAssertionSteps.assertTransactionDaoEquals(receiverTransactionOpt.get(), receiverTrxId, transferResponse.getReceiverAccountId(), transferResponse.getSenderAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_IN);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        this.dbAssertionSteps.assertAccountDaoEqualsWithDiffDateUpdated(senderDbAccountAfterRequest, expectedSenderDbAccount);
+        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, false);
 
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(secondUserAccount.getAccountNumber());
-        this.dbAssertionSteps.assertAccountDaoEqualsWithDiffDateUpdated(receiverDbAccountAfterRequest, expectedReceiverDbAccount);
+        this.dbAssertionSteps.assertAccountDaoEquals(receiverDbAccountAfterRequest, expectedReceiverDbAccount, false);
     }
 
     @ParameterizedTest
@@ -186,8 +187,8 @@ public class TransferMoneyApiTest extends BaseTest {
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(accountWithNoMoney.getAccountNumber());
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(secondUserAccount.getAccountNumber());
 
-        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount);
-        this.dbAssertionSteps.assertAccountDaoEquals(expectedReceiverDbAccount, receiverDbAccountAfterRequest);
+        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, true);
+        this.dbAssertionSteps.assertAccountDaoEquals(expectedReceiverDbAccount, receiverDbAccountAfterRequest, true);
     }
 
     @ParameterizedTest
@@ -218,8 +219,8 @@ public class TransferMoneyApiTest extends BaseTest {
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(accountWithNoMoney.getAccountNumber());
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
 
-        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount);
-        this.dbAssertionSteps.assertAccountDaoEquals(expectedReceiverDbAccount, receiverDbAccountAfterRequest);
+        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, true);
+        this.dbAssertionSteps.assertAccountDaoEquals(expectedReceiverDbAccount, receiverDbAccountAfterRequest, true);
     }
 
     @ParameterizedTest
@@ -246,8 +247,8 @@ public class TransferMoneyApiTest extends BaseTest {
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
 
-        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount);
-        this.dbAssertionSteps.assertAccountDaoEquals(expectedReceiverDbAccount, receiverDbAccountAfterRequest);
+        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, true);
+        this.dbAssertionSteps.assertAccountDaoEquals(expectedReceiverDbAccount, receiverDbAccountAfterRequest, true);
     }
 
     @Test
@@ -274,8 +275,8 @@ public class TransferMoneyApiTest extends BaseTest {
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
 
-        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount);
-        this.dbAssertionSteps.assertAccountDaoEquals(expectedReceiverDbAccount, receiverDbAccountAfterRequest);
+        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, true);
+        this.dbAssertionSteps.assertAccountDaoEquals(expectedReceiverDbAccount, receiverDbAccountAfterRequest, true);
     }
 
     @Test
@@ -296,7 +297,7 @@ public class TransferMoneyApiTest extends BaseTest {
                 accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount);
+        this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, true);
     }
 
     @Test
@@ -317,6 +318,6 @@ public class TransferMoneyApiTest extends BaseTest {
                 accountsBeforeRequest, accountsAfterRequest, firstUserSecondAccount);
 
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
-        this.dbAssertionSteps.assertAccountDaoEquals(receiverDbAccountAfterRequest, expectedReceiverDbAccount);
+        this.dbAssertionSteps.assertAccountDaoEquals(receiverDbAccountAfterRequest, expectedReceiverDbAccount, true);
     }
 }

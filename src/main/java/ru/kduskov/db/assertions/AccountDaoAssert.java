@@ -28,15 +28,6 @@ public class AccountDaoAssert extends BaseDbAssert<AccountDaoAssert, AccountDao>
         return assertion;
     }
 
-    /**
-     * isEqualTo with different date updated (actual is after expected)
-     * @param expected
-     * @return
-     */
-    public AccountDaoAssert isEqualTo(AccountDao expected) {
-        return isEqualTo(expected, false);
-    }
-
     public AccountDaoAssert customerIdEquals(Long expectedCustomerId) {
         isEqualTo(actual.getCustomerId(), expectedCustomerId, String.format("Expected customerId %s but was %s", expectedCustomerId, actual.getCustomerId()));
         return this;

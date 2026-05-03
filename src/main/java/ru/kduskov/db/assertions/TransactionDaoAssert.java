@@ -20,7 +20,7 @@ public class TransactionDaoAssert extends BaseDbAssert<TransactionDaoAssert, Tra
 
     public TransactionDaoAssert isEqualTo(TransactionDao expected) {
         return (TransactionDaoAssert) accountIdEquals(expected.getAccountId())
-                .amountEquals(expected.getAmount().doubleValue())
+                .amountEquals(expected.getAmount())
                 .typeEquals(expected.getType())
                 .timestampEquals(expected.getTimestamp())
                 .relatedAccountIdEquals(expected.getRelatedAccountId())
@@ -28,7 +28,7 @@ public class TransactionDaoAssert extends BaseDbAssert<TransactionDaoAssert, Tra
                 .dateCreatedEquals(expected.getCreatedAt());
     }
 
-    public TransactionDaoAssert isEqualTo(Long id, Long senderAccId, Long receiverAccId, double amount, TransactionType type) {
+    public TransactionDaoAssert isEqualTo(Long id, Long senderAccId, Long receiverAccId, BigDecimal amount, TransactionType type) {
         return (TransactionDaoAssert) accountIdEquals(senderAccId)
                 .amountEquals(amount)
                 .typeEquals(type)
@@ -63,8 +63,8 @@ public class TransactionDaoAssert extends BaseDbAssert<TransactionDaoAssert, Tra
         return this;
     }
 
-    public TransactionDaoAssert amountEquals(double expectedAmount) {
-        isEqualTo(actual.getAmount().doubleValue(), expectedAmount, String.format("Expected amount %s, but was %s", expectedAmount, actual.getAmount()));
+    public TransactionDaoAssert amountEquals(BigDecimal expectedAmount) {
+        isEqualTo(actual.getAmount().doubleValue(), expectedAmount.doubleValue(), String.format("Expected amount %s, but was %s", expectedAmount, actual.getAmount()));
         return this;
     }
 }

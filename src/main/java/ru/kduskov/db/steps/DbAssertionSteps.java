@@ -32,17 +32,11 @@ public class DbAssertionSteps {
         assertions.assertThat(actual).isEqualTo(expected);
     }
 
-    public void assertAccountDaoEquals(AccountDao actual, AccountDao expected) {
-        assertions.assertThat(actual).isEqualTo(expected, true);
+    public void assertAccountDaoEquals(AccountDao actual, AccountDao expected, boolean ignoreDateUpdated) {
+        assertions.assertThat(actual).isEqualTo(expected, ignoreDateUpdated);
     }
 
-    public void assertAccountDaoEqualsWithDiffDateUpdated(AccountDao actual, AccountDao expected) {
-        assertions.assertThat(actual).isEqualTo(expected);
-    }
-
-    public void assertTransactionDaoEquals(TransactionDao actual, Long id, TransferResponseBody transferRes, TransactionType type) {
-        var senderAccId = type == TransactionType.TRANSFER_IN ? transferRes.getReceiverAccountId() : transferRes.getSenderAccountId();
-        var receiverAccId = type == TransactionType.TRANSFER_IN ? transferRes.getSenderAccountId() : transferRes.getReceiverAccountId();
-        assertions.assertThat(actual).isEqualTo(id, senderAccId, receiverAccId, transferRes.getAmount(), type);
+    public void assertTransactionDaoEquals(TransactionDao actual, Long id, Long senderAccountId, Long receiverAccountId, BigDecimal amount, TransactionType type) {
+        assertions.assertThat(actual).isEqualTo(id, senderAccountId, receiverAccountId, amount, type);
     }
 }

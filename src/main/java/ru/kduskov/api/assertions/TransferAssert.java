@@ -36,9 +36,9 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
 
     public TransferAssert amountEquals(double expectedAmount) {
         softly(() ->
-                softly.assertThat(actual.getAmount())
+                softly.assertThat(actual.getAmount().doubleValue())
                         .withFailMessage("Expected amount %s but was %s",
-                                expectedAmount, actual.getAmount())
+                                expectedAmount, actual.getAmount().doubleValue())
                         .isEqualTo(expectedAmount)
         );
         return this;
