@@ -1,5 +1,8 @@
 package api.transactions;
 
+import support.ExpectedAccountState;
+import support.TransactionTestData;
+import support.TransferDbAssertions;
 import common.BaseMockTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,18 +18,15 @@ import ru.kduskov.api.enums.TransactionType;
 import ru.kduskov.api.generators.TransferRequestGenerator;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.specs.ResponseSpecs;
-import ru.kduskov.api.steps.DepositSteps;
 import ru.kduskov.api.steps.TransferSteps;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.api.steps.assertions.TransferAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
-import ru.kduskov.common.assertions.OptionalAssert;
 import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
 
-import java.math.BigDecimal;
 
 import static common.Constans.*;
 
@@ -39,9 +39,9 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
     private DbAssertionSteps dbAssertionSteps;
 
     public void setUpTestData() {
-        firstUser = SessionStorage.getUser(FIRST_USER_ID);
-        firstUserAccount = SessionStorage.getUserAccount(firstUser.getUsername(), FIRST_ACC_ID);
-        DepositSteps.sendDepositWithAmountValidation(firstUserAccount, firstUser.getToken(), 50_000);
+        var testData = TransactionTestData.getAccountWithDeposit(FIRST_USER_ID, FIRST_ACC_ID, 50_000);
+        firstUser = testData.getUser();
+        firstUserAccount = testData.getAccount();
     }
 
     @BeforeEach
@@ -62,11 +62,8 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts().getAccounts();
 
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        expectedSenderDbAccount.setBalance(expectedSenderDbAccount.getBalance().subtract(BigDecimal.valueOf(transferRequestBody.getAmount())));
-
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
-        expectedReceiverDbAccount.setBalance(expectedReceiverDbAccount.getBalance().add(BigDecimal.valueOf(transferRequestBody.getAmount())));
+        var expectedSenderDbAccount = ExpectedAccountState.decreasedBy(firstUserAccount, transferRequestBody.getAmount());
+        var expectedReceiverDbAccount = ExpectedAccountState.increasedBy(firstUserSecondAccount, transferRequestBody.getAmount());
 
         var transferResponse = TransferSteps.sendTransferWithFraudRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
 
@@ -85,13 +82,7 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
 
         var senderTrxId = senderTransactions.getTransactions().stream().filter(tr -> tr.getType().equals(TransactionType.TRANSFER_OUT)).findFirst().get().getId();
         var receiverTrxId = receiverTransactions.getTransactions().stream().filter(tr -> tr.getType().equals(TransactionType.TRANSFER_IN)).findFirst().get().getId();
-        var senderTransactionOpt = SqlSteps.findTransactionById(senderTrxId);
-        var receiverTransactionOpt = SqlSteps.findTransactionById(receiverTrxId);
-        OptionalAssert.assertThat(senderTransactionOpt).isPresent();
-        OptionalAssert.assertThat(receiverTransactionOpt).isPresent();
-
-        this.dbAssertionSteps.assertTransactionDaoEquals(senderTransactionOpt.get(), senderTrxId, transferResponse.getSenderAccountId(), transferResponse.getReceiverAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_OUT);
-        this.dbAssertionSteps.assertTransactionDaoEquals(receiverTransactionOpt.get(), receiverTrxId, transferResponse.getReceiverAccountId(), transferResponse.getSenderAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_IN);
+        TransferDbAssertions.assertTransferTransactionsPersisted(this.dbAssertionSteps, transferResponse, senderTrxId, receiverTrxId);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
         this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, false);
@@ -109,8 +100,8 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
+        var expectedSenderDbAccount = ExpectedAccountState.unchanged(firstUserAccount);
+        var expectedReceiverDbAccount = ExpectedAccountState.unchanged(firstUserSecondAccount);
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var transferResponse = TransferSteps.sendTransferWithFraudRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
@@ -126,8 +117,8 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
+        var expectedSenderDbAccount = ExpectedAccountState.unchanged(firstUserAccount);
+        var expectedReceiverDbAccount = ExpectedAccountState.unchanged(firstUserSecondAccount);
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var transferResponse = TransferSteps.sendTransferWithFraudRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
@@ -152,3 +143,4 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
 
     }
 }
+

@@ -1,5 +1,7 @@
 package api.transactions;
 
+import support.ExpectedAccountState;
+import support.TransactionTestData;
 import common.BaseTest;
 import ru.kduskov.api.constants.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,13 +17,11 @@ import ru.kduskov.api.steps.DepositSteps;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.api.steps.assertions.DepositAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
-import ru.kduskov.common.assertions.OptionalAssert;
 import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
 
-import java.math.BigDecimal;
 
 import static common.Constans.*;
 import static ru.kduskov.api.constants.ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT;
@@ -42,8 +42,9 @@ public class MakeDepositApiTest extends BaseTest {
     }
 
     public void setUpTestData() {
-        firstUser = SessionStorage.getUser(FIRST_USER_ID);
-        firstUserAccount = SessionStorage.getUserAccount(firstUser.getUsername(), FIRST_ACC_ID);
+        var testData = TransactionTestData.getUserAccount(FIRST_USER_ID, FIRST_ACC_ID);
+        firstUser = testData.getUser();
+        firstUserAccount = testData.getAccount();
     }
 
     @Test
@@ -56,7 +57,7 @@ public class MakeDepositApiTest extends BaseTest {
         var apiAccountsBeforeRequest = userSteps.getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId());
 
-         this.depositSteps.sendDepositWithStringResponse(depositRequestBody, RequestSpecs.adminSpec(), ResponseSpecs.accessForbidden());
+        this.depositSteps.sendDepositWithStringResponse(depositRequestBody, RequestSpecs.adminSpec(), ResponseSpecs.accessForbidden());
 
         var apiAccountsAfterRequest = SessionStorage.getUserSteps(FIRST_ACC_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(apiAccountsBeforeRequest, apiAccountsAfterRequest, firstUserAccount);
@@ -71,8 +72,8 @@ public class MakeDepositApiTest extends BaseTest {
         setUpTestData();
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_ACC_ID).getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId());
-        var expectedAccountDao = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
         var totalBalance = firstUserAccount.getBalance() + depositRequestBody.getAmount();
+        var expectedAccountDao = ExpectedAccountState.withBalance(firstUserAccount, totalBalance);
 
         var depositResponseBody = this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok());
         firstUserAccount.setBalance(firstUserAccount.getBalance() + depositRequestBody.getAmount());
@@ -88,7 +89,6 @@ public class MakeDepositApiTest extends BaseTest {
                 depositRequestBody.getAmount());
 
         var accountDaoAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        expectedAccountDao.setBalance(BigDecimal.valueOf(totalBalance));
 
         this.dbAssertionSteps.assertAccountDaoEquals(accountDaoAfterRequest, expectedAccountDao, false);
 
@@ -143,11 +143,10 @@ public class MakeDepositApiTest extends BaseTest {
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId(), balance);
 
-        var expectedAccountDao = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+        var totalBalance = firstUserAccount.getBalance() + balance;
+        var expectedAccountDao = ExpectedAccountState.withBalance(firstUserAccount, totalBalance);
 
         var depositResponseBody =  this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok());
-
-        var totalBalance = firstUserAccount.getBalance() + balance;
         firstUserAccount.setBalance(totalBalance);
 
         var transfers = SessionStorage.getUserSteps(FIRST_ACC_ID).getAccountTransactions(firstUserAccount.getId());
@@ -161,7 +160,6 @@ public class MakeDepositApiTest extends BaseTest {
                 depositRequestBody.getAmount());
 
         var accountDaoAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        expectedAccountDao.setBalance(BigDecimal.valueOf(totalBalance));
 
         this.dbAssertionSteps.assertAccountDaoEquals(accountDaoAfterRequest, expectedAccountDao, false);
     }
