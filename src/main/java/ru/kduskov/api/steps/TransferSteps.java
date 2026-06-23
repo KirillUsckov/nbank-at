@@ -23,4 +23,10 @@ public final class TransferSteps {
                 RequestSpecs.userSpec(userToken), responseSpec, Endpoint.TRANSFER)
                 .post(transferReq);
     }
+
+    public static TransferResponseBody sendTransferWithFraudRequest(String userToken, TransferRequestBody transferReq, ResponseSpecification responseSpec) {
+        return new ValidatedCrudRequested<TransferResponseBody>(
+                RequestSpecs.userSpec(userToken), responseSpec, Endpoint.TRANSFER_WITH_FRAUD)
+                .post(transferReq);
+    }
 }

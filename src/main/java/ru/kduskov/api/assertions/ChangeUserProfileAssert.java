@@ -15,9 +15,9 @@ public class ChangeUserProfileAssert extends BaseAssert<ChangeUserProfileAssert,
 
     public ChangeUserProfileAssert nameEquals(String expectedName) {
         softly(() ->
-                softly.assertThat(actual.getName())
+                softly.assertThat(actual.getCustomer().getName())
                         .withFailMessage("Expected name %s but was %s",
-                                expectedName, actual.getName())
+                                expectedName, actual.getCustomer().getName())
                         .isEqualTo(expectedName)
         );
         return this;
