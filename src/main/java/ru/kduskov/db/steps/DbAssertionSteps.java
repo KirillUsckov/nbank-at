@@ -25,7 +25,7 @@ public class DbAssertionSteps {
     }
 
     public void assertCustomerDaoMatchChangeUserProfileResponse(CustomerDao customerDao, ChangeUserProfileResponseBody changeUserProfileResponseBody) {
-        assertions.assertThat(customerDao).matches(changeUserProfileResponseBody);
+        assertions.assertThat(customerDao).matches(changeUserProfileResponseBody.getCustomer());
     }
 
     public void assertAccountDaoListEquals(List<AccountDao> actual, List<AccountDao> expected) {

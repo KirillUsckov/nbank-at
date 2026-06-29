@@ -27,6 +27,7 @@ public enum Endpoint {
     GET_USER_PROFILE("/customer/profile", null, null, UserProfileResponseBody.class),
     MAKE_DEPOSIT("/accounts/deposit", null, DepositRequestBody.class, DepositResponseBody.class),
     TRANSFER("/accounts/transfer", null, TransferRequestBody.class, TransferResponseBody.class),
+    TRANSFER_WITH_FRAUD("/accounts/transfer-with-fraud-check", null, TransferRequestBody.class, TransferResponseBody.class),
     AUTH_LOGIN("/auth/login", null, LoginRequestBody.class, LoginResponseBody.class),
     GET_CUSTOMER_ACCOUNTS("/customer/accounts", null, null, CustomerAccountsResponseBody.class),
     GET_ACCOUNT_TRANSACTIONS("/accounts/ACC_ID/transactions", "ACC_ID", null, TransactionsResponseBody.class);

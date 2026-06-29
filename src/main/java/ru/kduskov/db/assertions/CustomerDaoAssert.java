@@ -2,6 +2,7 @@ package ru.kduskov.db.assertions;
 
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.enums.Role;
+import ru.kduskov.api.models.body.response.accounts.Customer;
 import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.db.models.dao.CustomerDao;
@@ -16,11 +17,11 @@ public class CustomerDaoAssert extends BaseDbAssert<CustomerDaoAssert, CustomerD
     }
 
 
-    public CustomerDaoAssert matches(ChangeUserProfileResponseBody changeUserResponse) {
-        return (CustomerDaoAssert) nameEquals(changeUserResponse.getName())
-                .usernameEquals(changeUserResponse.getUsername())
-                .roleEquals(changeUserResponse.getRole())
-                .idEquals(changeUserResponse.getId());
+    public CustomerDaoAssert matches(Customer customer) {
+        return (CustomerDaoAssert) nameEquals(customer.getName())
+                .usernameEquals(customer.getUsername())
+                .roleEquals(customer.getRole())
+                .idEquals(customer.getId());
     }
 
     public CustomerDaoAssert matches(UserProfileResponseBody userResponse) {

@@ -1,14 +1,13 @@
 package ui.transactions;
 
+import support.TransactionTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.kduskov.api.generators.common.RandomData;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
-import ru.kduskov.api.steps.DepositSteps;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
-import ru.kduskov.api.utils.AccountsListUtils;
 import ru.kduskov.common.annotations.UserSession;
 import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.ui.models.UserModel;
@@ -29,10 +28,10 @@ public class TransferMoneyUiTest extends BaseUiTest {
     private final TransferPage transferPage = new TransferPage();
 
     public void setUpTestData() {
-        firstUser = SessionStorage.getUser(FIRST_USER_ID);
-        firstUserAccount = SessionStorage.getUserAccount(firstUser.getUsername(), FIRST_ACC_ID);
-        firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
-        DepositSteps.sendDepositWithAmountValidation(firstUserAccount, firstUser.getToken(), 50_000);
+        var testData = TransactionTestData.getAccountWithDeposit(FIRST_USER_ID, FIRST_ACC_ID, 50_000);
+        firstUser = testData.getUser();
+        firstUserAccount = testData.getAccount();
+        firstUserSecondAccount = TransactionTestData.getUserAccount(FIRST_USER_ID, SECOND_USER_ID).getAccount();
     }
 
     @BeforeEach

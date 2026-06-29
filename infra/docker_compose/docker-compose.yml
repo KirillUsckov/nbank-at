@@ -1,6 +1,6 @@
 services:
   backend:
-    image: nobugsme/nbank:preprod_version
+    image: nobugsme/nbank:with_fraud_check_with_swagger_fix
 #    image: nobugsme/nbank:with_validation_fix
     container_name: backend
     environment:
@@ -8,12 +8,13 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - FRAUD_DETECTION_SERVICE_URL=http://host.docker.internal:8080
     depends_on:
       - postgres
     ports:
       #Порт_снаружи:Порт_внутри
       - "4111:4111"
-    healthcheck: # ← ДОБАВЬТЕ healthcheck
+    healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:4111/health || exit 1" ]
       interval: 5s
       timeout: 1s

@@ -3,6 +3,8 @@ package ru.kduskov.db.models.dao;
 import lombok.*;
 import ru.kduskov.api.enums.Role;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

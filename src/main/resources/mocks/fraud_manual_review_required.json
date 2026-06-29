@@ -1,0 +1,8 @@
+{
+  "status": "FAILED",
+  "decision": "MANUAL_REVIEW_REQUIRED",
+  "riskScore": 0.9,
+  "reason": "High risk transaction",
+  "requiresManualReview": true,
+  "additionalVerificationRequired": false
+}

@@ -1,5 +1,9 @@
 package api.transactions;
 
+
+import support.ExpectedAccountState;
+import support.TransactionTestData;
+import support.TransferDbAssertions;
 import common.BaseTest;
 import ru.kduskov.api.constants.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,19 +19,15 @@ import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
 import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.specs.ResponseSpecs;
 import ru.kduskov.api.steps.AccountSteps;
-import ru.kduskov.api.steps.DepositSteps;
 import ru.kduskov.api.steps.TransferSteps;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.api.steps.assertions.TransferAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
-import ru.kduskov.common.assertions.OptionalAssert;
 import ru.kduskov.common.storage.SessionStorage;
-import ru.kduskov.db.models.dao.TransactionDao;
 import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
 
-import java.math.BigDecimal;
 
 import static common.Constans.*;
 
@@ -40,9 +40,9 @@ public class TransferMoneyApiTest extends BaseTest {
     private DbAssertionSteps dbAssertionSteps;
 
     public void setUpTestData() {
-        firstUser = SessionStorage.getUser(FIRST_USER_ID);
-        firstUserAccount = SessionStorage.getUserAccount(firstUser.getUsername(), FIRST_ACC_ID);
-        DepositSteps.sendDepositWithAmountValidation(firstUserAccount, firstUser.getToken(), 50_000);
+        var testData = TransactionTestData.getAccountWithDeposit(FIRST_USER_ID, FIRST_ACC_ID, 50_000);
+        firstUser = testData.getUser();
+        firstUserAccount = testData.getAccount();
     }
 
     @BeforeEach
@@ -61,17 +61,14 @@ public class TransferMoneyApiTest extends BaseTest {
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts().getAccounts();
 
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        expectedSenderDbAccount.setBalance(expectedSenderDbAccount.getBalance().subtract(BigDecimal.valueOf(amount)));
-
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
-        expectedReceiverDbAccount.setBalance(expectedReceiverDbAccount.getBalance().add(BigDecimal.valueOf(amount)));
+        var expectedSenderDbAccount = ExpectedAccountState.decreasedBy(firstUserAccount, amount);
+        var expectedReceiverDbAccount = ExpectedAccountState.increasedBy(firstUserSecondAccount, amount);
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
 
         var transferResponse = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
 
-        this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse);
+        this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse, "Transfer successful");
 
         var accountsAfterRequest = userSteps.getUserAccounts().getAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
@@ -86,13 +83,7 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var senderTrxId = senderTransactions.getTransactions().stream().filter(tr->tr.getType().equals(TransactionType.TRANSFER_OUT)).findFirst().get().getId();
         var receiverTrxId = receiverTransactions.getTransactions().stream().filter(tr->tr.getType().equals(TransactionType.TRANSFER_IN)).findFirst().get().getId();
-        var senderTransactionOpt = SqlSteps.findTransactionById(senderTrxId);
-        var receiverTransactionOpt = SqlSteps.findTransactionById(receiverTrxId);
-        OptionalAssert.assertThat(senderTransactionOpt).isPresent();
-        OptionalAssert.assertThat(receiverTransactionOpt).isPresent();
-
-       this.dbAssertionSteps.assertTransactionDaoEquals(senderTransactionOpt.get(), senderTrxId, transferResponse.getSenderAccountId(), transferResponse.getReceiverAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_OUT);
-        this.dbAssertionSteps.assertTransactionDaoEquals(receiverTransactionOpt.get(), receiverTrxId, transferResponse.getReceiverAccountId(), transferResponse.getSenderAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_IN);
+        TransferDbAssertions.assertTransferTransactionsPersisted(this.dbAssertionSteps, transferResponse, senderTrxId, receiverTrxId);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
         this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, false);
@@ -110,11 +101,8 @@ public class TransferMoneyApiTest extends BaseTest {
         var receiverAccountsBefore = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts().getAccounts();
         var secondUserAccount = SessionStorage.getUserAccounts(SECOND_USER_ID).stream().findFirst().orElseThrow();
 
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        expectedSenderDbAccount.setBalance(expectedSenderDbAccount.getBalance().subtract(BigDecimal.valueOf(amount)));
-
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(secondUserAccount.getAccountNumber());
-        expectedReceiverDbAccount.setBalance(expectedReceiverDbAccount.getBalance().add(BigDecimal.valueOf(amount)));
+        var expectedSenderDbAccount = ExpectedAccountState.decreasedBy(firstUserAccount, amount);
+        var expectedReceiverDbAccount = ExpectedAccountState.increasedBy(secondUserAccount, amount);
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), secondUserAccount.getId(), amount);
 
@@ -122,7 +110,7 @@ public class TransferMoneyApiTest extends BaseTest {
                 RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok(), Endpoint.TRANSFER)
                 .post(transferRequestBody);
 
-        this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse);
+        this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse, "Transfer successful");
 
         var senderAccountsAfter = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts().getAccounts();
         var receiverAccountsAfter = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts().getAccounts();
@@ -140,13 +128,7 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var senderTrxId = senderTransactions.getTransactions().stream().filter(tr->tr.getType().equals(TransactionType.TRANSFER_OUT)).findFirst().get().getId();
         var receiverTrxId = receiverTransactions.getTransactions().stream().filter(tr->tr.getType().equals(TransactionType.TRANSFER_IN)).findFirst().get().getId();
-        var senderTransactionOpt = SqlSteps.findTransactionById(senderTrxId);
-        var receiverTransactionOpt = SqlSteps.findTransactionById(receiverTrxId);
-        OptionalAssert.assertThat(senderTransactionOpt).isPresent();
-        OptionalAssert.assertThat(receiverTransactionOpt).isPresent();
-
-        this.dbAssertionSteps.assertTransactionDaoEquals(senderTransactionOpt.get(), senderTrxId, transferResponse.getSenderAccountId(), transferResponse.getReceiverAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_OUT);
-        this.dbAssertionSteps.assertTransactionDaoEquals(receiverTransactionOpt.get(), receiverTrxId, transferResponse.getReceiverAccountId(), transferResponse.getSenderAccountId(), transferResponse.getAmount(), TransactionType.TRANSFER_IN);
+        TransferDbAssertions.assertTransferTransactionsPersisted(this.dbAssertionSteps, transferResponse, senderTrxId, receiverTrxId);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
         this.dbAssertionSteps.assertAccountDaoEquals(senderDbAccountAfterRequest, expectedSenderDbAccount, false);
@@ -165,8 +147,8 @@ public class TransferMoneyApiTest extends BaseTest {
         var receiverAccountsBefore = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
         var secondUserAccount = SessionStorage.getUserAccounts(SECOND_USER_ID).stream().findFirst().orElseThrow();
 
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(accountWithNoMoney.getAccountNumber());
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(secondUserAccount.getAccountNumber());
+        var expectedSenderDbAccount = ExpectedAccountState.unchanged(accountWithNoMoney);
+        var expectedReceiverDbAccount = ExpectedAccountState.unchanged(secondUserAccount);
 
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), secondUserAccount.getId(), amount);
 
@@ -200,8 +182,8 @@ public class TransferMoneyApiTest extends BaseTest {
         var accountWithNoMoney = AccountSteps.createAccount(firstUser.getToken());
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(accountWithNoMoney.getAccountNumber());
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
+        var expectedSenderDbAccount = ExpectedAccountState.unchanged(accountWithNoMoney);
+        var expectedReceiverDbAccount = ExpectedAccountState.unchanged(firstUserSecondAccount);
 
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), firstUserSecondAccount.getId(), amount);
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
@@ -231,8 +213,8 @@ public class TransferMoneyApiTest extends BaseTest {
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
+        var expectedSenderDbAccount = ExpectedAccountState.unchanged(firstUserAccount);
+        var expectedReceiverDbAccount = ExpectedAccountState.unchanged(firstUserSecondAccount);
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
@@ -258,8 +240,8 @@ public class TransferMoneyApiTest extends BaseTest {
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
+        var expectedSenderDbAccount = ExpectedAccountState.unchanged(firstUserAccount);
+        var expectedReceiverDbAccount = ExpectedAccountState.unchanged(firstUserSecondAccount);
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), 10_000.01);
 
@@ -285,7 +267,7 @@ public class TransferMoneyApiTest extends BaseTest {
         setUpTestData();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
-        var expectedSenderDbAccount = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
+        var expectedSenderDbAccount = ExpectedAccountState.unchanged(firstUserAccount);
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), 100000000L);
 
@@ -306,7 +288,7 @@ public class TransferMoneyApiTest extends BaseTest {
         setUpTestData();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
-        var expectedReceiverDbAccount = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
+        var expectedReceiverDbAccount = ExpectedAccountState.unchanged(firstUserSecondAccount);
 
         var transferRequestBody = TransferRequestGenerator.generateWithReceiver(firstUserSecondAccount.getId());
 
@@ -321,3 +303,4 @@ public class TransferMoneyApiTest extends BaseTest {
         this.dbAssertionSteps.assertAccountDaoEquals(receiverDbAccountAfterRequest, expectedReceiverDbAccount, true);
     }
 }
+
