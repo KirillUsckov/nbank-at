@@ -82,7 +82,11 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
                 transferRequestBody.getAmount(),
                 firstUserSecondAccount.getId()
         );
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(    receiverTransactions, transferRequestBody.getAmount(), firstUserAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransferIn(
+                receiverTransactions,
+                transferRequestBody.getAmount(),
+                firstUserAccount.getId()
+        );
 
         var senderTrxId = senderTransactions.getTransactions()
                 .stream()
