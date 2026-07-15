@@ -6,7 +6,6 @@ import ru.kduskov.api.models.body.response.accounts.deposit.DepositResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 
 public class DepositAssert extends BaseAssert<DepositAssert, DepositResponseBody> {
-
     public DepositAssert(DepositResponseBody actual, SoftAssertions softly) {
         super(actual, DepositAssert.class, softly);
     }
