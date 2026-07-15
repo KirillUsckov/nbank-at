@@ -17,7 +17,7 @@ public class TransferPage extends BasePage {
 
     private final InputElement recipientAccountNumberInput = new InputElement(Selectors.byAttribute("placeholder", "Enter recipient account number"));
 
-    private final SelenideElement sendTransferButton = $(Selectors.byText("🚀 Send Transfer"));
+    private final SelenideElement sendTransferButton = $(Selectors.byText("\uD83D\uDE80 Send Transfer"));
 
     private final SelenideElement confirmTransferCheckbox = $(Selectors.byId("confirmCheck"));
 
@@ -28,7 +28,7 @@ public class TransferPage extends BasePage {
 
     @Override
     By pageLocator() {
-        return Selectors.byText("🆕 New Transfer");
+        return Selectors.byText("\uD83C\uDD95 New Transfer");
     }
 
     public void selectAccount(String accountNumber) {

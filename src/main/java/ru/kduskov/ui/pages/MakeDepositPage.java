@@ -7,7 +7,7 @@ import ru.kduskov.ui.elements.InputElement;
 import ru.kduskov.ui.elements.SelectElement;
 
 public class MakeDepositPage extends BasePage {
-    private static final String DEPOSIT_LABEL = "💵 Deposit";
+    private static final String DEPOSIT_LABEL = "\uD83D\uDCB5 Deposit";
 
     private final ButtonElement depositButton = new ButtonElement(Selectors.byText(DEPOSIT_LABEL));
 

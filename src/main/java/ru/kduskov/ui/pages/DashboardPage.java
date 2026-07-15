@@ -5,9 +5,9 @@ import org.openqa.selenium.By;
 import ru.kduskov.ui.elements.ButtonElement;
 
 public class DashboardPage extends BasePage {
-    private final ButtonElement depositMoneyButton = new ButtonElement(Selectors.byText("💰 Deposit Money"));
+    private final ButtonElement depositMoneyButton = new ButtonElement(Selectors.byText("\uD83D\uDCB0 Deposit Money"));
 
-    private final ButtonElement makeTransferButton = new ButtonElement(Selectors.byText("🔄️ Make a Transfer"));
+    private final ButtonElement makeTransferButton = new ButtonElement(Selectors.byText("\uD83D\uDD04 Make a Transfer"));
 
     @Override
     protected String url() {
