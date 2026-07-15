@@ -31,11 +31,11 @@ jobs:
           chmod +x ./mvnw
           chmod +x ./infra/docker_compose/push_docker.sh
 
-      - name: Build project
-        run: ./mvnw -q clean package -DskipTests
-
       - name: Run Checkstyle
-        run: ./mvnw --batch-mode checkstyle:check
+        run: ./mvnw -B --no-transfer-progress checkstyle:check
+
+      - name: Build project
+        run: ./mvnw -B --no-transfer-progress clean package -DskipTests
 
       - name: Build Docker image
         run: docker build -t nbank-at:${{ github.sha }} .
