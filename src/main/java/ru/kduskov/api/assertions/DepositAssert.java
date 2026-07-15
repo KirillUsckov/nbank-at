@@ -24,7 +24,6 @@ public class DepositAssert extends BaseAssert<DepositAssert, DepositResponseBody
         return this;
     }
 
-
     private DepositAssert hasDepositAmount(Double expectedAmount) {
         isEqualTo(
                 actual.getDepositAmount(),

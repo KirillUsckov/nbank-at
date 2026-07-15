@@ -3,7 +3,6 @@ package ru.kduskov.db.assertions;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.enums.Role;
 import ru.kduskov.api.models.body.response.accounts.Customer;
-import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.db.models.dao.CustomerDao;
 
@@ -15,7 +14,6 @@ public class CustomerDaoAssert extends BaseDbAssert<CustomerDaoAssert, CustomerD
     public static CustomerDaoAssert assertThat(CustomerDao actual, SoftAssertions softly) {
         return new CustomerDaoAssert(actual,  softly);
     }
-
 
     public CustomerDaoAssert matches(Customer customer) {
         return (CustomerDaoAssert) nameEquals(customer.getName())

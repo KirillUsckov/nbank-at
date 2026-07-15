@@ -35,13 +35,21 @@ public final class DepositSteps {
         }
     }
 
-    public DepositResponseBody sendDeposit(DepositRequestBody requestBody, RequestSpecification requestSpecification, ResponseSpecification responseSpecification) {
+    public DepositResponseBody sendDeposit(
+            DepositRequestBody requestBody,
+            RequestSpecification requestSpecification,
+            ResponseSpecification responseSpecification
+    ) {
         return new ValidatedCrudRequested<DepositResponseBody>(requestSpecification, responseSpecification, Endpoint.MAKE_DEPOSIT)
                 .post(requestBody);
 
     }
 
-    public String sendDepositWithStringResponse(DepositRequestBody body, RequestSpecification requestSpecification, ResponseSpecification responseSpecification) {
+    public String sendDepositWithStringResponse(
+            DepositRequestBody body,
+            RequestSpecification requestSpecification,
+            ResponseSpecification responseSpecification
+    ) {
         return new CrudRequester(requestSpecification, responseSpecification, Endpoint.MAKE_DEPOSIT)
                 .post(body)
                 .extract()

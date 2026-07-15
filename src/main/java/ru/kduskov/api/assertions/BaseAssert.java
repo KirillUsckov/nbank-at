@@ -16,7 +16,7 @@ public abstract class BaseAssert<S extends BaseAssert<S, A>, A>
     protected void softly(Runnable assertion) {
         try {
             assertion.run();
-        } catch (AssertionError e) {
+        } catch (AssertionError ignored) {
         }
     }
 

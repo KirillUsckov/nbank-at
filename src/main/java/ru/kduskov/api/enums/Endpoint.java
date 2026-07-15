@@ -2,7 +2,12 @@ package ru.kduskov.api.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import ru.kduskov.api.models.body.request.*;
+import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
+import ru.kduskov.api.models.body.request.CreateUserRequestBody;
+import ru.kduskov.api.models.body.request.DepositRequestBody;
+import ru.kduskov.api.models.body.request.TransferRequestBody;
+import ru.kduskov.api.models.body.request.LoginRequestBody;
+import ru.kduskov.api.models.body.request.BaseRequest;
 import ru.kduskov.api.models.body.response.BaseResponse;
 import ru.kduskov.api.models.body.response.LoginResponseBody;
 import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;

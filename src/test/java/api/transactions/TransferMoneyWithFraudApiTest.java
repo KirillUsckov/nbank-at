@@ -12,7 +12,6 @@ import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBod
 import ru.kduskov.api.models.body.response.customer.profile.CustomerAccountsResponseBody;
 import ru.kduskov.db.models.dao.AccountDao;
 import ru.kduskov.mock.annotations.FraudMockStatus;
-import ru.kduskov.mock.data.MockDataProvider;
 import ru.kduskov.mock.enums.FraudStatus;
 import ru.kduskov.api.enums.TransactionType;
 import ru.kduskov.api.generators.TransferRequestGenerator;
@@ -26,7 +25,6 @@ import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
-
 
 import static common.Constans.*;
 
@@ -67,7 +65,7 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
 
         var transferResponse = TransferSteps.sendTransferWithFraudRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
 
-        this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse, MockDataProvider.fraudResponse(FraudStatus.APPROVED), FraudStatus.APPROVED.getStatusMessage());
+        this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse, FraudStatus.APPROVED.getStatusMessage());
 
         var accountsAfterRequest = userSteps.getUserAccounts().getAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
@@ -80,8 +78,18 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
         this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, transferRequestBody.getAmount(), firstUserSecondAccount.getId());
         this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, transferRequestBody.getAmount(), firstUserAccount.getId());
 
-        var senderTrxId = senderTransactions.getTransactions().stream().filter(tr -> tr.getType().equals(TransactionType.TRANSFER_OUT)).findFirst().get().getId();
-        var receiverTrxId = receiverTransactions.getTransactions().stream().filter(tr -> tr.getType().equals(TransactionType.TRANSFER_IN)).findFirst().get().getId();
+        var senderTrxId = senderTransactions.getTransactions()
+                .stream()
+                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_OUT))
+                .findFirst()
+                .get()
+                .getId();
+        var receiverTrxId = receiverTransactions.getTransactions()
+                .stream()
+                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_IN))
+                .findFirst()
+                .get()
+                .getId();
         TransferDbAssertions.assertTransferTransactionsPersisted(this.dbAssertionSteps, transferResponse, senderTrxId, receiverTrxId);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
@@ -105,7 +113,14 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var transferResponse = TransferSteps.sendTransferWithFraudRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
-        assertTransferNotProcessed(transferRequestBody, transferResponse, accountsBeforeRequest, expectedSenderDbAccount, expectedReceiverDbAccount, FraudStatus.MANUAL_REVIEW_REQUIRED);
+        assertTransferNotProcessed(
+                transferRequestBody,
+                transferResponse,
+                accountsBeforeRequest,
+                expectedSenderDbAccount,
+                expectedReceiverDbAccount,
+                FraudStatus.MANUAL_REVIEW_REQUIRED
+        );
     }
 
     @ParameterizedTest
@@ -123,11 +138,25 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var transferResponse = TransferSteps.sendTransferWithFraudRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
 
-        assertTransferNotProcessed(transferRequestBody, transferResponse, accountsBeforeRequest, expectedSenderDbAccount, expectedReceiverDbAccount, FraudStatus.VERIFICATION_REQUIRED);
+        assertTransferNotProcessed(
+                transferRequestBody,
+                transferResponse,
+                accountsBeforeRequest,
+                expectedSenderDbAccount,
+                expectedReceiverDbAccount,
+                FraudStatus.VERIFICATION_REQUIRED
+        );
     }
 
-    private void assertTransferNotProcessed(TransferRequestBody transferRequestBody, TransferResponseBody transferResponse, CustomerAccountsResponseBody accountsBeforeRequest, AccountDao expectedSenderDbAccount, AccountDao expectedReceiverDbAccount, FraudStatus fraudStatus) {
-        this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse, MockDataProvider.fraudResponse(fraudStatus), fraudStatus.getStatusMessage());
+    private void assertTransferNotProcessed(
+            TransferRequestBody transferRequestBody,
+            TransferResponseBody transferResponse,
+            CustomerAccountsResponseBody accountsBeforeRequest,
+            AccountDao expectedSenderDbAccount,
+            AccountDao expectedReceiverDbAccount,
+            FraudStatus fraudStatus
+    ) {
+        this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse, fraudStatus.getStatusMessage());
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(

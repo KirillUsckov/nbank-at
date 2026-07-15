@@ -3,7 +3,6 @@ package support;
 import ru.kduskov.api.enums.TransactionType;
 import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBody;
 import ru.kduskov.common.assertions.OptionalAssert;
-import ru.kduskov.db.models.dao.AccountDao;
 import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 

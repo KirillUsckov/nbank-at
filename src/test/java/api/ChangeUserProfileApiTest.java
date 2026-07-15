@@ -22,6 +22,7 @@ import static ru.kduskov.api.constants.ErrorMessages.UserProfile.NAME_MUST_CONTA
 
 public class ChangeUserProfileApiTest extends BaseTest {
     private UserProfileAssertionSteps userProfileAssertionSteps;
+
     private DbAssertionSteps dbAssertionSteps;
 
     @BeforeEach
@@ -50,7 +51,6 @@ public class ChangeUserProfileApiTest extends BaseTest {
         this.dbAssertionSteps.assertCustomerDaoMatchChangeUserProfileResponse(expectedCustomer, changeUserProfileResponse);
     }
 
-
     @ParameterizedTest
     @UserSession
     @MethodSource("invalidNames")
@@ -66,7 +66,7 @@ public class ChangeUserProfileApiTest extends BaseTest {
 
         var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
 
-        this.userProfileAssertionSteps.assertCustomerNameMatchesPrevious(customerBeforeRequest,customerAfterRequest);
+        this.userProfileAssertionSteps.assertCustomerNameMatchesPrevious(customerBeforeRequest, customerAfterRequest);
 
         var expectedCustomerOpt = SqlSteps.findCustomerByUsername(customerBeforeRequest.getUsername());
         this.userProfileAssertionSteps.assertOptionalIsPresent(expectedCustomerOpt);

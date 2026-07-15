@@ -5,6 +5,7 @@ import ru.kduskov.api.models.body.request.DepositRequestBody;
 import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
 import ru.kduskov.api.models.body.response.accounts.deposit.DepositResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.common.steps.BaseAssertionsSteps;
 
 public class DepositAssertionSteps extends BaseAssertionsSteps {
 

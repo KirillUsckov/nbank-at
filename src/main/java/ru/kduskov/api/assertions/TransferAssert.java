@@ -19,7 +19,8 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
     public TransferAssert receiverAccountIdEquals(long expectedReceiverAccountId) {
         softly(() ->
                 softly.assertThat(actual.getReceiverAccountId())
-                        .withFailMessage("Expected receiver account id %s but was %s",
+                        .withFailMessage(
+                                "Expected receiver account id %s but was %s",
                                 expectedReceiverAccountId, actual.getReceiverAccountId())
                         .isEqualTo(expectedReceiverAccountId)
         );
@@ -29,7 +30,7 @@ public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseB
     public TransferAssert senderAccountIdEquals(long expectedSenderAccountId) {
         isEqualTo(actual.getSenderAccountId(), expectedSenderAccountId,
                 String.format("Expected sender account id %s but was %s",
-                        expectedSenderAccountId , actual.getSenderAccountId())
+                        expectedSenderAccountId, actual.getSenderAccountId())
         );
         return this;
     }

@@ -22,8 +22,9 @@ import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
 
-
-import static common.Constans.*;
+import static common.Constans.FIRST_ACC_ID;
+import static common.Constans.FIRST_USER_ID;
+import static common.Constans.SECOND_USER_ID;
 import static ru.kduskov.api.constants.ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT;
 
 public class MakeDepositApiTest extends BaseTest {
@@ -107,7 +108,10 @@ public class MakeDepositApiTest extends BaseTest {
         var secondUserAccount = SessionStorage.getUserAccount(secondUser.getUsername(), FIRST_ACC_ID);
         depositRequestBody.setAccountId(secondUserAccount.getId());
 
-        var depositResponseBody = this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.accessForbidden());
+        var depositResponseBody = this.depositSteps.sendDeposit(
+                depositRequestBody,
+                RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.accessForbidden()
+        );
         this.accountAssertionSteps.assertMessage(UNAUTHORIZED_ACCESS_TO_ACCOUNT, depositResponseBody.getMessage());
 
         var accountsAfterRequest = userSteps.getUserAccounts();
@@ -128,7 +132,10 @@ public class MakeDepositApiTest extends BaseTest {
 
         var depositRequestBody = DepositRequestGenerator.generate();
 
-        var depositResponseBody = this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.accessForbidden());
+        var depositResponseBody = this.depositSteps.sendDeposit(
+                depositRequestBody,
+                RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.accessForbidden()
+        );
         this.accountAssertionSteps.assertMessage(UNAUTHORIZED_ACCESS_TO_ACCOUNT, depositResponseBody.getMessage());
 
         var dbAccountsAfterRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
@@ -146,7 +153,11 @@ public class MakeDepositApiTest extends BaseTest {
         var totalBalance = firstUserAccount.getBalance() + balance;
         var expectedAccountDao = ExpectedAccountState.withBalance(firstUserAccount, totalBalance);
 
-        var depositResponseBody =  this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok());
+        var depositResponseBody =  this.depositSteps.sendDeposit(
+                depositRequestBody,
+                RequestSpecs.userSpec(firstUser.getToken()),
+                ResponseSpecs.ok()
+        );
         firstUserAccount.setBalance(totalBalance);
 
         var transfers = SessionStorage.getUserSteps(FIRST_ACC_ID).getAccountTransactions(firstUserAccount.getId());
@@ -176,8 +187,15 @@ public class MakeDepositApiTest extends BaseTest {
         var accountsBeforeRequest = userSteps.getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId(), balance);
 
-        var depositResponseBody = this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.badRequest());
-        this.accountAssertionSteps.assertMessage(ErrorMessages.Deposit.INVALID_ACCOUNT_OR_AMOUNT, depositResponseBody.getMessage());
+        var depositResponseBody = this.depositSteps.sendDeposit(
+                depositRequestBody,
+                RequestSpecs.userSpec(firstUser.getToken()),
+                ResponseSpecs.badRequest()
+        );
+        this.accountAssertionSteps.assertMessage(
+                ErrorMessages.Deposit.INVALID_ACCOUNT_OR_AMOUNT,
+                depositResponseBody.getMessage()
+        );
 
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
@@ -201,7 +219,11 @@ public class MakeDepositApiTest extends BaseTest {
                         .amount(5000.01)
                         .build();
 
-        var depositResponseBody = this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.badRequest());
+        var depositResponseBody = this.depositSteps.sendDeposit(
+                depositRequestBody,
+                RequestSpecs.userSpec(firstUser.getToken()),
+                ResponseSpecs.badRequest()
+        );
         var message = depositResponseBody.getMessage();
         this.depositAssertionSteps.assertMessage(ErrorMessages.Deposit.DEPOSIT_AMOUNT_EXCEED_MAX, message);
 

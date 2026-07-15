@@ -15,6 +15,7 @@ public class TransactionTestData {
         this.user = user;
         this.account = account;
     }
+
     public static TransactionTestData getAccountWithDeposit(int userId, int accountId, double amount) {
         var testData = getUserAccount(userId, accountId);
         DepositSteps.sendDepositWithAmountValidation(testData.account, testData.user.getToken(), amount);

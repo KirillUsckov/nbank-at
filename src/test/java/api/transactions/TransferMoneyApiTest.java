@@ -1,6 +1,5 @@
 package api.transactions;
 
-
 import support.ExpectedAccountState;
 import support.TransactionTestData;
 import support.TransferDbAssertions;
@@ -27,7 +26,6 @@ import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
-
 
 import static common.Constans.*;
 
@@ -81,8 +79,18 @@ public class TransferMoneyApiTest extends BaseTest {
         this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, amount, firstUserSecondAccount.getId());
         this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, amount, firstUserAccount.getId());
 
-        var senderTrxId = senderTransactions.getTransactions().stream().filter(tr->tr.getType().equals(TransactionType.TRANSFER_OUT)).findFirst().get().getId();
-        var receiverTrxId = receiverTransactions.getTransactions().stream().filter(tr->tr.getType().equals(TransactionType.TRANSFER_IN)).findFirst().get().getId();
+        var senderTrxId = senderTransactions.getTransactions()
+                .stream()
+                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_OUT))
+                .findFirst()
+                .get()
+                .getId();
+        var receiverTrxId = receiverTransactions.getTransactions()
+                .stream()
+                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_IN))
+                .findFirst()
+                .get()
+                .getId();
         TransferDbAssertions.assertTransferTransactionsPersisted(this.dbAssertionSteps, transferResponse, senderTrxId, receiverTrxId);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
@@ -126,8 +134,18 @@ public class TransferMoneyApiTest extends BaseTest {
         this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, amount, secondUserAccount.getId());
         this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, amount, firstUserAccount.getId());
 
-        var senderTrxId = senderTransactions.getTransactions().stream().filter(tr->tr.getType().equals(TransactionType.TRANSFER_OUT)).findFirst().get().getId();
-        var receiverTrxId = receiverTransactions.getTransactions().stream().filter(tr->tr.getType().equals(TransactionType.TRANSFER_IN)).findFirst().get().getId();
+        var senderTrxId = senderTransactions.getTransactions()
+                .stream()
+                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_OUT))
+                .findFirst()
+                .get()
+                .getId();
+        var receiverTrxId = receiverTransactions.getTransactions()
+                .stream()
+                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_IN))
+                .findFirst()
+                .get()
+                .getId();
         TransferDbAssertions.assertTransferTransactionsPersisted(this.dbAssertionSteps, transferResponse, senderTrxId, receiverTrxId);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
@@ -153,7 +171,10 @@ public class TransferMoneyApiTest extends BaseTest {
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), secondUserAccount.getId(), amount);
 
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, response.getMessage());
+        this.transferAssertionSteps.assertMessage(
+                ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS,
+                response.getMessage()
+        );
 
         var senderAccountsAfter = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var receiverAccountsAfter = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
@@ -187,7 +208,10 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), firstUserSecondAccount.getId(), amount);
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, response.getMessage());
+        this.transferAssertionSteps.assertMessage(
+                ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS,
+                response.getMessage()
+        );
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -218,7 +242,10 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, response.getMessage());
+        this.transferAssertionSteps.assertMessage(
+                ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS,
+                response.getMessage()
+        );
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -272,7 +299,10 @@ public class TransferMoneyApiTest extends BaseTest {
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), 100000000L);
 
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS, response.getMessage());
+        this.transferAssertionSteps.assertMessage(
+                ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS,
+                response.getMessage()
+        );
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(

@@ -2,18 +2,14 @@ package ui;
 
 import com.codeborne.selenide.Configuration;
 import common.BaseTest;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.MutableCapabilities;
 import ru.kduskov.common.confs.Config;
 import ru.kduskov.common.enums.ConfigParams;
-import ru.kduskov.common.extensions.*;
+import ru.kduskov.common.extensions.BrowserMatchExtension;
 
 import java.util.Map;
-
 
 @ExtendWith(BrowserMatchExtension.class)
 public abstract class BaseUiTest extends BaseTest {

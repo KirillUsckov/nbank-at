@@ -1,9 +1,7 @@
 package ru.kduskov.db.models;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import ru.kduskov.db.enums.Operators;
 
 import java.util.List;

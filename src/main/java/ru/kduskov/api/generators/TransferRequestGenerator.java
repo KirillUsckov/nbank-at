@@ -22,7 +22,6 @@ public final class TransferRequestGenerator {
         return request;
     }
 
-
     public static TransferRequestBody generateWithReceiver(Long receiverId) {
         var request = generate();
         request.setReceiverAccountId(receiverId);

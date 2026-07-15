@@ -39,32 +39,56 @@ public class TransactionDaoAssert extends BaseDbAssert<TransactionDaoAssert, Tra
     }
 
     private TransactionDaoAssert timestampBefore(LocalDateTime expectedTimestamp) {
-        softly.assertThat(actual.getTimestamp()).withFailMessage(String.format("Expected timestamp %s should be after %s", expectedTimestamp, actual.getTimestamp())).isBefore(expectedTimestamp);
+        softly.assertThat(actual.getTimestamp())
+                .withFailMessage(
+                        String.format("Expected timestamp %s should be after %s", expectedTimestamp, actual.getTimestamp())
+                )
+                .isBefore(expectedTimestamp);
         return this;
     }
 
     private TransactionDaoAssert timestampEquals(LocalDateTime expectedTimestamp) {
-        isEqualTo(actual.getTimestamp(), expectedTimestamp, String.format("Expected timestamp %s, but was %s", expectedTimestamp, actual.getTimestamp()));
+        isEqualTo(
+                actual.getTimestamp(),
+                expectedTimestamp,
+                String.format("Expected timestamp %s, but was %s", expectedTimestamp, actual.getTimestamp())
+        );
         return this;
     }
 
     public TransactionDaoAssert relatedAccountIdEquals(Long expectedRelatedAccId) {
-        isEqualTo(actual.getRelatedAccountId(), expectedRelatedAccId, String.format("Expected related account id %s, but was %s", expectedRelatedAccId, actual.getRelatedAccountId()));
+        isEqualTo(
+                actual.getRelatedAccountId(),
+                expectedRelatedAccId,
+                String.format("Expected related account id %s, but was %s", expectedRelatedAccId, actual.getRelatedAccountId())
+        );
         return this;
     }
 
     public TransactionDaoAssert typeEquals(TransactionType expectedType) {
-        isEqualTo(actual.getType(), expectedType, String.format("Expected type %s, but was %s", expectedType, actual.getType()));
+        isEqualTo(
+                actual.getType(),
+                expectedType,
+                String.format("Expected type %s, but was %s", expectedType, actual.getType())
+        );
         return this;
     }
 
     public TransactionDaoAssert accountIdEquals(Long expectedAccId) {
-        isEqualTo(actual.getAccountId(), expectedAccId, String.format("Expected account id %s, but was %s", expectedAccId, actual.getAccountId()));
+        isEqualTo(
+                actual.getAccountId(),
+                expectedAccId,
+                String.format("Expected account id %s, but was %s", expectedAccId, actual.getAccountId())
+        );
         return this;
     }
 
     public TransactionDaoAssert amountEquals(BigDecimal expectedAmount) {
-        isEqualTo(actual.getAmount().doubleValue(), expectedAmount.doubleValue(), String.format("Expected amount %s, but was %s", expectedAmount, actual.getAmount()));
+        isEqualTo(
+                actual.getAmount().doubleValue(),
+                expectedAmount.doubleValue(),
+                String.format("Expected amount %s, but was %s", expectedAmount, actual.getAmount())
+        );
         return this;
     }
 }

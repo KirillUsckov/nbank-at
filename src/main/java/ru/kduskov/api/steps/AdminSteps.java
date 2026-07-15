@@ -2,11 +2,8 @@ package ru.kduskov.api.steps;
 
 import ru.kduskov.api.enums.Endpoint;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
-import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.models.body.request.CreateUserRequestBody;
 import ru.kduskov.api.models.body.response.admin.FullUserProfileResponseBody;
-import ru.kduskov.api.models.body.response.general.AccountResponseBody;
-import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.api.requests.skelethon.requesters.CrudRequester;
 import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
 import ru.kduskov.api.specs.RequestSpecs;

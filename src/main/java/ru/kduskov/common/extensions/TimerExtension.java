@@ -1,6 +1,8 @@
 package ru.kduskov.common.extensions;
 
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,11 +13,11 @@ public class TimerExtension implements BeforeEachCallback, AfterEachCallback {
     private final Map<String, Long> endTimes = new HashMap<>();
 
     // Добавьте счетчик экземпляров
-    private static final AtomicInteger instanceCounter = new AtomicInteger(0);
+    private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger(0);
     private final int instanceId;
 
     public TimerExtension() {
-        this.instanceId = instanceCounter.incrementAndGet();
+        this.instanceId = INSTANCE_COUNTER.incrementAndGet();
         System.out.printf("TimerExtension instance #%d created%n", instanceId);
     }
 
@@ -37,8 +39,11 @@ public class TimerExtension implements BeforeEachCallback, AfterEachCallback {
     }
 
     private String getFullTestName(ExtensionContext context) {
-        var baseName = context.getRequiredTestClass().getSimpleName() + "." +
-                context.getRequiredTestMethod().getName();
+        var baseName = String.format(
+                "%s.%s",
+                context.getRequiredTestClass().getSimpleName(),
+                context.getRequiredTestMethod().getName()
+        );
 
         // Используем displayName, который содержит параметры для @ValueSource
         var displayName = context.getDisplayName();

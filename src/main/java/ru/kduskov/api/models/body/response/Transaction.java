@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import ru.kduskov.api.deserializers.CustomLocalDateTimeDeserializer;
 import ru.kduskov.api.enums.Status;
 import ru.kduskov.api.enums.TransactionType;
-import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.db.models.dao.AccountDao;
 
 import java.time.LocalDateTime;

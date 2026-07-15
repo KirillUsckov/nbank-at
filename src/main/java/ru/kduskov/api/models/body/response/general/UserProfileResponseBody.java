@@ -1,6 +1,5 @@
 package ru.kduskov.api.models.body.response.general;
 
-import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;

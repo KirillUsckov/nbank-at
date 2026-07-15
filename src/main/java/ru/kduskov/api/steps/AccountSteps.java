@@ -1,6 +1,5 @@
 package ru.kduskov.api.steps;
 
-
 import ru.kduskov.api.enums.Endpoint;
 import ru.kduskov.api.models.body.response.accounts.DeleteAccountResponse;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
