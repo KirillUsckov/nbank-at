@@ -1,12 +1,20 @@
 services:
   backend:
-#    image: nobugsme/nbank:with_database
-    image: nobugsme/nbank:with_validation_fix
+    image: nobugsme/nbank:with_fraud_check_with_swagger_fix
+#    image: nobugsme/nbank:with_validation_fix
     container_name: backend
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/nbank
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - FRAUD_DETECTION_SERVICE_URL=http://host.docker.internal:8080
+    depends_on:
+      - postgres
     ports:
       #Порт_снаружи:Порт_внутри
       - "4111:4111"
-    healthcheck: # ← ДОБАВЬТЕ healthcheck
+    healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:4111/health || exit 1" ]
       interval: 5s
       timeout: 1s
@@ -16,8 +24,27 @@ services:
       #Общая сеть для того, чтобы сервисы взаимодействовали друг с другом
       - nbank-network
 
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=nbank
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+    networks:
+      - nbank-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d nbank" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   frontend:
-    image: nobugsme/nbank-ui:with_nginx
+    image: nobugsme/nbank-ui:preprod_version
     container_name: frontend
     expose:
       # не открываем порт наружу, а даем доступ внутри сети

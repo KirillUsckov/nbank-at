@@ -1,10 +1,12 @@
 package ru.kduskov.api.assertions;
 
 import org.assertj.core.api.SoftAssertions;
+import ru.kduskov.api.assertions.list.AccountListAssert;
+import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
+import ru.kduskov.api.models.body.response.accounts.deposit.DepositResponseBody;
 import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBody;
 import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
-import ru.kduskov.api.models.body.response.Transaction;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
 
 import java.util.List;
@@ -19,9 +21,12 @@ public class Assertions {
     public AccountAssert assertThat(AccountResponseBody account) {
         return AccountAssert.assertThat(account, softly);
     }
+    public DepositAssert assertThat(DepositResponseBody account) {
+        return DepositAssert.assertThat(account, softly);
+    }
 
-    public TransactionAssert assertThat(Transaction transaction) {
-        return TransactionAssert.assertThat(transaction, softly);
+    public TransactionsAssert assertThat(TransactionsResponseBody transaction) {
+        return TransactionsAssert.assertThat(transaction, softly);
     }
 
     public TransferAssert assertThat(TransferResponseBody transfer) {

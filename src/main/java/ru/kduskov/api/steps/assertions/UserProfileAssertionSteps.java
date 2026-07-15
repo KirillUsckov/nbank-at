@@ -5,7 +5,7 @@ import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
 
-public class UserProfileAssertionSteps extends  BaseAssertionsSteps{
+public class UserProfileAssertionSteps extends BaseAssertionsSteps {
 
     public UserProfileAssertionSteps(SoftAssertions softly) {
         super(softly);
@@ -16,10 +16,10 @@ public class UserProfileAssertionSteps extends  BaseAssertionsSteps{
     }
 
     public void assertCustomerNameMatchesRequest(ChangeUserProfileRequestBody requestBody, UserProfileResponseBody userProfileResponseBody) {
-        assertions.assertThat(userProfileResponseBody).hasName(requestBody.getName());
+        assertions.assertThat(userProfileResponseBody).nameEquals(requestBody.getName());
     }
 
     public void assertCustomerNameMatchesPrevious(UserProfileResponseBody customerBeforeRequest, UserProfileResponseBody customerAfterRequest) {
-        assertions.assertThat(customerAfterRequest).hasName(customerBeforeRequest.getName());
+        assertions.assertThat(customerAfterRequest).nameEquals(customerBeforeRequest.getName());
     }
 }

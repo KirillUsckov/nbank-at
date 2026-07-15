@@ -2,6 +2,8 @@ package ru.kduskov.api.steps.assertions;
 
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.models.body.request.DepositRequestBody;
+import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
+import ru.kduskov.api.models.body.response.accounts.deposit.DepositResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 
 public class DepositAssertionSteps extends BaseAssertionsSteps {
@@ -11,10 +13,13 @@ public class DepositAssertionSteps extends BaseAssertionsSteps {
     }
 
     public void assertSingleDeposit(DepositRequestBody depositRequestBody,
-                                    AccountResponseBody depositResponseBody,
-                                    AccountResponseBody userAccount) {
+                                    DepositResponseBody depositResponseBody,
+                                    AccountResponseBody userAccount,
+                                    TransactionsResponseBody transactionsResponseBody) {
 
         assertions.assertThat(depositResponseBody)
-                .isValidDepositResponse(depositRequestBody.getBalance(), depositRequestBody.getId(), userAccount);
+                .isValidDepositResponse(depositRequestBody, userAccount);
+        assertions.assertThat(transactionsResponseBody)
+                .hasLatestDeposit(depositRequestBody.getAmount(), userAccount.getId());
     }
 }

@@ -7,6 +7,7 @@ public interface CrudEndpointInterface {
     Object post();
     Object put(BaseRequest model);
     Object get();
+    Object get(String urlParam);
     Object delete(long id);
 
 }

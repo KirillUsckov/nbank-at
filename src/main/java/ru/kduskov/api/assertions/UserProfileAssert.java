@@ -12,7 +12,7 @@ public class UserProfileAssert extends BaseAssert<UserProfileAssert, UserProfile
         return new UserProfileAssert(actual, softly);
     }
 
-    public UserProfileAssert hasName(String expectedName) {
+    public UserProfileAssert nameEquals(String expectedName) {
         softly(() ->
                 softly.assertThat(actual.getName())
                         .withFailMessage("Expected name %s but was %s",

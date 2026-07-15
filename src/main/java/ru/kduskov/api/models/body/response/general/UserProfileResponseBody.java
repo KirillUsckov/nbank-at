@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import ru.kduskov.api.models.body.response.BaseResponse;
 import ru.kduskov.api.enums.Role;
+import ru.kduskov.db.models.dao.AccountDao;
 
 import java.util.List;
 
@@ -18,8 +19,7 @@ public class UserProfileResponseBody extends BaseResponse {
     private Long id;
     private String username;
     private String password;
+    private List<AccountDao> accounts;
     private String name;
     private Role role;
-    @Nullable
-    private List<AccountResponseBody> accounts;
 }

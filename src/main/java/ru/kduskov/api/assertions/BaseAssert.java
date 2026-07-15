@@ -19,4 +19,12 @@ public abstract class BaseAssert<S extends BaseAssert<S, A>, A>
         } catch (AssertionError e) {
         }
     }
+
+    protected <T> void isEqualTo(T actual, T expected, String message) {
+        softly(() ->
+                softly.assertThat(actual)
+                        .withFailMessage(message)
+                        .isEqualTo(expected)
+        );
+    }
 }

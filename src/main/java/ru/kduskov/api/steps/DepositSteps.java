@@ -4,6 +4,7 @@ import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import ru.kduskov.api.enums.Endpoint;
 import ru.kduskov.api.models.body.request.DepositRequestBody;
+import ru.kduskov.api.models.body.response.accounts.deposit.DepositResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.requests.skelethon.requesters.CrudRequester;
 import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
@@ -27,21 +28,17 @@ public final class DepositSteps {
             var currentDeposit = Math.min(remainingAmount, MAX_DEPOSIT_PER_DEPOSIT_TRANSACTION);
             new CrudRequester(RequestSpecs.userSpec(userAuthToken), ResponseSpecs.ok(), Endpoint.MAKE_DEPOSIT)
                     .post(DepositRequestBody.builder()
-                            .id(account.getId())
-                            .balance(currentDeposit)
+                            .accountId(account.getId())
+                            .amount(currentDeposit)
                             .build());
             remainingAmount -= currentDeposit;
         }
     }
 
-    public AccountResponseBody sendDeposit(DepositRequestBody requestBody, RequestSpecification requestSpecification, ResponseSpecification responseSpecification) {
-        return new ValidatedCrudRequested<AccountResponseBody>(requestSpecification, responseSpecification, Endpoint.MAKE_DEPOSIT)
+    public DepositResponseBody sendDeposit(DepositRequestBody requestBody, RequestSpecification requestSpecification, ResponseSpecification responseSpecification) {
+        return new ValidatedCrudRequested<DepositResponseBody>(requestSpecification, responseSpecification, Endpoint.MAKE_DEPOSIT)
                 .post(requestBody);
 
-    }
-
-    public String sendDepositWithStringResponse(DepositRequestBody body, String userAuthToken, ResponseSpecification responseSpecification) {
-        return sendDepositWithStringResponse(body, RequestSpecs.userSpec(userAuthToken), responseSpecification);
     }
 
     public String sendDepositWithStringResponse(DepositRequestBody body, RequestSpecification requestSpecification, ResponseSpecification responseSpecification) {
