@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+
+    <!-- Кодировка исходных файлов -->
+    <property name="charset" value="UTF-8"/>
+
+    <!-- Уровень серьёзности нарушений -->
+    <property name="severity" value="error"/>
+
+    <!-- Проверяем только Java-файлы -->
+    <property name="fileExtensions" value="java"/>
+
+    <!-- Запрещаем символы табуляции -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <!-- Максимальная длина строки -->
+    <module name="LineLength">
+        <property name="max" value="150"/>
+        <property name="ignorePattern"
+                  value="^(package|import) .*|.*https?://.*"/>
+    </module>
+
+    <module name="TreeWalker">
+
+        <!-- ==================== Именование ==================== -->
+
+        <!-- package: ru.kduskov.api.tests -->
+        <module name="PackageName">
+            <property name="format"
+                      value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+
+        <!-- Классы и интерфейсы: LoginTest, BasePage -->
+        <module name="TypeName">
+            <property name="format"
+                      value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Обычные поля: apiClient, baseUrl -->
+        <module name="MemberName">
+            <property name="format"
+                      value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Локальные переменные -->
+        <module name="LocalVariableName">
+            <property name="format"
+                      value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Параметры методов -->
+        <module name="ParameterName">
+            <property name="format"
+                      value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Константы: DEFAULT_TIMEOUT -->
+        <module name="ConstantName">
+            <property name="format"
+                      value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+
+        <!--
+            Разрешены два распространённых варианта:
+
+            shouldReturnSuccessResponse
+            given_validUser_when_login_then_success
+        -->
+        <module name="MethodName">
+            <property name="format"
+                      value="^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$"/>
+        </module>
+
+        <!-- ==================== Импорты ==================== -->
+
+        <!-- Запрещает import java.util.* -->
+        <module name="AvoidStarImport"/>
+
+        <!-- Запрещает неиспользуемые импорты -->
+        <module name="UnusedImports"/>
+
+        <!-- Запрещает повторяющиеся импорты -->
+        <module name="RedundantImport"/>
+
+        <!-- ==================== Пробелы ==================== -->
+
+        <module name="WhitespaceAfter"/>
+
+        <module name="WhitespaceAround">
+            <!-- Пустые constructor/method blocks допустимы -->
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="false"/>
+        </module>
+
+        <module name="NoWhitespaceBefore"/>
+
+        <module name="NoWhitespaceAfter"/>
+
+        <module name="OperatorWrap">
+            <property name="option" value="nl"/>
+            <property name="tokens"
+                      value="
+                        QUESTION,
+                        COLON,
+                        EQUAL,
+                        NOT_EQUAL,
+                        DIV,
+                        PLUS,
+                        MINUS,
+                        STAR,
+                        MOD,
+                        SR,
+                        BSR,
+                        GE,
+                        GT,
+                        SL,
+                        LE,
+                        LT,
+                        BXOR,
+                        BOR,
+                        LOR,
+                        BAND,
+                        LAND,
+                        TYPE_EXTENSION_AND,
+                        LITERAL_INSTANCEOF
+                      "/>
+        </module>
+
+        <!-- ==================== Отступы ==================== -->
+
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="8"/>
+            <property name="arrayInitIndent" value="4"/>
+        </module>
+
+        <!-- ==================== Скобки ==================== -->
+
+        <!-- Открывающая скобка остаётся на той же строке -->
+        <module name="LeftCurly">
+            <property name="option" value="eol"/>
+        </module>
+
+        <module name="RightCurly">
+            <property name="option" value="same"/>
+        </module>
+
+        <!-- Требуем скобки даже для однострочного if -->
+        <module name="NeedBraces">
+            <property name="allowSingleLineStatement" value="false"/>
+        </module>
+
+        <!-- ==================== Размеры ==================== -->
+
+        <!-- Не больше четырёх уровней вложенности -->
+        <module name="NestedIfDepth">
+            <property name="max" value="4"/>
+        </module>
+
+        <!-- ==================== Качество кода ==================== -->
+
+        <!-- Запрещает пустые операторы: ;; -->
+        <module name="EmptyStatement"/>
+
+        <!-- Запрещает пустой catch -->
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName"
+                      value="^(ignored|expected)$"/>
+        </module>
+
+        <!-- Проверяет отсутствие случайного fall-through -->
+        <module name="FallThrough"/>
+
+        <!-- Запрещает изменение управляющей переменной цикла -->
+        <module name="ModifiedControlVariable"/>
+
+        <!-- Упрощает лишние логические выражения -->
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+
+        <!-- Запрещает присваивание внутри выражения -->
+        <module name="InnerAssignment"/>
+
+        <!-- Запрещает объявление нескольких переменных в одной строке -->
+        <module name="MultipleVariableDeclarations"/>
+
+        <!-- Запрещает ненужные точки с запятой -->
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+        <module name="UnnecessarySemicolonInEnumeration"/>
+        <module name="UnnecessarySemicolonInTryWithResources"/>
+
+        <!-- Проверка equals/hashCode -->
+        <module name="EqualsHashCode"/>
+
+        <!-- Запрещает finalize -->
+        <module name="NoFinalizer"/>
+
+        <!-- Не позволяет ловить Exception без необходимости -->
+        <module name="IllegalCatch">
+            <property name="illegalClassNames"
+                      value="
+                        java.lang.Throwable,
+                        java.lang.Error
+                      "/>
+        </module>
+
+        <!-- Не позволяет бросать Throwable/Error -->
+        <module name="IllegalThrows">
+            <property name="illegalClassNames"
+                      value="
+                        java.lang.Throwable,
+                        java.lang.Error
+                      "/>
+        </module>
+
+        <!-- ==================== Модификаторы ==================== -->
+
+        <!-- Проверяет стандартный порядок модификаторов -->
+        <module name="ModifierOrder"/>
+
+        <!-- Находит лишние модификаторы -->
+        <module name="RedundantModifier"/>
+
+        <!--
+            Обычные поля должны быть private.
+
+            protectedAllowed=true нужен для базовых классов
+            автотестового фреймворка: BaseTest, BasePage,
+            BaseResponse и аналогичных.
+        -->
+        <module name="VisibilityModifier">
+            <property name="packageAllowed" value="false"/>
+            <property name="protectedAllowed" value="true"/>
+            <property name="publicMemberPattern"
+                      value="^serialVersionUID$"/>
+        </module>
+
+        <!-- ==================== Аннотации ==================== -->
+
+        <!-- @Override должен присутствовать при переопределении -->
+        <module name="MissingOverride"/>
+
+        <!-- Проверяет расположение аннотаций -->
+        <module name="AnnotationLocation">
+            <property name="allowSamelineMultipleAnnotations"
+                      value="false"/>
+        </module>
+
+        <!-- Javadoc проверки отключены -->
+
+        <!-- ==================== Прочее ==================== -->
+
+        <!-- Запрещает несколько пустых строк подряд -->
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields"
+                      value="true"/>
+            <property name="allowMultipleEmptyLines"
+                      value="false"/>
+            <property name="allowMultipleEmptyLinesInsideClassMembers"
+                      value="false"/>
+        </module>
+
+        <!-- Проверяет переносы строк между операторами -->
+        <module name="OneStatementPerLine"/>
+
+        <!-- Один top-level класс на файл -->
+        <module name="OneTopLevelClass"/>
+
+        <!-- Запрещает Unicode escape вместо обычного символа -->
+        <module name="AvoidEscapedUnicodeCharacters">
+            <property name="allowEscapesForControlCharacters"
+                      value="true"/>
+        </module>
+
+    </module>
+</module>

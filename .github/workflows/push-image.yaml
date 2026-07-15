@@ -45,4 +45,4 @@ jobs:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           DOCKERHUB_USERNAME: kirberia
           IMAGE_NAME: nbank-at
-        run: ./infra/push_docker.sh "${{ github.sha }}"
+        run: ./infra/docker_compose/push_docker.sh "${{ github.sha }}"
