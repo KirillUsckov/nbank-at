@@ -1,7 +1,6 @@
 package ru.kduskov.api.constants;
 
 public class ErrorMessages {
-
     public static class UserProfile {
         public static String NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY = "Name must contain two words with letters only";
     }

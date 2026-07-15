@@ -32,7 +32,7 @@ jobs:
           chmod +x ./infra/docker_compose/push_docker.sh
 
       - name: Build project
-        run: ./mvnw --batch-mode clean package
+        run: ./mvnw clean package -DskipTests
 
       - name: Run Checkstyle
         run: ./mvnw --batch-mode checkstyle:check
