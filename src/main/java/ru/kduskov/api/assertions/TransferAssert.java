@@ -7,7 +7,6 @@ import ru.kduskov.mock.enums.FraudStatus;
 import ru.kduskov.mock.models.FraudMockResponse;
 
 public class TransferAssert extends BaseAssert<TransferAssert, TransferResponseBody> {
-
     public TransferAssert(TransferResponseBody actual, SoftAssertions softly) {
         super(actual, TransferAssert.class, softly);
     }

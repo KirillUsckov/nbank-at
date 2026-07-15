@@ -38,7 +38,7 @@ jobs:
         run: ./mvnw -B --no-transfer-progress clean package -DskipTests
 
       - name: Build Docker image
-        run: docker build --progress=tty -t nbank-at:${{ github.sha }} .
+        run: docker build -t nbank-at:${{ github.sha }} .
 
       - name: Push Docker image
         env:
