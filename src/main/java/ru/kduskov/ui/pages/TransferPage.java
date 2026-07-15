@@ -11,11 +11,11 @@ import static com.codeborne.selenide.Selenide.$;
 public class TransferPage extends BasePage {
     private final SelectElement accountsSelect = new SelectElement(Selectors.byXpath("//*[contains(@class,'account-selector')]"));
 
-    private final InputElement amountInput = new InputElement(Selectors.byAttribute("placeholder","Enter amount"));
+    private final InputElement amountInput = new InputElement(Selectors.byAttribute("placeholder", "Enter amount"));
 
-    private final InputElement recipientNameInput = new InputElement(Selectors.byAttribute("placeholder","Enter recipient name"));
+    private final InputElement recipientNameInput = new InputElement(Selectors.byAttribute("placeholder", "Enter recipient name"));
 
-    private final InputElement recipientAccountNumberInput = new InputElement(Selectors.byAttribute("placeholder","Enter recipient account number"));
+    private final InputElement recipientAccountNumberInput = new InputElement(Selectors.byAttribute("placeholder", "Enter recipient account number"));
 
     private final SelenideElement sendTransferButton = $(Selectors.byText("🚀 Send Transfer"));
 

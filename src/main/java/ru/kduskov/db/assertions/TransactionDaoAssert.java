@@ -2,8 +2,6 @@ package ru.kduskov.db.assertions;
 
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.enums.TransactionType;
-import ru.kduskov.db.models.dao.AccountDao;
-import ru.kduskov.db.models.dao.BaseDao;
 import ru.kduskov.db.models.dao.TransactionDao;
 
 import java.math.BigDecimal;

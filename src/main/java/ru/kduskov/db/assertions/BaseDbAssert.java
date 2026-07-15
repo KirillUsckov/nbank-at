@@ -19,8 +19,7 @@ public abstract class BaseDbAssert<S extends BaseDbAssert<S, A>, A extends BaseD
     protected void softly(Runnable assertion) {
         try {
             assertion.run();
-        } catch (AssertionError e) {
-
+        } catch (AssertionError ignored) {
         }
     }
 

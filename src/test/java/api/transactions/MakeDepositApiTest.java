@@ -118,7 +118,7 @@ public class MakeDepositApiTest extends BaseTest {
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, secondUserAccount);
 
         var dbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
-        this.dbAssertionSteps.assertAccountDaoEquals(dbAccountAfterRequest, dbAccountBeforeRequest,true);
+        this.dbAssertionSteps.assertAccountDaoEquals(dbAccountAfterRequest, dbAccountBeforeRequest, true);
     }
 
     @Test

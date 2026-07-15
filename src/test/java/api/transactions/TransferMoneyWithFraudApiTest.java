@@ -26,7 +26,9 @@ import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
 
-import static common.Constans.*;
+import static common.Constans.FIRST_USER_ID;
+import static common.Constans.FIRST_ACC_ID;
+import static common.Constans.SECOND_ACC_ID;
 
 public class TransferMoneyWithFraudApiTest extends BaseMockTest {
     private AccountResponseBody firstUserAccount;
@@ -75,8 +77,12 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
 
         var senderTransactions = userSteps.getAccountTransactions(firstUserAccount.getId());
         var receiverTransactions = userSteps.getAccountTransactions(firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, transferRequestBody.getAmount(), firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, transferRequestBody.getAmount(), firstUserAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransferOut(
+                senderTransactions,
+                transferRequestBody.getAmount(),
+                firstUserSecondAccount.getId()
+        );
+        this.accountAssertionSteps.assertAccountHasLatestTransferIn(    receiverTransactions, transferRequestBody.getAmount(), firstUserAccount.getId());
 
         var senderTrxId = senderTransactions.getTransactions()
                 .stream()

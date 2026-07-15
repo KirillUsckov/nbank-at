@@ -12,10 +12,23 @@ import ru.kduskov.db.models.Condition;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data
@@ -61,7 +74,7 @@ public class DBRequest {
         var sql = buildSQL();
 
         try (Connection connection = getConnection();
-            var statement = connection.prepareStatement(sql)) {
+                var statement = connection.prepareStatement(sql)) {
 
             setParameters(statement);
 
@@ -499,8 +512,8 @@ public class DBRequest {
             }
 
             // Проверяем snake_case -> camelCase
-            if (fieldName.equals(columnName.replace("_", "")) ||
-                    fieldName.replace("_", "").equals(columnName.replace("_", ""))) {
+            if (fieldName.equals(columnName.replace("_", ""))
+                    || fieldName.replace("_", "").equals(columnName.replace("_", ""))) {
                 return field.getName();
             }
         }

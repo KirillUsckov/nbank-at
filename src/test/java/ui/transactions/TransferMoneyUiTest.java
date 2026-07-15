@@ -10,7 +10,6 @@ import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
 import ru.kduskov.common.storage.SessionStorage;
-import ru.kduskov.ui.models.UserModel;
 import ru.kduskov.ui.pages.DashboardPage;
 import ru.kduskov.ui.pages.TransferPage;
 import ru.kduskov.ui.steps.BrowserSteps;

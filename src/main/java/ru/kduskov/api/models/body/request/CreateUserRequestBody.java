@@ -11,7 +11,6 @@ import ru.kduskov.api.enums.Role;
 
 import static ru.kduskov.api.enums.GenerationsRules.PASSWORD;
 
-
 @Data
 @Jacksonized
 @Builder

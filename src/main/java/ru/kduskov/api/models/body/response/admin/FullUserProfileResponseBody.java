@@ -13,5 +13,5 @@ import java.util.List;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class FullUserProfileResponseBody extends BaseResponse {
-    List<FullUserProfileInfo> data;
+    private List<FullUserProfileInfo> data;
 }

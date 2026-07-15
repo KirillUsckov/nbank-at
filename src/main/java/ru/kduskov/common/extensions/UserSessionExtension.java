@@ -17,7 +17,7 @@ public class UserSessionExtension implements BeforeEachCallback {
     public void beforeEach(ExtensionContext context) {
         var annotation = context.getRequiredTestMethod().getAnnotation(UserSession.class);
         if (annotation != null) {
-            for(int i = 0; i < annotation.usersNumber(); i++) {
+            for (int i = 0; i < annotation.usersNumber(); i++) {
                 var userModel = AdminSteps.createRandomUser();
                 var accounts = new ArrayList<AccountResponseBody>();
                 for (int j = 0; j < annotation.accountsNumber(); j++) {
@@ -26,7 +26,7 @@ public class UserSessionExtension implements BeforeEachCallback {
                 SessionStorage.insertUserAccounts(userModel.getUsername(), accounts);
                 SessionStorage.insertUser(userModel);
             }
-            if(annotation.isUi()) {
+            if (annotation.isUi()) {
                 loginWithUserCredentials(SessionStorage.getUser(annotation.userForLogin()).getToken());
             }
         }

@@ -11,6 +11,7 @@ import static ru.kduskov.common.enums.ConfigParams.API_BASE_URL;
 
 public final class RequestSpecs {
     private static String userToken;
+
     private static RequestSpecBuilder defaultRequestBuilder() {
         return new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)

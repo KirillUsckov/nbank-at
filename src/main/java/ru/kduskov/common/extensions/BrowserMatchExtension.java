@@ -15,7 +15,7 @@ public class BrowserMatchExtension implements ExecutionCondition {
         Browser browsers = context.getElement()
                 .map(el -> el.getAnnotation(Browser.class))
                 .orElse(null);
-        if(browsers == null) {
+        if (browsers == null) {
             return ConditionEvaluationResult.enabled("No browser conditions");
         }
         if (

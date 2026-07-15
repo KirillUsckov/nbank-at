@@ -10,8 +10,6 @@ import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.specs.ResponseSpecs;
 import ru.kduskov.ui.models.UserModel;
 
-import java.util.List;
-
 public final class AdminSteps {
 
     public static FullUserProfileResponseBody getAllUsers() {

@@ -9,7 +9,11 @@ import ru.kduskov.api.models.body.request.BaseRequest;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Random;
 
 public final class RequestDataGenerator {
     private static final Faker FAKER = new Faker();

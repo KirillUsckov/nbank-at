@@ -7,13 +7,13 @@ import ru.kduskov.ui.elements.InputElement;
 import ru.kduskov.ui.elements.SelectElement;
 
 public class MakeDepositPage extends BasePage {
-    private final String DEPOSIT_LABEL = "💵 Deposit";
+    private static final String DEPOSIT_LABEL = "💵 Deposit";
 
     private final ButtonElement depositButton = new ButtonElement(Selectors.byText(DEPOSIT_LABEL));
 
     private final SelectElement accountsSelect = new SelectElement(Selectors.byXpath("//*[contains(@class,'account-selector')]"));
 
-    private final InputElement amountInput = new InputElement(Selectors.byAttribute("placeholder","Enter amount"));
+    private final InputElement amountInput = new InputElement(Selectors.byAttribute("placeholder", "Enter amount"));
 
     @Override
     protected String url() {

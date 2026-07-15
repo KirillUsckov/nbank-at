@@ -21,8 +21,7 @@ public final class Config {
             throw new RuntimeException("Fail to load config.properties");
         }
     }
-
-
+    
     public static String getProperty(ConfigParams configParam) {
         var property = System.getProperty(configParam.getValue());
         if (property != null) {
