@@ -276,12 +276,5 @@
 
         <!-- Один top-level класс на файл -->
         <module name="OneTopLevelClass"/>
-
-        <!-- Запрещает Unicode escape вместо обычного символа -->
-        <module name="AvoidEscapedUnicodeCharacters">
-            <property name="allowEscapesForControlCharacters"
-                      value="true"/>
-        </module>
-
     </module>
 </module>
