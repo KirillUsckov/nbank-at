@@ -1,7 +1,6 @@
 package ru.kduskov.api.steps;
 
 import ru.kduskov.api.enums.Endpoint;
-import ru.kduskov.api.models.body.request.CreateUserRequestBody;
 import ru.kduskov.api.models.body.request.LoginRequestBody;
 import ru.kduskov.api.requests.skelethon.requesters.CrudRequester;
 import ru.kduskov.api.specs.RequestSpecs;

@@ -6,6 +6,7 @@ import ru.kduskov.api.enums.TransactionType;
 import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
 import ru.kduskov.api.models.body.response.customer.profile.CustomerAccountsResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.common.steps.BaseAssertionsSteps;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +67,7 @@ public class AccountAssertionSteps extends BaseAssertionsSteps {
         assertions.assertThat(account).hasNoTransactionOfType(type);
 
     }
+
     private AccountAssert assertAccountExistInList(List<AccountResponseBody> accountsAfterRequest,
                                                    AccountResponseBody account) {
         return assertions.assertThatAccounts(accountsAfterRequest)

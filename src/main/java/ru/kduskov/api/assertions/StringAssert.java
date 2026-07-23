@@ -18,4 +18,11 @@ public class StringAssert {
                 .isEqualTo(expected);
         return this;
     }
+
+    public StringAssert equalTo(String expected, String message) {
+        softly.assertThat(actual)
+                .withFailMessage(message)
+                .isEqualTo(expected);
+        return this;
+    }
 }

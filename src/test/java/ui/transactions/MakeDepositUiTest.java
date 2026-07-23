@@ -9,6 +9,7 @@ import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.ui.pages.DashboardPage;
 import ru.kduskov.ui.pages.MakeDepositPage;
 import ru.kduskov.ui.steps.BrowserSteps;
+import ru.kduskov.ui.steps.assertions.AlertAssertionSteps;
 import ui.BaseUiTest;
 
 import static common.Constans.FIRST_ACC_ID;
@@ -18,13 +19,15 @@ import static ru.kduskov.api.enums.BankAlerts.SUCCESSFULLY_DEPOSITED_TO_ACCOUNT;
 import static ru.kduskov.ui.pages.BasePage.loginWithUserCredentials;
 
 public class MakeDepositUiTest extends BaseUiTest {
-    private AccountAssertionSteps accountAssertionSteps;
     private final DashboardPage dashboardPage = new DashboardPage();
     private final MakeDepositPage makeDepositPage = new MakeDepositPage();
+    private AlertAssertionSteps alertAssertionSteps;
+    private AccountAssertionSteps accountAssertionSteps;
 
     @BeforeEach
     public void initAssertionClasses() {
         this.accountAssertionSteps = new AccountAssertionSteps(softly);
+        this.alertAssertionSteps = new AlertAssertionSteps(softly);
     }
 
     @Test
@@ -45,8 +48,12 @@ public class MakeDepositUiTest extends BaseUiTest {
         makeDepositPage.clickDepositButton();
 
         var successfulMessage = BrowserSteps.getAlertText();
-        var expectedMessage = String.format(SUCCESSFULLY_DEPOSITED_TO_ACCOUNT.getMessage(), depositRequestBody.getAmount(), userAccount.getAccountNumber());
-        softly.assertThat(successfulMessage).withFailMessage("Alert message is not equal expected").isEqualTo(expectedMessage);
+        var expectedMessage = String.format(
+                SUCCESSFULLY_DEPOSITED_TO_ACCOUNT.getMessage(),
+                depositRequestBody.getAmount(),
+                userAccount.getAccountNumber()
+        );
+        alertAssertionSteps.assertTextEqualsTo(expectedMessage, successfulMessage);
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts().getAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
@@ -70,7 +77,7 @@ public class MakeDepositUiTest extends BaseUiTest {
         makeDepositPage.clickDepositButton();
 
         var errorMessage = BrowserSteps.getAlertText();
-        softly.assertThat(errorMessage).isEqualTo(DEPOSIT_LESS_OR_EQUAL_TO_5000.getMessage());
+        alertAssertionSteps.assertTextEqualsTo(DEPOSIT_LESS_OR_EQUAL_TO_5000.getMessage(), errorMessage);
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, userAccount);

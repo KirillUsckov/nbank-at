@@ -1,0 +1,32 @@
+name: Run tests
+
+#trigger
+on: [ push, workflow_dispatch ]
+
+jobs:
+  run-tests:
+    name: Set up review apps and run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+          cache: maven
+
+      - name: Set up Services
+        run: bash infra/docker_compose/restart_docker.sh
+
+      - name: Wait for backend startup
+        run: bash infra/docker_compose/wait-for-backend.sh
+
+      - name: Run tests
+        run: ./mvnw clean test -q
+
+      - name: Print Docker logs on failure
+        if: failure()
+        run: docker compose -f infra/docker_compose/docker-compose.yml logs

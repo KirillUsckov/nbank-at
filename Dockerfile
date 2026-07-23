@@ -6,7 +6,7 @@ FROM maven:3.9.12-eclipse-temurin-21-alpine
 # Дефолтные значения аргументов, передаваемых в докер
 ARG TEST_PROFILE=api
 ARG API_BASE_URL=http://localhost:4111
-ARG UI_BASE_URL=http://localhost:3000
+ARG UI_BASE_URL=http://localhost:80
 ARG SELENOID_URL
 ARG SELENOID_UI_URL
 
@@ -24,7 +24,7 @@ WORKDIR /app
 COPY pom.xml .
 
 # Загрузка и кэширование зависимостей
-RUN mvn dependency:go-offline
+RUN mvn -B --no-transfer-progress dependency:go-offline
 
 # Копирование всего проекта
 COPY . .

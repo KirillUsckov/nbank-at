@@ -10,26 +10,27 @@ import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
 import ru.kduskov.common.storage.SessionStorage;
-import ru.kduskov.ui.models.UserModel;
 import ru.kduskov.ui.pages.DashboardPage;
 import ru.kduskov.ui.pages.TransferPage;
 import ru.kduskov.ui.steps.BrowserSteps;
 import ui.BaseUiTest;
 
-import static common.Constans.*;
-import static ru.kduskov.api.enums.BankAlerts.*;
+import static common.Constans.FIRST_ACC_ID;
+import static common.Constans.FIRST_USER_ID;
+import static common.Constans.SECOND_USER_ID;
+import static ru.kduskov.api.enums.BankAlerts.FILL_ALL_FIELDS_AND_CONFIRM;
+import static ru.kduskov.api.enums.BankAlerts.SUCCESSFULLY_TRANSFERRED_TO_ACCOUNT;
+import static ru.kduskov.api.enums.BankAlerts.RECIPIENT_NAME_DOES_NOT_MATCH_REGISTERED_NAME;
 
 public class TransferMoneyUiTest extends BaseUiTest {
     private AccountResponseBody firstUserAccount;
     private AccountResponseBody firstUserSecondAccount;
-    private UserModel firstUser;
     private AccountAssertionSteps accountAssertionSteps;
     private final DashboardPage dashboardPage = new DashboardPage();
     private final TransferPage transferPage = new TransferPage();
 
     public void setUpTestData() {
         var testData = TransactionTestData.getAccountWithDeposit(FIRST_USER_ID, FIRST_ACC_ID, 50_000);
-        firstUser = testData.getUser();
         firstUserAccount = testData.getAccount();
         firstUserSecondAccount = TransactionTestData.getUserAccount(FIRST_USER_ID, SECOND_USER_ID).getAccount();
     }

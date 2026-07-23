@@ -20,7 +20,7 @@ public class AccountDaoAssert extends BaseDbAssert<AccountDaoAssert, AccountDao>
                 .balanceEquals(expected.getBalance())
                 .idEquals(expected.getId())
                 .dateCreatedEquals(expected.getCreatedAt());
-        if(isDateUpdatedEquals) {
+        if (isDateUpdatedEquals) {
             assertion.dateUpdatedEquals(expected.getUpdatedAt());
         } else {
             assertion.dateUpdatedAfter(expected.getUpdatedAt());
@@ -29,17 +29,29 @@ public class AccountDaoAssert extends BaseDbAssert<AccountDaoAssert, AccountDao>
     }
 
     public AccountDaoAssert customerIdEquals(Long expectedCustomerId) {
-        isEqualTo(actual.getCustomerId(), expectedCustomerId, String.format("Expected customerId %s but was %s", expectedCustomerId, actual.getCustomerId()));
+        isEqualTo(
+                actual.getCustomerId(),
+                expectedCustomerId,
+                String.format("Expected customerId %s but was %s", expectedCustomerId, actual.getCustomerId())
+        );
         return this;
     }
 
     public AccountDaoAssert accountNumberEquals(String expectedAccNumber) {
-        isEqualTo(actual.getAccountNumber(), expectedAccNumber, String.format("Expected account number %s but was %s", expectedAccNumber, actual.getAccountNumber()));
+        isEqualTo(
+                actual.getAccountNumber(),
+                expectedAccNumber,
+                String.format("Expected account number %s but was %s", expectedAccNumber, actual.getAccountNumber())
+        );
         return this;
     }
 
     public AccountDaoAssert balanceEquals(BigDecimal expectedBalance) {
-        isEqualTo(actual.getBalance().doubleValue(), expectedBalance.doubleValue(), String.format("Expected balance %s but was %s", expectedBalance, actual.getBalance()));
+        isEqualTo(
+                actual.getBalance().doubleValue(),
+                expectedBalance.doubleValue(),
+                String.format("Expected balance %s but was %s", expectedBalance, actual.getBalance())
+        );
         return this;
     }
 }

@@ -56,7 +56,7 @@ public class SqlSteps {
     }
 
     public static AccountDao getAccountByAccountNumber(String accountNumber) {
-        var optAccount =SqlSteps.findAccountByAccountNumber(accountNumber);
+        var optAccount = SqlSteps.findAccountByAccountNumber(accountNumber);
         OptionalAssert.assertThat(optAccount).isPresent();
         return optAccount.get();
     }

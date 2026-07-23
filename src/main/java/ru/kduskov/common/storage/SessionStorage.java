@@ -6,7 +6,6 @@ import ru.kduskov.ui.models.UserModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SessionStorage {
     /*
@@ -19,11 +18,15 @@ public class SessionStorage {
         слабые ссылки на объекты ThreadLocal, значения - сильные ссылки на соответствующие объекты SessionStorage
     */
     private static final ThreadLocal<SessionStorage> INSTANCE = ThreadLocal.withInitial(SessionStorage::new);
+
     private final LinkedHashMap<String, UserModel> userMap = new LinkedHashMap<>();
+
     private final LinkedHashMap<String, UserSteps> userStepsMap = new LinkedHashMap<>();
+
     private final LinkedHashMap<String, List<AccountResponseBody>> accountMap = new LinkedHashMap<>();
 
     private SessionStorage() {
+
     }
 
     public static SessionStorage getInstance() {
@@ -56,14 +59,13 @@ public class SessionStorage {
     }
 
     public static UserModel getUser(int idx) {
-        var key = getInstance().userMap.keySet().toArray()[idx-1];
+        var key = getInstance().userMap.keySet().toArray()[idx - 1];
         return getInstance().userMap.get(key);
     }
 
     public static UserSteps getUserSteps(int idx) {
         return getInstance().userStepsMap.get(getInstance().userStepsMap.keySet().stream().toList().get(idx - 1));
     }
-
 
     public static UserSteps getUserSteps(String username) {
         return getInstance().userStepsMap.get(username);

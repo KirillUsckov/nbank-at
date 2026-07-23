@@ -2,7 +2,6 @@ package ru.kduskov.common.assertions;
 
 import lombok.AllArgsConstructor;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertions;
 
 import java.util.Optional;
 

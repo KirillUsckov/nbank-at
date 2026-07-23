@@ -5,9 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import ru.kduskov.api.models.body.response.BaseResponse;
-import ru.kduskov.api.models.body.response.Transaction;
-
-import java.util.List;
 
 @Data
 @Jacksonized

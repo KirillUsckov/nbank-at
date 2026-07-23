@@ -1,0 +1,48 @@
+name: Build and publish Docker image
+
+on:
+  push:
+    paths:
+      - "src/**"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-publish:
+    name: Build, check and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: "21"
+          cache: maven
+
+      - name: Make scripts executable
+        run: |
+          chmod +x ./mvnw
+          chmod +x ./infra/docker_compose/push_docker.sh
+
+      - name: Build project
+        run: ./mvnw -B --no-transfer-progress clean package -DskipTests
+
+      - name: Run Checkstyle
+        run: ./mvnw -B --no-transfer-progress checkstyle:check
+
+      - name: Build Docker image
+        run: docker build -t nbank-at:${{ github.sha }} .
+
+      - name: Push Docker image
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          DOCKERHUB_USERNAME: kirberia
+          IMAGE_NAME: nbank-at
+        run: ./infra/docker_compose/push_docker.sh "${{ github.sha }}"

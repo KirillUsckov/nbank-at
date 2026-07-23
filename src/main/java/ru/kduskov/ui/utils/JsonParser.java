@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 @UtilityClass
 public final class JsonParser {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static <T> T parse(String resourcePath, Class<T> clazz) {
         var is = Thread.currentThread()
@@ -20,7 +19,7 @@ public final class JsonParser {
         }
 
         try {
-            return mapper.readValue(is, clazz);
+            return MAPPER.readValue(is, clazz);
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse JSON: " + resourcePath, e);
         }

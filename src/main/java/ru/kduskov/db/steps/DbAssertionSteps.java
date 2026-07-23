@@ -2,7 +2,6 @@ package ru.kduskov.db.steps;
 
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.enums.TransactionType;
-import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBody;
 import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
 import ru.kduskov.db.assertions.DbAssertions;
@@ -24,7 +23,10 @@ public class DbAssertionSteps {
         assertions.assertThat(customerDao).matches(userProfileResponseBody);
     }
 
-    public void assertCustomerDaoMatchChangeUserProfileResponse(CustomerDao customerDao, ChangeUserProfileResponseBody changeUserProfileResponseBody) {
+    public void assertCustomerDaoMatchChangeUserProfileResponse(
+            CustomerDao customerDao,
+            ChangeUserProfileResponseBody changeUserProfileResponseBody
+    ) {
         assertions.assertThat(customerDao).matches(changeUserProfileResponseBody.getCustomer());
     }
 
@@ -36,7 +38,14 @@ public class DbAssertionSteps {
         assertions.assertThat(actual).isEqualTo(expected, ignoreDateUpdated);
     }
 
-    public void assertTransactionDaoEquals(TransactionDao actual, Long id, Long senderAccountId, Long receiverAccountId, BigDecimal amount, TransactionType type) {
+    public void assertTransactionDaoEquals(
+            TransactionDao actual,
+            Long id,
+            Long senderAccountId,
+            Long receiverAccountId,
+            BigDecimal amount,
+            TransactionType type
+    ) {
         assertions.assertThat(actual).isEqualTo(id, senderAccountId, receiverAccountId, amount, type);
     }
 }

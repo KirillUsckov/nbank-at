@@ -12,10 +12,23 @@ import ru.kduskov.db.models.Condition;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data
@@ -61,7 +74,7 @@ public class DBRequest {
         var sql = buildSQL();
 
         try (Connection connection = getConnection();
-            var statement = connection.prepareStatement(sql)) {
+                var statement = connection.prepareStatement(sql)) {
 
             setParameters(statement);
 
@@ -77,8 +90,7 @@ public class DBRequest {
         var sql = buildSQL();
 
         try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
+                PreparedStatement statement = connection.prepareStatement(sql)) {
             setParameters(statement);
             return statement.executeUpdate();
         } catch (SQLException e) {
@@ -150,7 +162,9 @@ public class DBRequest {
     private <T> T mapToBasicType(ResultSet rs, Class<T> clazz) throws SQLException {
         var value = rs.getObject(1);
 
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         if (clazz == String.class) {
             return clazz.cast(value.toString());
@@ -161,8 +175,12 @@ public class DBRequest {
         } else if (clazz == Double.class || clazz == double.class) {
             return clazz.cast(((Number) value).doubleValue());
         } else if (clazz == Boolean.class || clazz == boolean.class) {
-            if (value instanceof Boolean) return clazz.cast(value);
-            if (value instanceof Number) return clazz.cast(((Number) value).intValue() != 0);
+            if (value instanceof Boolean) {
+                return clazz.cast(value);
+            }
+            if (value instanceof Number) {
+                return clazz.cast(((Number) value).intValue() != 0);
+            }
             return clazz.cast(Boolean.parseBoolean(value.toString()));
         } else if (clazz == Float.class || clazz == float.class) {
             return clazz.cast(((Number) value).floatValue());
@@ -222,7 +240,9 @@ public class DBRequest {
     }
 
     private Object convertValue(Object value, Class<?> targetType) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         if (targetType.isEnum()) {
             return convertToEnum(value, targetType);
@@ -341,7 +361,9 @@ public class DBRequest {
             sql.append(" WHERE ");
 
             for (int i = 0; i < conditions.size(); i++) {
-                if (i > 0) sql.append(" AND ");
+                if (i > 0)  {
+                    sql.append(" AND ");
+                }
                 Condition condition = conditions.get(i);
                 sql.append(buildCondition(condition));
             }
@@ -413,10 +435,17 @@ public class DBRequest {
 
     // Вспомогательные методы
     private boolean isBasicType(Class<?> clazz) {
-        return clazz == String.class || clazz == Integer.class || clazz == int.class ||
-                clazz == Long.class || clazz == long.class || clazz == Double.class ||
-                clazz == double.class || clazz == Boolean.class || clazz == boolean.class ||
-                clazz == Float.class || clazz == float.class;
+        return clazz == String.class
+                || clazz == Integer.class
+                || clazz == int.class
+                || clazz == Long.class
+                || clazz == long.class
+                || clazz == Double.class
+                || clazz == double.class
+                || clazz == Boolean.class
+                || clazz == boolean.class
+                || clazz == Float.class
+                || clazz == float.class;
     }
 
     private Map<String, String> createColumnToFieldMap(Class<?> clazz, ResultSetMetaData metaData)
@@ -471,8 +500,8 @@ public class DBRequest {
                 if (columnAnnotation.ignore()) {
                     continue;
                 }
-                if (!columnAnnotation.name().isEmpty() &&
-                        columnAnnotation.name().equalsIgnoreCase(columnName)) {
+                if (!columnAnnotation.name().isEmpty()
+                        && columnAnnotation.name().equalsIgnoreCase(columnName)) {
                     return field.getName();
                 }
             }
@@ -483,8 +512,8 @@ public class DBRequest {
             }
 
             // Проверяем snake_case -> camelCase
-            if (fieldName.equals(columnName.replace("_", "")) ||
-                    fieldName.replace("_", "").equals(columnName.replace("_", ""))) {
+            if (fieldName.equals(columnName.replace("_", ""))
+                    || fieldName.replace("_", "").equals(columnName.replace("_", ""))) {
                 return field.getName();
             }
         }
@@ -512,7 +541,7 @@ public class DBRequest {
         String sql = buildSQL();
 
         try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
 
             for (Map<String, Object> rowData : batchData) {
                 int paramIndex = 1;

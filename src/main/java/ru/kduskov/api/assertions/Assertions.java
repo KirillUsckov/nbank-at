@@ -21,6 +21,7 @@ public class Assertions {
     public AccountAssert assertThat(AccountResponseBody account) {
         return AccountAssert.assertThat(account, softly);
     }
+
     public DepositAssert assertThat(DepositResponseBody account) {
         return DepositAssert.assertThat(account, softly);
     }

@@ -10,10 +10,15 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class TransferPage extends BasePage {
     private final SelectElement accountsSelect = new SelectElement(Selectors.byXpath("//*[contains(@class,'account-selector')]"));
-    private final InputElement amountInput = new InputElement(Selectors.byAttribute("placeholder","Enter amount"));
-    private final InputElement recipientNameInput = new InputElement(Selectors.byAttribute("placeholder","Enter recipient name"));
-    private final InputElement recipientAccountNumberInput = new InputElement(Selectors.byAttribute("placeholder","Enter recipient account number"));
+
+    private final InputElement amountInput = new InputElement(Selectors.byAttribute("placeholder", "Enter amount"));
+
+    private final InputElement recipientNameInput = new InputElement(Selectors.byAttribute("placeholder", "Enter recipient name"));
+
+    private final InputElement recipientAccountNumberInput = new InputElement(Selectors.byAttribute("placeholder", "Enter recipient account number"));
+
     private final SelenideElement sendTransferButton = $(Selectors.byText("\uD83D\uDE80 Send Transfer"));
+
     private final SelenideElement confirmTransferCheckbox = $(Selectors.byId("confirmCheck"));
 
     @Override
@@ -30,7 +35,7 @@ public class TransferPage extends BasePage {
         accountsSelect.waitOptionsWithValue();
         var availableAccounts =  accountsSelect.getOptionsText();
         var accountPart = String.format("%s (Balance:", accountNumber);
-        var targetAccount = availableAccounts.stream().filter(acc->acc.contains(accountPart)).findFirst().orElseThrow();
+        var targetAccount = availableAccounts.stream().filter(acc -> acc.contains(accountPart)).findFirst().orElseThrow();
         accountsSelect.select(targetAccount);
     }
 

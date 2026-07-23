@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class SelectElement extends BaseElement{
+public class SelectElement extends BaseElement {
     public SelectElement(By locator) {
         super(locator);
     }

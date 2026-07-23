@@ -1,6 +1,9 @@
 package ru.kduskov.db.models.dao;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ru.kduskov.db.annotations.Column;
 
 import java.math.BigDecimal;
