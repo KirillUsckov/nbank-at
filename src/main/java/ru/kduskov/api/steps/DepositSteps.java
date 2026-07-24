@@ -1,5 +1,6 @@
 package ru.kduskov.api.steps;
 
+import io.qameta.allure.Step;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import ru.kduskov.api.enums.Endpoint;
@@ -22,6 +23,7 @@ public final class DepositSteps {
      * @param userAuthToken
      * @param deposit
      */
+    @Step("Send big deposit")
     public static void sendDepositWithAmountValidation(AccountResponseBody account, String userAuthToken, double deposit) {
         double remainingAmount = deposit;
         while (remainingAmount > 0) {

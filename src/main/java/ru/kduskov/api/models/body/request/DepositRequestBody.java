@@ -17,4 +17,9 @@ public class DepositRequestBody extends BaseRequest {
     private Long accountId;
     @GeneratingRule(valueKey = GenerationsRules.DEPOSIT_BALANCE)
     private Double amount;
+
+    @Override
+    public String toString() {
+        return "DepositRequestBody: accountId=" + accountId + ", amount=" + amount;
+    }
 }

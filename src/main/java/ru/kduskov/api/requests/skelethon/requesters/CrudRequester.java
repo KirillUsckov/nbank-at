@@ -1,5 +1,6 @@
 package ru.kduskov.api.requests.skelethon.requesters;
 
+import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
@@ -11,6 +12,7 @@ import ru.kduskov.api.requests.skelethon.HttpRequest;
 
 import static io.restassured.RestAssured.given;
 
+
 public class CrudRequester extends HttpRequest implements CrudEndpointInterface {
     public CrudRequester(RequestSpecification requestSpecification, ResponseSpecification responseSpecification, Endpoint endpoint) {
         super(requestSpecification, responseSpecification, endpoint);
@@ -18,6 +20,36 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
 
     @Override
     public ValidatableResponse post(BaseRequest body) {
+        return post(endpoint, body);
+    }
+
+    @Override
+    public ValidatableResponse post() {
+        return post(endpoint, null);
+    }
+
+    @Override
+    public ValidatableResponse put(BaseRequest body) {
+        return put(endpoint, body);
+    }
+
+    @Override
+    public ValidatableResponse get() {
+        return get(endpoint);
+    }
+
+    @Override
+    public ValidatableResponse get(String urlParam) {
+        return get(endpoint, urlParam);
+    }
+
+    @Override
+    public ValidatableResponse delete(long id) {
+        return delete(endpoint, id);
+    }
+
+    @Step("POST {endpoint} with body {body}")
+    private ValidatableResponse post(Endpoint endpoint, BaseRequest body) {
         return given()
                 .spec(requestSpecification)
                 .body(body == null ? "" : body)
@@ -27,13 +59,8 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
                 .spec(responseSpecification);
     }
 
-    @Override
-    public ValidatableResponse post() {
-        return post(null);
-    }
-
-    @Override
-    public ValidatableResponse put(BaseRequest body) {
+    @Step("PUT {endpoint} with body {body}")
+    private ValidatableResponse put(Endpoint endpoint, BaseRequest body) {
         return given()
                 .spec(requestSpecification)
                 .contentType(ContentType.JSON)
@@ -44,8 +71,8 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
                 .spec(responseSpecification);
     }
 
-    @Override
-    public ValidatableResponse get() {
+    @Step("GET {endpoint}")
+    private ValidatableResponse get(Endpoint endpoint) {
         return given()
                 .spec(requestSpecification)
                 .get(endpoint.getEndpoint())
@@ -54,8 +81,8 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
                 .spec(responseSpecification);
     }
 
-    @Override
-    public ValidatableResponse get(String urlParam) {
+    @Step("GET {endpoint} with query params {urlParam}")
+    private ValidatableResponse get(Endpoint endpoint, String urlParam) {
         var url = endpoint.getUrlWithParam(urlParam);
         return given()
                 .spec(requestSpecification)
@@ -65,8 +92,8 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
                 .spec(responseSpecification);
     }
 
-    @Override
-    public ValidatableResponse delete(long id) {
+    @Step("DELETE {endpoint} for id {id}")
+    private ValidatableResponse delete(Endpoint endpoint, long id) {
         return given()
                 .spec(requestSpecification)
                 .delete(endpoint.getEndpoint() + id)

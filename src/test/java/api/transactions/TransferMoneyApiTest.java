@@ -1,5 +1,9 @@
 package api.transactions;
 
+import io.qameta.allure.Step;
+import org.junit.jupiter.api.DisplayName;
+import ru.kduskov.api.utils.TransactionsListUtils;
+import ru.kduskov.common.assertions.OptionalAssert;
 import support.ExpectedAccountState;
 import support.TransactionTestData;
 import support.TransferDbAssertions;
@@ -27,10 +31,14 @@ import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
 
+import java.util.Optional;
+
 import static common.Constans.FIRST_USER_ID;
 import static common.Constans.FIRST_ACC_ID;
 import static common.Constans.SECOND_ACC_ID;
 import static common.Constans.SECOND_USER_ID;
+import static ru.kduskov.api.enums.TransactionType.TRANSFER_IN;
+import static ru.kduskov.api.enums.TransactionType.TRANSFER_OUT;
 
 public class TransferMoneyApiTest extends BaseTest {
     private AccountResponseBody firstUserAccount;
@@ -40,14 +48,15 @@ public class TransferMoneyApiTest extends BaseTest {
     private AccountAssertionSteps accountAssertionSteps;
     private DbAssertionSteps dbAssertionSteps;
 
-    public void setUpTestData() {
+    @Step("Prepare funded sender account")
+    public void prepareFundedSenderAccount() {
         var testData = TransactionTestData.getAccountWithDeposit(FIRST_USER_ID, FIRST_ACC_ID, 50_000);
         firstUser = testData.getUser();
         firstUserAccount = testData.getAccount();
     }
 
     @BeforeEach
-    public void initAssertionClasses() {
+    public void initializeAssertionSteps() {
         this.transferAssertionSteps = new TransferAssertionSteps(softly);
         this.accountAssertionSteps = new AccountAssertionSteps(softly);
         this.dbAssertionSteps = new DbAssertionSteps(softly);
@@ -56,8 +65,9 @@ public class TransferMoneyApiTest extends BaseTest {
     @ParameterizedTest
     @UserSession(accountsNumber = 2)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
-    public void checkUserCanMakeTransferToHisAnotherAccountWithValidAmountIfMoneyEnough(double amount) {
-        setUpTestData();
+    @DisplayName("User transfers money to another own account when balance is sufficient")
+    public void shouldTransferMoneyToAnotherOwnAccountWhenBalanceIsSufficient(double amount) {
+        prepareFundedSenderAccount();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts().getAccounts();
@@ -77,23 +87,14 @@ public class TransferMoneyApiTest extends BaseTest {
         this.accountAssertionSteps.assertBalanceWasDecreased(
                 accountsBeforeRequest, accountsAfterRequest, firstUserAccount, amount);
 
-        var senderTransactions = userSteps.getAccountTransactions(firstUserAccount.getId());
-        var receiverTransactions = userSteps.getAccountTransactions(firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, amount, firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, amount, firstUserAccount.getId());
+        var senderTrans = userSteps.getAccountTransactions(firstUserAccount.getId());
+        var receiverTrans = userSteps.getAccountTransactions(firstUserSecondAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(senderTrans, TRANSFER_OUT, amount, firstUserSecondAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(receiverTrans, TRANSFER_IN, amount, firstUserAccount.getId());
 
-        var senderTrxId = senderTransactions.getTransactions()
-                .stream()
-                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_OUT))
-                .findFirst()
-                .get()
-                .getId();
-        var receiverTrxId = receiverTransactions.getTransactions()
-                .stream()
-                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_IN))
-                .findFirst()
-                .get()
-                .getId();
+        var senderTrxId = TransactionsListUtils.findFirstTransactionWithType(senderTrans.getTransactions(), TRANSFER_OUT).getId();
+        var receiverTrxId = TransactionsListUtils.findFirstTransactionWithType(receiverTrans.getTransactions(), TRANSFER_IN).getId();
+
         TransferDbAssertions.assertTransferTransactionsPersisted(this.dbAssertionSteps, transferResponse, senderTrxId, receiverTrxId);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
@@ -106,8 +107,9 @@ public class TransferMoneyApiTest extends BaseTest {
     @ParameterizedTest
     @UserSession(usersNumber = 2, accountsNumber = 2)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
-    public void checkUserCanMakeTransferToAnotherUserAccountWithValidAmountIfMoneyEnough(double amount) {
-        setUpTestData();
+    @DisplayName("Transfer to another user's account succeeds when balance is sufficient")
+    public void shouldTransferMoneyToAnotherUserWhenBalanceIsSufficient(double amount) {
+        prepareFundedSenderAccount();
         var senderAccountsBefore = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts().getAccounts();
         var receiverAccountsBefore = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts().getAccounts();
         var secondUserAccount = SessionStorage.getUserAccounts(SECOND_USER_ID).stream().findFirst().orElseThrow();
@@ -134,21 +136,22 @@ public class TransferMoneyApiTest extends BaseTest {
         var senderTransactions = SessionStorage.getUserSteps(FIRST_USER_ID).getAccountTransactions(firstUserAccount.getId());
         var receiverTransactions = SessionStorage.getUserSteps(SECOND_USER_ID).getAccountTransactions(secondUserAccount.getId());
 
-        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, amount, secondUserAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, amount, firstUserAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(
+                senderTransactions,
+                TRANSFER_OUT,
+                amount,
+                secondUserAccount.getId()
+        );
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(
+                receiverTransactions,
+                TRANSFER_IN,
+                amount,
+                firstUserAccount.getId()
+        );
 
-        var senderTrxId = senderTransactions.getTransactions()
-                .stream()
-                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_OUT))
-                .findFirst()
-                .get()
-                .getId();
-        var receiverTrxId = receiverTransactions.getTransactions()
-                .stream()
-                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_IN))
-                .findFirst()
-                .get()
-                .getId();
+        var senderTrxId = TransactionsListUtils.findFirstTransactionWithType(senderTransactions.getTransactions(), TRANSFER_OUT).getId();
+        var receiverTrxId = TransactionsListUtils.findFirstTransactionWithType(receiverTransactions.getTransactions(), TRANSFER_IN).getId();
+
         TransferDbAssertions.assertTransferTransactionsPersisted(this.dbAssertionSteps, transferResponse, senderTrxId, receiverTrxId);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
@@ -161,8 +164,9 @@ public class TransferMoneyApiTest extends BaseTest {
     @ParameterizedTest
     @UserSession(usersNumber = 2, accountsNumber = 1)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
-    public void checkUserCantMakeTransferToAnotherUserAccountWithValidAmountIfMoneyNotEnough(double amount) {
-        setUpTestData();
+    @DisplayName("Transfer to another user is rejected when balance is insufficient")
+    public void shouldRejectTransferToAnotherUserWhenBalanceIsInsufficient(double amount) {
+        prepareFundedSenderAccount();
         var accountWithNoMoney = AccountSteps.createAccount(firstUser.getToken());
         var senderAccountsBefore = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var receiverAccountsBefore = SessionStorage.getUserSteps(SECOND_USER_ID).getUserAccounts();
@@ -188,7 +192,7 @@ public class TransferMoneyApiTest extends BaseTest {
                 receiverAccountsBefore, receiverAccountsAfter, secondUserAccount);
 
         var accountWithNoMoneyTransactions = SessionStorage.getUserSteps(FIRST_USER_ID).getAccountTransactions(accountWithNoMoney.getId());
-        this.accountAssertionSteps.assertAccountHasNoTransactionsWithType(accountWithNoMoneyTransactions, TransactionType.TRANSFER_OUT);
+        this.accountAssertionSteps.assertAccountHasNoTransactionsWithType(accountWithNoMoneyTransactions, TRANSFER_OUT);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(accountWithNoMoney.getAccountNumber());
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(secondUserAccount.getAccountNumber());
@@ -200,8 +204,9 @@ public class TransferMoneyApiTest extends BaseTest {
     @ParameterizedTest
     @UserSession(accountsNumber = 2)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
-    public void checkUserCantMakeTransferToOwnUserAccountWithValidAmountIfMoneyNotEnough(double amount) {
-        setUpTestData();
+    @DisplayName("Transfer between own accounts is rejected when balance is insufficient")
+    public void shouldRejectTransferBetweenOwnAccountsWhenBalanceIsInsufficient(double amount) {
+        prepareFundedSenderAccount();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountWithNoMoney = AccountSteps.createAccount(firstUser.getToken());
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
@@ -223,7 +228,7 @@ public class TransferMoneyApiTest extends BaseTest {
                 accountsBeforeRequest, accountsAfterRequest, firstUserSecondAccount);
 
         var accountWithNoMoneyTransactions = SessionStorage.getUserSteps(FIRST_USER_ID).getAccountTransactions(accountWithNoMoney.getId());
-        this.accountAssertionSteps.assertAccountHasNoTransactionsWithType(accountWithNoMoneyTransactions, TransactionType.TRANSFER_OUT);
+        this.accountAssertionSteps.assertAccountHasNoTransactionsWithType(accountWithNoMoneyTransactions, TRANSFER_OUT);
 
         var senderDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(accountWithNoMoney.getAccountNumber());
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
@@ -235,8 +240,9 @@ public class TransferMoneyApiTest extends BaseTest {
     @ParameterizedTest
     @UserSession(accountsNumber = 2)
     @ValueSource(doubles = {-0.01, 0})
-    public void checkUserCantMakeTransferWithTooLowAmount(double amount) {
-        setUpTestData();
+    @DisplayName("Transfer is rejected when amount is zero or negative")
+    public void shouldRejectTransferWhenAmountIsNotPositive(double amount) {
+        prepareFundedSenderAccount();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
@@ -265,8 +271,9 @@ public class TransferMoneyApiTest extends BaseTest {
 
     @Test
     @UserSession(accountsNumber = 2)
-    public void checkUserCantMakeTransferWithTooBigAmount() {
-        setUpTestData();
+    @DisplayName("Transfer is rejected when amount exceeds the maximum limit")
+    public void shouldRejectTransferWhenAmountExceedsMaximumLimit() {
+        prepareFundedSenderAccount();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
@@ -293,8 +300,9 @@ public class TransferMoneyApiTest extends BaseTest {
 
     @Test
     @UserSession(accountsNumber = 2)
-    public void checkUserCantMakeTransferToNotExistedAccount() {
-        setUpTestData();
+    @DisplayName("Transfer is rejected when receiver account does not exist")
+    public void shouldRejectTransferWhenReceiverAccountDoesNotExist() {
+        prepareFundedSenderAccount();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var expectedSenderDbAccount = ExpectedAccountState.unchanged(firstUserAccount);
@@ -317,8 +325,9 @@ public class TransferMoneyApiTest extends BaseTest {
 
     @Test
     @UserSession(accountsNumber = 2)
-    public void checkUserCantMakeTransferFromNotExistedAccount() {
-        setUpTestData();
+    @DisplayName("Transfer is rejected when sender account does not exist")
+    public void shouldRejectTransferWhenSenderAccountDoesNotExist() {
+        prepareFundedSenderAccount();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var expectedReceiverDbAccount = ExpectedAccountState.unchanged(firstUserSecondAccount);

@@ -1,5 +1,8 @@
 package api.transactions;
 
+import io.qameta.allure.Step;
+import org.junit.jupiter.api.DisplayName;
+import ru.kduskov.api.utils.TransactionsListUtils;
 import support.ExpectedAccountState;
 import support.TransactionTestData;
 import support.TransferDbAssertions;
@@ -38,7 +41,8 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
     private AccountAssertionSteps accountAssertionSteps;
     private DbAssertionSteps dbAssertionSteps;
 
-    public void setUpTestData() {
+    @Step("Prepare funded sender account")
+    public void prepareFundedSenderAccount() {
         var testData = TransactionTestData.getAccountWithDeposit(FIRST_USER_ID, FIRST_ACC_ID, 50_000);
         firstUser = testData.getUser();
         firstUserAccount = testData.getAccount();
@@ -55,8 +59,9 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
     @UserSession(accountsNumber = 2)
     @FraudMockStatus(FraudStatus.APPROVED)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
-    public void shouldExecuteTransferWhenFraudApproved(double amount) {
-        setUpTestData();
+    @DisplayName("Transfer is processed when fraud check is approved")
+    public void shouldProcessTransferWhenFraudCheckIsApproved(double amount) {
+        prepareFundedSenderAccount();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
@@ -77,28 +82,28 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
 
         var senderTransactions = userSteps.getAccountTransactions(firstUserAccount.getId());
         var receiverTransactions = userSteps.getAccountTransactions(firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferOut(
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(
                 senderTransactions,
+                TransactionType.TRANSFER_OUT,
                 transferRequestBody.getAmount(),
                 firstUserSecondAccount.getId()
         );
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(
                 receiverTransactions,
+                TransactionType.TRANSFER_IN,
                 transferRequestBody.getAmount(),
                 firstUserAccount.getId()
         );
 
-        var senderTrxId = senderTransactions.getTransactions()
-                .stream()
-                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_OUT))
-                .findFirst()
-                .get()
+        var senderTrxId = TransactionsListUtils.findFirstTransactionWithType(
+                        senderTransactions.getTransactions(),
+                        TransactionType.TRANSFER_OUT
+                )
                 .getId();
-        var receiverTrxId = receiverTransactions.getTransactions()
-                .stream()
-                .filter(tr -> tr.getType().equals(TransactionType.TRANSFER_IN))
-                .findFirst()
-                .get()
+        var receiverTrxId = TransactionsListUtils.findFirstTransactionWithType(
+                        receiverTransactions.getTransactions(),
+                        TransactionType.TRANSFER_IN
+                )
                 .getId();
         TransferDbAssertions.assertTransferTransactionsPersisted(this.dbAssertionSteps, transferResponse, senderTrxId, receiverTrxId);
 
@@ -113,8 +118,9 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
     @UserSession(accountsNumber = 2)
     @FraudMockStatus(FraudStatus.MANUAL_REVIEW_REQUIRED)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
-    public void shouldNotExecuteTransferWhenManualReviewIsRequired(double amount) {
-        setUpTestData();
+    @DisplayName("Transfer is not processed when manual review is required")
+    public void shouldNotProcessTransferWhenManualReviewIsRequired(double amount) {
+        prepareFundedSenderAccount();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
@@ -123,7 +129,7 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var transferResponse = TransferSteps.sendTransferWithFraudRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
-        assertTransferNotProcessed(
+        assertTransferWasNotProcessed(
                 transferRequestBody,
                 transferResponse,
                 accountsBeforeRequest,
@@ -137,8 +143,9 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
     @UserSession(accountsNumber = 2)
     @FraudMockStatus(FraudStatus.VERIFICATION_REQUIRED)
     @ValueSource(doubles = {0.01, 9999.99, 10_000})
-    public void shouldNotExecuteTransferWhenVerificationIsRequired(double amount) {
-        setUpTestData();
+    @DisplayName("Transfer is not processed when additional verification is required")
+    public void shouldNotProcessTransferWhenVerificationIsRequired(double amount) {
+        prepareFundedSenderAccount();
         firstUserSecondAccount = SessionStorage.getUserAccount(firstUser.getUsername(), SECOND_ACC_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
 
@@ -148,7 +155,7 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var transferResponse = TransferSteps.sendTransferWithFraudRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
 
-        assertTransferNotProcessed(
+        assertTransferWasNotProcessed(
                 transferRequestBody,
                 transferResponse,
                 accountsBeforeRequest,
@@ -158,7 +165,7 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
         );
     }
 
-    private void assertTransferNotProcessed(
+    private void assertTransferWasNotProcessed(
             TransferRequestBody transferRequestBody,
             TransferResponseBody transferResponse,
             CustomerAccountsResponseBody accountsBeforeRequest,

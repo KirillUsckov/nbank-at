@@ -2,6 +2,7 @@ package api;
 
 import common.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -33,18 +34,19 @@ public class ChangeUserProfileApiTest extends BaseTest {
 
     @Test
     @UserSession
-    public void checkUserCanChangeProfileNameByValidName() {
+    @DisplayName("Profile name is updated when the new name is valid")
+    public void shouldUpdateProfileNameWhenNameIsValid() {
         var requestBody = RequestDataGenerator.generateFilledObject(ChangeUserProfileRequestBody.class);
 
-        var changeUserProfileResponse = SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfile(requestBody);
+        var changeUserProfileResponse = SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfile(requestBody, ResponseSpecs.ok());
 
         // TODO: разобраться с тем, почему если в ChangeUserProfileResponseBody сразу поля пользователя, то message - пуст
         this.userProfileAssertionSteps.assertChangeUserProfileResponse(requestBody, changeUserProfileResponse);
 
-        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
+        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
         this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(requestBody, customerAfterRequest);
 
-        var expectedCustomerOpt = SqlSteps.findCustomerByUsername(changeUserProfileResponse.getCustomer().getUsername());
+        var expectedCustomerOpt = SqlSteps.findCustomerByUsername(changeUserProfileResponse.getUsername());
         this.userProfileAssertionSteps.assertOptionalIsPresent(expectedCustomerOpt);
         var expectedCustomer = expectedCustomerOpt.get();
 
@@ -53,18 +55,19 @@ public class ChangeUserProfileApiTest extends BaseTest {
 
     @ParameterizedTest
     @UserSession
-    @MethodSource("invalidNames")
-    public void checkUserCantChangeProfileNameByInvalidName(String name) {
-        var customerBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
+    @MethodSource("provideInvalidNames")
+    @DisplayName("Profile name update is rejected when the new name is invalid")
+    public void shouldRejectProfileNameUpdateWhenNameIsInvalid(String name) {
+        var customerBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
 
         var requestBody = ChangeUserProfileRequestBody.builder()
                 .name(name)
                 .build();
 
-        var response = SessionStorage.getUserSteps(FIRST_USER_ID).getChangeUserProfileStringResponse(requestBody, ResponseSpecs.badRequest());
+        var response = SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfile(requestBody, ResponseSpecs.badRequest());
         this.userProfileAssertionSteps.assertMessage(NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY, response.getMessage());
 
-        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
+        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
 
         this.userProfileAssertionSteps.assertCustomerNameMatchesPrevious(customerBeforeRequest, customerAfterRequest);
 
@@ -76,7 +79,7 @@ public class ChangeUserProfileApiTest extends BaseTest {
 
     }
 
-    private static Stream<String> invalidNames() {
+    private static Stream<String> provideInvalidNames() {
         return Stream.of(
                 "",
                 " ",

@@ -13,9 +13,8 @@ public class InputElement extends BaseElement {
     }
 
     public void clearAndSetValue(String value) {
-        $(locator).shouldBe(Condition.enabled).click();
-        $(locator).sendKeys(Keys.chord(Keys.CONTROL, "a"));
-        $(locator).sendKeys(Keys.DELETE);
-        $(locator).setValue(value);
+        $(locator)
+                .shouldBe(Condition.visible, Condition.enabled)
+                .setValue(value);
     }
 }

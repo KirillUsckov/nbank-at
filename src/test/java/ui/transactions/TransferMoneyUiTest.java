@@ -1,11 +1,11 @@
 package ui.transactions;
 
+import io.qameta.allure.Step;
+import ru.kduskov.api.enums.TransactionType;
 import support.TransactionTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.kduskov.api.generators.common.RandomData;
-import ru.kduskov.api.generators.common.RequestDataGenerator;
-import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
@@ -29,7 +29,9 @@ public class TransferMoneyUiTest extends BaseUiTest {
     private final DashboardPage dashboardPage = new DashboardPage();
     private final TransferPage transferPage = new TransferPage();
 
-    public void setUpTestData() {
+
+    @Step("Prepare funded sender account")
+    public void prepareFundedSenderAccount() {
         var testData = TransactionTestData.getAccountWithDeposit(FIRST_USER_ID, FIRST_ACC_ID, 50_000);
         firstUserAccount = testData.getAccount();
         firstUserSecondAccount = TransactionTestData.getUserAccount(FIRST_USER_ID, SECOND_USER_ID).getAccount();
@@ -43,15 +45,16 @@ public class TransferMoneyUiTest extends BaseUiTest {
     @Test
     @UserSession(accountsNumber = 2, isUi = true)
     public void transferMoneySuccessfully() {
-        setUpTestData();
+        prepareFundedSenderAccount();
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts().getAccounts();
         var amount = RandomData.getNumericString(4);
-        var customer = userSteps.getCustomer();
+        var customer = userSteps.getUserProfile();
         var name = customer.getName();
 
         var recipientAccountNumber = firstUserSecondAccount.getAccountNumber();
         dashboardPage.clickMakeTransferButton();
+        BrowserSteps.refresh();
 
         transferPage.waitPageOpened();
         transferPage.selectAccount(firstUserAccount.getAccountNumber());
@@ -73,18 +76,28 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
         var senderTransactions = userSteps.getAccountTransactions(firstUserAccount.getId());
         var receiverTransactions = userSteps.getAccountTransactions(firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, Double.parseDouble(amount), firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, Double.parseDouble(amount), firstUserAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(
+                senderTransactions,
+                TransactionType.TRANSFER_OUT,
+                Double.parseDouble(amount),
+                firstUserSecondAccount.getId()
+        );
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(
+                receiverTransactions,
+                TransactionType.TRANSFER_IN,
+                Double.parseDouble(amount),
+                firstUserAccount.getId()
+        );
     }
 
     @Test
     @UserSession(accountsNumber = 2, isUi = true)
     public void transferMoneyErrorWithoutConfirmCheckbox() {
-        setUpTestData();
+        prepareFundedSenderAccount();
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts();
         var amount = RandomData.getNumericString(4);
-        var customer = userSteps.getCustomer();
+        var customer = userSteps.getUserProfile();
         var name = customer.getName();
 
         var recipientAccountNumber = firstUserSecondAccount.getAccountNumber();
@@ -110,9 +123,7 @@ public class TransferMoneyUiTest extends BaseUiTest {
     @Test
     @UserSession(accountsNumber = 2, isUi = true)
     public void transferMoneyErrorWithMismatchedReceiverName() {
-        setUpTestData();
-        var requestBody = RequestDataGenerator.generateFilledObject(ChangeUserProfileRequestBody.class);
-        SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfile(requestBody);
+        prepareFundedSenderAccount();
 
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts();

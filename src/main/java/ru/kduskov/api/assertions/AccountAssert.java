@@ -1,5 +1,6 @@
 package ru.kduskov.api.assertions;
 
+import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 
@@ -12,6 +13,7 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return new AccountAssert(actual, softly);
     }
 
+    @Step("Check id is {expectedId}")
     public AccountAssert hasId(long expectedId) {
         softly(() ->
                 softly.assertThat(actual.getId())
@@ -21,6 +23,7 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return this;
     }
 
+    @Step("Check balance is {expectedBalance}")
     public AccountAssert hasBalance(double expectedBalance) {
         softly(() ->
                 softly.assertThat(actual.getBalance())
@@ -30,6 +33,7 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return this;
     }
 
+    @Step("Check account number is {expectedAccountNumber}")
     public AccountAssert hasAccountNumber(String expectedAccountNumber) {
         softly(() ->
                 softly.assertThat(actual.getAccountNumber())
@@ -40,31 +44,24 @@ public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody
         return this;
     }
 
+    @Step("Check AccountResponse matches expected {expectedAccount}")
     public AccountAssert matches(AccountResponseBody expectedAccount) {
         return hasId(expectedAccount.getId())
                 .hasBalance(expectedAccount.getBalance())
                 .hasAccountNumber(expectedAccount.getAccountNumber());
     }
 
-    public AccountAssert wasNotChangedComparedTo(AccountResponseBody originalAccount) {
-        return matches(originalAccount);
-    }
-
+    @Step("Check Account balance was increased by {transactionAmount}")
     public AccountAssert wasIncreasedBy(double transactionAmount, AccountResponseBody originalAccount) {
         var expectedBalance = originalAccount.getBalance() + transactionAmount;
         return hasBalance(expectedBalance)
                 .hasAccountNumber(originalAccount.getAccountNumber());
     }
 
-    public AccountAssert wasDencreasedBy(double transactionAmount, AccountResponseBody originalAccount) {
+    @Step("Check Account balance was decreased by {transactionAmount}")
+    public AccountAssert wasDecreasedBy(double transactionAmount, AccountResponseBody originalAccount) {
         var expectedBalance = originalAccount.getBalance() - transactionAmount;
         return hasBalance(expectedBalance)
-                .hasAccountNumber(originalAccount.getAccountNumber());
-    }
-
-    public AccountAssert isValidDepositResponse(long accountId, AccountResponseBody originalAccount) {
-        return hasId(accountId)
-                .hasBalance(originalAccount.getBalance())
                 .hasAccountNumber(originalAccount.getAccountNumber());
     }
 }

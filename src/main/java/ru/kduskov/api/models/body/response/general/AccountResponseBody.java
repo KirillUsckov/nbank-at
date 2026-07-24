@@ -15,4 +15,9 @@ public class AccountResponseBody extends BaseResponse {
     private String accountNumber;
     private Double balance;
     private Double depositAmount;
+
+    @Override
+    public String toString() {
+        return "AccountResponseBody: id = " + id + ", accountNumber = " + accountNumber + ", balance = " + balance + ", deposit = " + depositAmount;
+    }
 }

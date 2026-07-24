@@ -1,6 +1,7 @@
 package ui;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.kduskov.api.generators.common.RandomData;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
@@ -31,7 +32,8 @@ public class ChangeUserProfileUiTest extends BaseUiTest {
     @Test
     @Browser(value = {Browsers.CHROME, Browsers.FIREFOX})
     @UserSession(isUi = true)
-    public void changeNameSuccessfullyWithValidName() {
+    @DisplayName("User name is updated when a valid name is submitted")
+    public void shouldUpdateUserNameWhenNewNameIsValid() {
         headerPanel.clickUserInfo();
         changeNamePage.waitPageOpened();
 
@@ -45,18 +47,19 @@ public class ChangeUserProfileUiTest extends BaseUiTest {
 
         var headerUsername = headerPanel.getUserNameFromUserInfo();
         softly.assertThat(headerUsername).withFailMessage("New username is not equal expected").isEqualTo(newName);
-        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
+        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
         this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(requestBody, customerAfterRequest);
     }
 
     @Test
     @Browser(value = {Browsers.CHROME, Browsers.FIREFOX})
     @UserSession(isUi = true)
-    public void changeNameErrorWithInvalidName() {
+    @DisplayName("User name is not updated when an invalid name is submitted")
+    public void shouldNotUpdateUserNameWhenNewNameIsInvalid() {
         var oldName = headerPanel.getUserNameFromUserInfo();
         headerPanel.clickUserInfo();
         changeNamePage.waitPageOpened();
-        var customerBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
+        var customerBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
 
         var newName = RandomData.getStringAndNumericString(10);
 
@@ -68,7 +71,7 @@ public class ChangeUserProfileUiTest extends BaseUiTest {
 
         var headerUsername = headerPanel.getUserNameFromUserInfo();
         softly.assertThat(headerUsername).withFailMessage("New username is not equal old name").isEqualTo(oldName);
-        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
+        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
         this.userProfileAssertionSteps.assertCustomerNameMatchesPrevious(customerBeforeRequest, customerAfterRequest);
     }
 }

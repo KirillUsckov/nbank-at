@@ -1,5 +1,7 @@
 package api.transactions;
 
+import io.qameta.allure.Step;
+import org.junit.jupiter.api.DisplayName;
 import support.ExpectedAccountState;
 import support.TransactionTestData;
 import common.BaseTest;
@@ -42,7 +44,8 @@ public class MakeDepositApiTest extends BaseTest {
         this.dbAssertionSteps = new DbAssertionSteps(softly);
     }
 
-    public void setUpTestData() {
+    @Step("Prepare user account")
+    public void prepareUserAccount() {
         var testData = TransactionTestData.getUserAccount(FIRST_USER_ID, FIRST_ACC_ID);
         firstUser = testData.getUser();
         firstUserAccount = testData.getAccount();
@@ -50,8 +53,9 @@ public class MakeDepositApiTest extends BaseTest {
 
     @Test
     @UserSession(accountsNumber = 1)
-    public void checkAdminCannotMakeDeposit() {
-        setUpTestData();
+    @DisplayName("Deposit is rejected when requested by an administrator")
+    public void shouldRejectDepositWhenRequestedByAdmin() {
+        prepareUserAccount();
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var dbAccountBeforeRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
 
@@ -69,8 +73,9 @@ public class MakeDepositApiTest extends BaseTest {
 
     @Test
     @UserSession(accountsNumber = 1)
-    public void checkUserCanMakeDepositToHisOwnAccount() {
-        setUpTestData();
+    @DisplayName("User deposits money into own account")
+    public void shouldDepositMoneyIntoOwnAccount() {
+        prepareUserAccount();
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_ACC_ID).getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId());
         var totalBalance = firstUserAccount.getBalance() + depositRequestBody.getAmount();
@@ -97,8 +102,9 @@ public class MakeDepositApiTest extends BaseTest {
 
     @Test
     @UserSession(usersNumber = 2, accountsNumber = 1)
-    public void checkUserCantMakeDepositToOthersAccount() {
-        setUpTestData();
+    @DisplayName("Deposit to another user's account is rejected")
+    public void shouldRejectDepositToAnotherUsersAccount() {
+        prepareUserAccount();
         var userSteps = SessionStorage.getUserSteps(SECOND_USER_ID);
         var dbAccountBeforeRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
 
@@ -123,11 +129,12 @@ public class MakeDepositApiTest extends BaseTest {
 
     @Test
     @UserSession(accountsNumber = 1)
-    public void checkUserCantMakeDepositToNotExistedAccount() {
-        setUpTestData();
+    @DisplayName("Deposit is rejected when account does not exist")
+    public void shouldRejectDepositWhenAccountDoesNotExist() {
+        prepareUserAccount();
 
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
-        var user = userSteps.getCustomer();
+        var user = userSteps.getUserProfile();
         var dbAccountsBeforeRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
 
         var depositRequestBody = DepositRequestGenerator.generate();
@@ -145,8 +152,9 @@ public class MakeDepositApiTest extends BaseTest {
     @ParameterizedTest
     @UserSession(accountsNumber = 1)
     @ValueSource(doubles = {0.1, 4999.99, 5000})
-    public void checkUserCanMakeDepositOnlyWithBalanceInRange(double balance) {
-        setUpTestData();
+    @DisplayName("Deposit succeeds when amount is within the allowed range")
+    public void shouldDepositMoneyWhenAmountIsWithinAllowedRange(double balance) {
+        prepareUserAccount();
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId(), balance);
 
@@ -178,8 +186,9 @@ public class MakeDepositApiTest extends BaseTest {
     @ParameterizedTest
     @UserSession(accountsNumber = 1)
     @ValueSource(doubles = {-0.01, 0})
-    public void checkUserCanNotMakeDepositWithLowBalance(double balance) {
-        setUpTestData();
+    @DisplayName("Deposit is rejected when amount is zero or negative")
+    public void shouldRejectDepositWhenAmountIsNotPositive(double balance) {
+        prepareUserAccount();
 
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var dbAccountBeforeRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
@@ -206,8 +215,9 @@ public class MakeDepositApiTest extends BaseTest {
 
     @Test
     @UserSession(accountsNumber = 1)
-    public void checkUserCanNotMakeDepositWithHighBalance() {
-        setUpTestData();
+    @DisplayName("Deposit is rejected when amount exceeds the maximum limit")
+    public void shouldRejectDepositWhenAmountExceedsMaximumLimit() {
+        prepareUserAccount();
 
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var dbAccountBeforeRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());

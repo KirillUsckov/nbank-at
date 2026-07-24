@@ -23,7 +23,7 @@ public class GlobalCleanupListener implements TestExecutionListener {
                 try {
                     var userToken = LoginSteps.login(LoginRequestGenerator.generate(user));
                     var userSteps = new UserSteps(userToken);
-                    var customer = userSteps.getCustomer();
+                    var customer = userSteps.getUserProfile();
                     var id = customer.getId();
                     // Параллельное удаление аккаунтов
 

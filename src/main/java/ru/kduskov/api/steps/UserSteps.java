@@ -1,5 +1,6 @@
 package ru.kduskov.api.steps;
 
+import io.qameta.allure.Step;
 import io.restassured.specification.ResponseSpecification;
 import lombok.AllArgsConstructor;
 import ru.kduskov.api.enums.Endpoint;
@@ -16,7 +17,8 @@ import ru.kduskov.api.specs.ResponseSpecs;
 public class UserSteps {
     private String authToken;
 
-    public ChangeUserProfileResponseBody getChangeUserProfileStringResponse(
+    @Step("Change user profile")
+    public ChangeUserProfileResponseBody changeUserProfile(
             ChangeUserProfileRequestBody body,
             ResponseSpecification responseSpecification
     ) {
@@ -28,7 +30,8 @@ public class UserSteps {
                 .put(body);
     }
 
-    public UserProfileResponseBody getCustomer() {
+    @Step("Get user profile")
+    public UserProfileResponseBody getUserProfile() {
         return new ValidatedCrudRequested<UserProfileResponseBody>(
                 RequestSpecs.userSpec(authToken),
                 ResponseSpecs.ok(),
@@ -36,6 +39,7 @@ public class UserSteps {
                 .get();
     }
 
+    @Step("Get user accounts")
     public CustomerAccountsResponseBody getUserAccounts() {
         return new ValidatedCrudRequested<CustomerAccountsResponseBody>(
                 RequestSpecs.userSpec(authToken),
@@ -45,6 +49,7 @@ public class UserSteps {
 
     }
 
+    @Step("Get transactions for account {id}")
     public TransactionsResponseBody getAccountTransactions(Long id) {
         return new ValidatedCrudRequested<TransactionsResponseBody>(
                 RequestSpecs.userSpec(authToken),
@@ -52,14 +57,5 @@ public class UserSteps {
                 Endpoint.GET_ACCOUNT_TRANSACTIONS)
                 .get(String.valueOf(id));
 
-    }
-
-    public ChangeUserProfileResponseBody changeUserProfile(ChangeUserProfileRequestBody requestBody) {
-        return new ValidatedCrudRequested<ChangeUserProfileResponseBody>(
-                RequestSpecs.userSpec(authToken),
-                ResponseSpecs.ok(),
-                Endpoint.CHANGE_USER_PROFILE
-        )
-                .put(requestBody);
     }
 }

@@ -1,5 +1,6 @@
 package ru.kduskov.api.assertions;
 
+import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.models.body.request.DepositRequestBody;
 import ru.kduskov.api.models.body.response.accounts.deposit.DepositResponseBody;
@@ -14,6 +15,7 @@ public class DepositAssert extends BaseAssert<DepositAssert, DepositResponseBody
         return new DepositAssert(actual, softly);
     }
 
+    @Step("Check id is {expectedId}")
     public DepositAssert hasId(long expectedId) {
         softly(() ->
                 softly.assertThat(actual.getId())
@@ -23,6 +25,7 @@ public class DepositAssert extends BaseAssert<DepositAssert, DepositResponseBody
         return this;
     }
 
+    @Step("Check deposit amount is {expectedAmount}")
     private DepositAssert hasDepositAmount(Double expectedAmount) {
         isEqualTo(
                 actual.getDepositAmount(),
@@ -31,6 +34,7 @@ public class DepositAssert extends BaseAssert<DepositAssert, DepositResponseBody
         return this;
     }
 
+    @Step("Check balance is {expectedBalance}")
     public DepositAssert hasBalance(double expectedBalance) {
         softly(() ->
                 softly.assertThat(actual.getBalance())
@@ -40,6 +44,7 @@ public class DepositAssert extends BaseAssert<DepositAssert, DepositResponseBody
         return this;
     }
 
+    @Step("Check account number is {expectedAccountNumber}")
     public DepositAssert hasAccountNumber(String expectedAccountNumber) {
         softly(() ->
                 softly.assertThat(actual.getAccountNumber())
@@ -50,6 +55,7 @@ public class DepositAssert extends BaseAssert<DepositAssert, DepositResponseBody
         return this;
     }
 
+    @Step("Check transaction id is not empty")
     private DepositAssert hasNotEmptyTransactionId() {
         softly(() ->
                 softly.assertThat(actual.getTransactionId())
@@ -59,28 +65,14 @@ public class DepositAssert extends BaseAssert<DepositAssert, DepositResponseBody
         return this;
     }
 
+    @Step("Check DepositResponse matches {expectedAccount}")
     public DepositAssert matches(AccountResponseBody expectedAccount) {
         return hasId(expectedAccount.getId())
                 .hasBalance(expectedAccount.getBalance())
                 .hasAccountNumber(expectedAccount.getAccountNumber());
     }
 
-    public DepositAssert wasNotChangedComparedTo(AccountResponseBody originalAccount) {
-        return matches(originalAccount);
-    }
-
-    public DepositAssert wasIncreasedBy(double transactionAmount, AccountResponseBody originalAccount) {
-        var expectedBalance = originalAccount.getBalance() + transactionAmount;
-        return hasBalance(expectedBalance)
-                .hasAccountNumber(originalAccount.getAccountNumber());
-    }
-
-    public DepositAssert wasDencreasedBy(double transactionAmount, AccountResponseBody originalAccount) {
-        var expectedBalance = originalAccount.getBalance() - transactionAmount;
-        return hasBalance(expectedBalance)
-                .hasAccountNumber(originalAccount.getAccountNumber());
-    }
-
+    @Step("Check DepositResponse matches {depositReq} and {originalAccount}")
     public DepositAssert isValidDepositResponse(DepositRequestBody depositReq, AccountResponseBody originalAccount) {
         return hasId(depositReq.getAccountId())
                 .hasDepositAmount(depositReq.getAmount())

@@ -1,7 +1,9 @@
 package ui;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.logevents.SelenideLogger;
 import common.BaseTest;
+import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.MutableCapabilities;
@@ -22,5 +24,6 @@ public abstract class BaseUiTest extends BaseTest {
         var caps = new MutableCapabilities();
         caps.setCapability("selenoid:options", Map.of("enableVNC", true, "enableLog", true));
         Configuration.browserCapabilities = caps;
+        SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
     }
 }

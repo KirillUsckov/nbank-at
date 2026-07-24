@@ -37,6 +37,11 @@ public final class AdminSteps {
     public static UserModel createRandomUser() {
         var requestBody = RequestDataGenerator.generateFilledObject(CreateUserRequestBody.class);
 
+        System.out.printf(
+                "Created user: %s, thread=%s%n",
+                requestBody.getUsername(),
+                Thread.currentThread().getName()
+        );
         var authToken = createUser(requestBody);
         return UserModel.fromCreateUserRequest(requestBody, authToken);
     }

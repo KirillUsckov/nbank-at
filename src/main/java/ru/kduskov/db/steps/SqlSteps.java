@@ -10,7 +10,9 @@ import ru.kduskov.db.models.dao.AccountDao;
 import ru.kduskov.db.models.dao.CustomerDao;
 import ru.kduskov.db.models.dao.TransactionDao;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class SqlSteps {
@@ -23,9 +25,9 @@ public class SqlSteps {
     }
 
     public static Optional<TransactionDao> findAllTransactionsByAccountId(Long senderAccountId,
-                                                                      Long receiverAccountId,
-                                                                      double amount,
-                                                                      TransactionType transactionType) {
+                                                                          Long receiverAccountId,
+                                                                          double amount,
+                                                                          TransactionType transactionType) {
         return DBRequest.builder()
                 .requestType(RequestType.SELECT)
                 .table(Tables.TRANSACTIONS)
@@ -75,6 +77,15 @@ public class SqlSteps {
                 .table(Tables.ACCOUNTS)
                 .where(Condition.equalTo("customer_id", customerId))
                 .extractAs(AccountDao.class);
+    }
+
+    public static void setAccountBalance(String accountNumber, double balance) {
+        DBRequest.builder()
+                .requestType(RequestType.UPDATE)
+                .table(Tables.ACCOUNTS)
+                .where(Condition.equalTo("account_number", accountNumber))
+                .set(Map.of("balance", balance))
+                .execute();
     }
 
     public static List<AccountDao> findAllAccounts() {

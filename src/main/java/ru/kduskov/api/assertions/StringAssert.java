@@ -1,5 +1,6 @@
 package ru.kduskov.api.assertions;
 
+import io.qameta.allure.Step;
 import lombok.AllArgsConstructor;
 import org.assertj.core.api.SoftAssertions;
 
@@ -12,13 +13,12 @@ public class StringAssert {
         return new StringAssert(actual, softly);
     }
 
+    @Step("Check string matches {expected}")
     public StringAssert equalTo(String expected) {
-        softly.assertThat(actual)
-                .withFailMessage("Expected string '%s' but was '%s'", expected, actual)
-                .isEqualTo(expected);
-        return this;
+        return equalTo(actual, String.format("Expected string '%s' but was '%s'", expected, actual));
     }
 
+    @Step("Check string matches {expected}")
     public StringAssert equalTo(String expected, String message) {
         softly.assertThat(actual)
                 .withFailMessage(message)
