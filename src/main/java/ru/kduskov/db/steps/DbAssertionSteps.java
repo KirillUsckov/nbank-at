@@ -23,6 +23,7 @@ public class DbAssertionSteps {
     public void assertCustomerDaoMatchUserProfileResponse(CustomerDao customerDao, UserProfileResponseBody userProfileResponseBody) {
         assertions.assertThat(customerDao).matches(userProfileResponseBody);
     }
+
     public void assertCustomerDaoMatchCreateUserRequest(CustomerDao customerDao, CreateUserRequestBody createUserRequestBody) {
         assertions.assertThat(customerDao).matches(createUserRequestBody);
     }

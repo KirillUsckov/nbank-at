@@ -124,8 +124,7 @@ public class CreateUserTest extends BaseTest {
                 Arguments.of(
                         requestWithPassword(EMPTY),
                         "empty password"
-                )
-                ,
+                ),
                 Arguments.of(
                         requestWithPassword(
                                 RandomData.getNotMatchingCondition(
@@ -134,7 +133,6 @@ public class CreateUserTest extends BaseTest {
                         ),
                         "password has invalid format"
                 ),
-
                 Arguments.of(
                         requestWithPassword(
                                 RandomData.getNotMatchingCondition(

@@ -1,7 +1,6 @@
 package ru.kduskov.api.steps;
 
 import io.qameta.allure.Step;
-import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.ResponseSpecification;
 import lombok.AllArgsConstructor;
 import ru.kduskov.api.enums.Endpoint;

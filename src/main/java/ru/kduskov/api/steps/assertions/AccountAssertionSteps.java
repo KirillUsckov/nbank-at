@@ -15,7 +15,6 @@ import ru.kduskov.common.steps.BaseAssertionsSteps;
 
 import java.util.List;
 
-
 public class AccountAssertionSteps extends BaseAssertionsSteps {
 
     public AccountAssertionSteps(SoftAssertions softly) {

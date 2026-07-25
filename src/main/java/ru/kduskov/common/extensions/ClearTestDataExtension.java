@@ -9,8 +9,9 @@ import ru.kduskov.ui.models.UserModel;
 public class ClearTestDataExtension implements AfterEachCallback {
     @Override
     public void afterEach(ExtensionContext context) {
-        if (!SessionStorage.getAllUsers().isEmpty())
+        if (!SessionStorage.getAllUsers().isEmpty()) {
             SqlSteps.deleteAllUsers(SessionStorage.getAllUsers().stream().map(UserModel::getUsername).toList());
+        }
         SessionStorage.clear();
     }
 }

@@ -33,7 +33,7 @@ jobs:
 
       - name: Tear down services
         if: always()
-        run: docker compose -f .\infra\docker_compose\docker-compose.yml down
+        run: docker compose -f infra/docker_compose/docker-compose.yml down
 
       - name: Run Swagger coverage report generation
         if: always()
@@ -58,7 +58,7 @@ jobs:
           allure_history: allure-history
 
       - name: Publish test report
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

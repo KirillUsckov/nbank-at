@@ -6,7 +6,7 @@ import ru.kduskov.common.confs.Config;
 import ru.kduskov.common.enums.ConfigParams;
 
 public class ErrorResponseGenerator {
-    private ErrorResponseGenerator(){
+    private ErrorResponseGenerator() {
     }
 
     public static ErrorResponseBody generate(HttpStatus.Code code, String path) {

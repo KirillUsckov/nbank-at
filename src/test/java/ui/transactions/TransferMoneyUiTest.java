@@ -29,7 +29,6 @@ public class TransferMoneyUiTest extends BaseUiTest {
     private final DashboardPage dashboardPage = new DashboardPage();
     private final TransferPage transferPage = new TransferPage();
 
-
     @Step("Prepare funded sender account")
     public void prepareFundedSenderAccount() {
         var testData = TransactionTestData.getAccountWithDeposit(FIRST_USER_ID, FIRST_ACC_ID, 50_000);

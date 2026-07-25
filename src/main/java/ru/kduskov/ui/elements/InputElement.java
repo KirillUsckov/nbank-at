@@ -16,11 +16,13 @@ public class InputElement extends BaseElement {
                 .shouldBe(Condition.visible, Condition.enabled)
                 .setValue(value);
     }
+
     public void sendKeys(String value) {
         $(locator)
                 .shouldBe(Condition.visible, Condition.enabled)
                 .sendKeys(value);
     }
+
     public void append(String value) {
         $(locator)
                 .shouldBe(Condition.visible, Condition.enabled)

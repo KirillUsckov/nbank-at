@@ -28,7 +28,7 @@ public class StringAssert {
         return this;
     }
 
-   @Step("Check string is not empty")
+    @Step("Check string is not empty")
     public StringAssert isNotEmpty() {
         softly.assertThat(actual)
                 .withFailMessage(String.format("String shouldn't be empty, but was '%s'", actual))

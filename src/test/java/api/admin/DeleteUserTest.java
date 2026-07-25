@@ -4,12 +4,8 @@ import common.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.Arguments;
-import ru.kduskov.api.constants.GenerationsRegexes;
 import ru.kduskov.api.enums.Endpoint;
 import ru.kduskov.api.generators.ErrorResponseGenerator;
-import ru.kduskov.common.enums.MatchingCondition;
-import ru.kduskov.common.generators.RandomData;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.CreateUserRequestBody;
 import ru.kduskov.api.models.body.response.BaseResponse;
@@ -24,7 +20,8 @@ import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.db.steps.SqlSteps;
 
 import static common.Constans.FIRST_USER_ID;
-import static org.eclipse.jetty.http.HttpStatus.Code.*;
+import static org.eclipse.jetty.http.HttpStatus.Code.FORBIDDEN;
+import static org.eclipse.jetty.http.HttpStatus.Code.BAD_REQUEST;
 import static ru.kduskov.api.constants.ErrorMessages.User.USER_WITH_ID_NOT_FOUND;
 import static ru.kduskov.api.constants.Messages.User.USER_WITH_ID_DELETED_SUCCESSFULLY;
 

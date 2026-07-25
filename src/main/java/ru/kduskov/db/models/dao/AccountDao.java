@@ -23,10 +23,9 @@ public class AccountDao extends BaseDao {
 
     @Override
     public String toString() {
-        return "AccountDao{" +
-                "accountNumber='" + maskAccountNumber(accountNumber) + '\'' +
-                ", balance=" + balance +
-                ", customerId=" + customerId +
-                '}';
+        return "AccountDao{"
+                + "accountNumber='" + maskAccountNumber(accountNumber) + '\''
+                + ", balance=" + balance
+                + ", customerId=" + customerId + '}';
     }
 }

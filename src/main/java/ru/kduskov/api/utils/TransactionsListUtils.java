@@ -1,6 +1,5 @@
 package ru.kduskov.api.utils;
 
-import lombok.experimental.UtilityClass;
 import ru.kduskov.api.enums.TransactionType;
 import ru.kduskov.api.models.body.response.Transaction;
 

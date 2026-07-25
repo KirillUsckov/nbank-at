@@ -107,7 +107,9 @@ public final class RandomData {
     // Вспомогательные методы
 
     private static String generateStringOfLength(int length) {
-        if (length <= 0) return "";
+        if (length <= 0) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
             sb.append((char) (32 + RANDOM.nextInt(95))); // печатные ASCII символы
@@ -166,7 +168,6 @@ public final class RandomData {
 
         return generateFromGroups(selectedGroups, minLength, maxLength);
     }
-
 
     /**
      * Метод генерирует строку из переданных групп элементов

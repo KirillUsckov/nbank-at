@@ -14,7 +14,6 @@ import ru.kduskov.common.confs.Config;
 import static io.restassured.RestAssured.given;
 import static ru.kduskov.common.enums.ConfigParams.API_VERSION;
 
-
 public class CrudRequester extends HttpRequest implements CrudEndpointInterface {
     public CrudRequester(RequestSpecification requestSpecification, ResponseSpecification responseSpecification, Endpoint endpoint) {
         super(requestSpecification, responseSpecification, endpoint);

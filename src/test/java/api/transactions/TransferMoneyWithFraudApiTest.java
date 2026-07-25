@@ -170,7 +170,6 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
         );
     }
 
-
     @Test
     @UserSession(accountsNumber = 1)
     @FraudMockStatus(FraudStatus.APPROVED)

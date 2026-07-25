@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexLengthExtractor {
-    private RegexLengthExtractor(){}
+    private RegexLengthExtractor() {}
 
     // Извлечение минимальной и максимальной длины для всей строки
     public static LengthInfo extractTotalLengthConstraint(String regex) {
@@ -26,7 +26,7 @@ public class RegexLengthExtractor {
 
     @Getter
     public static class LengthInfo {
-        int minLength = 0;
-        int maxLength = Integer.MAX_VALUE;
+        private int minLength = 0;
+        private int maxLength = Integer.MAX_VALUE;
     }
 }

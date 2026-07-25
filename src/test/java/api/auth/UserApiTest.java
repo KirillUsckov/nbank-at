@@ -58,6 +58,7 @@ public class UserApiTest extends BaseTest {
                 errorResponse.getMessage()
         );
     }
+
     @Test
     @UserSession
     @DisplayName("Authorization header is empty when request is empty")

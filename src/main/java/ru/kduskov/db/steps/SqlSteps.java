@@ -10,8 +10,10 @@ import ru.kduskov.db.models.dao.AccountDao;
 import ru.kduskov.db.models.dao.CustomerDao;
 import ru.kduskov.db.models.dao.TransactionDao;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Map;
 
 public class SqlSteps {
     public static void deleteAllUsers(List<String> usernames) {

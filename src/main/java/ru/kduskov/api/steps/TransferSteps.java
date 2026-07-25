@@ -22,6 +22,7 @@ public final class TransferSteps {
         )
                 .post(transferReq);
     }
+
     @Step("Send transfer")
     public static String sendTransferRequestWithStringResponse(
             RequestSpecification requestSpec,
@@ -46,6 +47,7 @@ public final class TransferSteps {
                 RequestSpecs.userSpec(userToken), responseSpec, Endpoint.TRANSFER_WITH_FRAUD)
                 .post(transferReq);
     }
+
     @Step("Send transfer with fraud check")
     public static String sendTransferWithFraudRequestWithStringResponse(
             RequestSpecification requestSpec,

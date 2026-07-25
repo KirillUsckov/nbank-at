@@ -2,15 +2,12 @@ package ru.kduskov.api.specs;
 
 import com.github.viclovsky.swagger.coverage.SwaggerCoverageRestAssured;
 import com.github.viclovsky.swagger.coverage.SwaggerCoverageV3RestAssured;
-import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
-import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
 import ru.kduskov.api.constants.Headers;
 import ru.kduskov.common.confs.Config;
-import ru.kduskov.common.enums.ConfigParams;
 import ru.kduskov.ui.utils.TestDataReader;
 
 import java.util.List;
