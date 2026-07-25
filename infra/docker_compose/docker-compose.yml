@@ -1,5 +1,6 @@
 services:
   backend:
+    platform: linux/arm64/v8
     image: nobugsme/nbank:with_fraud_check_with_approve
     container_name: backend
     environment:

@@ -87,7 +87,7 @@ jobs:
 
   allure-report:
     name: Build Allure Report
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs: run-tests
     if: ${{ always() && needs.run-tests.result != 'cancelled' }}
     steps:
@@ -119,7 +119,7 @@ jobs:
 
   publish-reports:
     name: Publish test reports
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs:
       - run-tests
       - allure-report
