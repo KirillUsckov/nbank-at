@@ -31,9 +31,17 @@ jobs:
         if: failure()
         run: docker compose -f infra/docker_compose/docker-compose.yml logs
 
-      - name: Run Swagger coverege report generation
+      - name: Tear down services
+        if: always()
+        run: docker compose -f .\infra\docker_compose\docker-compose.yml down
+
+      - name: Run Swagger coverage report generation
         if: always()
         run: .swagger-coverage-commandline-1.5.0\bin\swagger-coverage-commandline -s http://backend:4111/v3/api-docs -i swagger-coverage-output
+
+      - name: Build Swagger Coverage report
+        if: always()
+        run: sudo cp swagger-coverage-report.html allure-history/${{ github.run_number }}
 
       - name: Load allure history
         uses: actions/checkout@v2
@@ -41,5 +49,18 @@ jobs:
         with:
           ref: gh-pages
           path: gh-pages
+
       - name: Build allure report
         uses: simple-elf/allure-report-action@v1.7
+        with:
+          gh_pages: gh-pages
+          allure_results: target/allure-results
+          allure_history: allure-history
+
+      - name: Publish test report
+        uses: peaceiris/actions-gh-pages@v4
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
