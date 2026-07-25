@@ -80,7 +80,6 @@ public final class RandomData {
         }
     }
 
-    // Генерация строки короче минимальной длины
     private static String generateLengthLess(String regex) {
         int minLength = getMinLength(regex);
         if (minLength <= 0) {
@@ -91,7 +90,6 @@ public final class RandomData {
         return generateStringOfLength(minLength - 1);
     }
 
-    // Генерация строки длиннее максимальной длины
     private static String generateLengthMore(String regex) {
         int maxLength = getMaxLength(regex);
         // Генерируем строку длины maxLength + 1 (или больше)
