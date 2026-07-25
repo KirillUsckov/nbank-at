@@ -92,13 +92,10 @@ public final class RandomData {
 
     private static String generateLengthMore(String regex) {
         int maxLength = getMaxLength(regex);
-        // Генерируем строку длины maxLength + 1 (или больше)
         return generateStringOfLength(maxLength + 1 + RANDOM.nextInt(10));
     }
 
-    // Генерация случайной строки, не соответствующей regex
     private static String generateRandomNotMatching(String regex) {
-        // Просто генерируем случайную строку с неправильными символами
         return RgxGen.parse(regex).generateNotMatching();
     }
 
