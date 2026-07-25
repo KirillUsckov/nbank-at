@@ -10,7 +10,7 @@ on:
 jobs:
   run-tests:
     name: Set up review apps and run tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -34,6 +34,7 @@ jobs:
         run: bash infra/docker_compose/wait-for-backend.sh
 
       - name: Inspect image
+        if: always()
         run: |
           docker buildx imagetools inspect nobugsme/nbank:with_fraud_check_with_approve
 

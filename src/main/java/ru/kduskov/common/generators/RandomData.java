@@ -127,7 +127,6 @@ public final class RandomData {
      * @return безопасный пароль
      */
     public static String generateSecurePassword(int minLength, int maxLength) {
-        // Корректируем длину (минимум 4, так как 4 группы)
         minLength = Math.max(minLength, VALID_GROUPS.length);
         maxLength = Math.max(maxLength, minLength);
 

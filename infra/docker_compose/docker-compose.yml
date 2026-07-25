@@ -1,7 +1,6 @@
 services:
   backend:
     image: nobugsme/nbank:with_fraud_check_with_approve
-    platform: linux/amd64
     container_name: backend
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/nbank
