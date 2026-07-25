@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.random.RandomGenerator;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 public final class RandomData {
     private static final RandomGenerator RANDOM = RandomGenerator.getDefault();
     private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -83,8 +85,7 @@ public final class RandomData {
     private static String generateLengthLess(String regex) {
         int minLength = getMinLength(regex);
         if (minLength <= 0) {
-            // Если минимальная длина 0, генерируем пустую строку
-            return "";
+            return EMPTY;
         }
         // Генерируем строку длины minLength - 1
         return generateStringOfLength(minLength - 1);
