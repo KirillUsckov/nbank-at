@@ -1,13 +1,13 @@
 package ru.kduskov.common.utils;
 
 import lombok.Getter;
+import lombok.experimental.UtilityClass;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@UtilityClass
 public class RegexLengthExtractor {
-    private RegexLengthExtractor() {}
-
     // Извлечение минимальной и максимальной длины для всей строки
     public static LengthInfo extractTotalLengthConstraint(String regex) {
         LengthInfo info = new LengthInfo();

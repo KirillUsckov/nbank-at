@@ -1,10 +1,9 @@
 package ru.kduskov.common.utils;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public final class LogMaskingUtils {
-
-    private LogMaskingUtils() {
-    }
-
     public static String maskAccountNumber(String accountNumber) {
         if (accountNumber == null) {
             return null;

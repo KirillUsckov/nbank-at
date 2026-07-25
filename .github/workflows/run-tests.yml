@@ -1,7 +1,11 @@
 name: Run tests
 
 #trigger
-on: [ push, workflow_dispatch ]
+on:
+  push:
+    branches-ignore:
+      - gh-pages
+  workflow_dispatch:
 
 jobs:
   run-tests:
@@ -10,27 +14,34 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
-        if: always()
 
       - name: Setup JDK
         uses: actions/setup-java@v4
-        if: always()
         with:
           distribution: 'corretto'
           java-version: '21'
           cache: maven
 
+      - name: Make scripts executable
+        run: |
+          chmod +x mvnw
+          chmod +x ./swagger-coverage-commandline-1.5.0/bin/swagger-coverage-commandline
+
       - name: Set up Services
-        if: always()
         run: bash infra/docker_compose/restart_docker.sh
 
       - name: Wait for backend startup
-        if: always()
         run: bash infra/docker_compose/wait-for-backend.sh
 
       - name: Run tests
-        if: always()
         run: ./mvnw clean test -q
+
+      - name: Run Swagger coverage
+        if: always()
+        run: |
+          ./swagger-coverage-commandline-1.5.0/bin/swagger-coverage-commandline \
+            -s http://localhost:4111/v3/api-docs \
+            -i swagger-coverage-output
 
       - name: Print Docker logs on failure
         if: failure()
@@ -40,17 +51,54 @@ jobs:
         if: always()
         run: docker compose -f infra/docker_compose/docker-compose.yml down
 
-      - name: Run Swagger coverage report generation
+      - name: Upload test results
         if: always()
-        run: .swagger-coverage-commandline-1.5.0\bin\swagger-coverage-commandline -s http://backend:4111/v3/api-docs -i swagger-coverage-output
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/allure-results
+            swagger-coverage-output
+          retention-days: 7
 
-      - name: Build Swagger Coverage report
+      - name: Upload Allure results
         if: always()
-        run: sudo cp swagger-coverage-report.html allure-history/${{ github.run_number }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: target/allure-results
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Prepare Swagger report
+        if: always()
+        run: |
+          mkdir -p swagger-report
+          cp swagger-coverage-report.html swagger-report/index.html
+
+      - name: Upload Swagger report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: swagger-report
+          path: swagger-report
+          if-no-files-found: error
+          retention-days: 7
+
+  allure-report:
+    name: Build Allure Report
+    runs-on: ubuntu-latest
+    needs: run-tests
+    if: ${{ always() && needs.run-tests.result != 'cancelled' }}
+    steps:
+      - name: Download allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
 
       - name: Load allure history
         uses: actions/checkout@v2
-        if: always()
         with:
           ref: gh-pages
           path: gh-pages
@@ -59,13 +107,40 @@ jobs:
         uses: simple-elf/allure-report-action@v1.7
         with:
           gh_pages: gh-pages
-          allure_results: target/allure-results
+          allure_results: allure-results
           allure_history: allure-history
 
-      - name: Publish test report
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-history
+          retention-days: 7
+
+  publish-reports:
+    name: Publish test reports
+    runs-on: ubuntu-latest
+    needs:
+      - run-tests
+      - allure-report
+    if: ${{ always() && needs.allure-report.result == 'success' }}
+    steps:
+      - name: Download Allure report
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report
+          path: reports/test-report/${{ github.run_number }}/allure-report
+
+      - name: Download Swagger report
+        uses: actions/download-artifact@v4
+        with:
+          name: swagger-report
+          path: reports/test-report/${{ github.run_number }}/swagger-coverage
+
+      - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
-        if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: reports
+          keep_files: true
