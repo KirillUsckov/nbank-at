@@ -38,6 +38,6 @@ public class MakeDepositPage extends BasePage {
     }
 
     public void setAmount(String amount) {
-        amountInput.clearAndSetValue(amount);
+        amountInput.setValue(amount);
     }
 }

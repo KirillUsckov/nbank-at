@@ -2,8 +2,8 @@ package api.transactions;
 
 import io.qameta.allure.Step;
 import org.junit.jupiter.api.DisplayName;
+import ru.kduskov.api.generators.DepositRequestGenerator;
 import ru.kduskov.api.utils.TransactionsListUtils;
-import ru.kduskov.common.assertions.OptionalAssert;
 import support.ExpectedAccountState;
 import support.TransactionTestData;
 import support.TransferDbAssertions;
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import ru.kduskov.api.enums.Endpoint;
-import ru.kduskov.api.enums.TransactionType;
 import ru.kduskov.api.generators.TransferRequestGenerator;
 import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
@@ -30,8 +29,6 @@ import ru.kduskov.common.storage.SessionStorage;
 import ru.kduskov.db.steps.DbAssertionSteps;
 import ru.kduskov.db.steps.SqlSteps;
 import ru.kduskov.ui.models.UserModel;
-
-import java.util.Optional;
 
 import static common.Constans.FIRST_USER_ID;
 import static common.Constans.FIRST_ACC_ID;
@@ -119,9 +116,7 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), secondUserAccount.getId(), amount);
 
-        var transferResponse = new ValidatedCrudRequested<TransferResponseBody>(
-                RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok(), Endpoint.TRANSFER)
-                .post(transferRequestBody);
+        var transferResponse = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.ok());
 
         this.transferAssertionSteps.assertTransferResponse(transferRequestBody, transferResponse, "Transfer successful");
 
@@ -178,7 +173,7 @@ public class TransferMoneyApiTest extends BaseTest {
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), secondUserAccount.getId(), amount);
 
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(
+        this.stringAssertionsSteps.assertTextEqualsTo(
                 ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS,
                 response.getMessage()
         );
@@ -216,7 +211,7 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(accountWithNoMoney.getId(), firstUserSecondAccount.getId(), amount);
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(
+        this.stringAssertionsSteps.assertTextEqualsTo(
                 ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS,
                 response.getMessage()
         );
@@ -251,7 +246,7 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), amount);
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(
+        this.stringAssertionsSteps.assertTextEqualsTo(
                 ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS,
                 response.getMessage()
         );
@@ -283,7 +278,7 @@ public class TransferMoneyApiTest extends BaseTest {
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), firstUserSecondAccount.getId(), 10_000.01);
 
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(ErrorMessages.Transfer.TRANSFER_AMOUNT_CANNOT_EXCEED_MAX, response.getMessage());
+        this.stringAssertionsSteps.assertTextEqualsTo(ErrorMessages.Transfer.TRANSFER_AMOUNT_CANNOT_EXCEED_MAX, response.getMessage());
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -310,7 +305,7 @@ public class TransferMoneyApiTest extends BaseTest {
         var transferRequestBody = TransferRequestGenerator.generate(firstUserAccount.getId(), 100000000L);
 
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.badRequest());
-        this.transferAssertionSteps.assertMessage(
+        this.stringAssertionsSteps.assertTextEqualsTo(
                 ErrorMessages.Transfer.INVALID_TRANSFER_INSUFFICIENT_FUNDS_OR_INVALID_ACCOUNTS,
                 response.getMessage()
         );
@@ -335,7 +330,7 @@ public class TransferMoneyApiTest extends BaseTest {
         var transferRequestBody = TransferRequestGenerator.generateWithReceiver(firstUserSecondAccount.getId());
 
         var response = TransferSteps.sendTransferRequest(firstUser.getToken(), transferRequestBody, ResponseSpecs.accessForbidden());
-        this.accountAssertionSteps.assertMessage(ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT, response.getMessage());
+        this.stringAssertionsSteps.assertTextEqualsTo(ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT, response.getMessage());
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -343,6 +338,22 @@ public class TransferMoneyApiTest extends BaseTest {
 
         var receiverDbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserSecondAccount.getAccountNumber());
         this.dbAssertionSteps.assertAccountDaoEquals(receiverDbAccountAfterRequest, expectedReceiverDbAccount, true);
+    }
+
+    @Test
+    @UserSession(accountsNumber = 1)
+    @DisplayName("Transfer request is rejected when auth header is empty")
+    public void shouldRejectUnauthorisedDepositRequest() {
+        prepareFundedSenderAccount();
+        var transferRequestBody = TransferRequestGenerator.generateWithReceiver(firstUserAccount.getId());
+
+        var response = TransferSteps.sendTransferRequestWithStringResponse(
+                RequestSpecs.unauthSpec(),
+                transferRequestBody,
+                ResponseSpecs.unauthorized()
+        );
+
+        this.stringAssertionsSteps.assertTextIsEmpty(response);
     }
 }
 

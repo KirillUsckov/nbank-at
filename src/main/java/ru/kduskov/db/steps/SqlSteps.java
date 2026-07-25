@@ -11,11 +11,17 @@ import ru.kduskov.db.models.dao.CustomerDao;
 import ru.kduskov.db.models.dao.TransactionDao;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class SqlSteps {
+    public static void deleteAllUsers(List<String> usernames) {
+        DBRequest.builder()
+                .requestType(RequestType.DELETE)
+                .table(Tables.CUSTOMERS)
+                .where(Condition.in("username", new ArrayList<>(usernames)))
+                .execute();
+    }
+
     public static Optional<CustomerDao> findCustomerByUsername(String username) {
         return DBRequest.builder()
                 .requestType(RequestType.SELECT)

@@ -39,7 +39,7 @@ Content-Type: application/json
 Authorization:  Basic YWRtaW46YWRtaW4=
 
 {
-  "username": "kirill",
+  "username": "kirill1",
   "password": "myPass25!",
   "role": "USER"
 }

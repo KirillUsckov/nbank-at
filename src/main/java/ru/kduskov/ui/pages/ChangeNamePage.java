@@ -21,7 +21,7 @@ public class ChangeNamePage extends BasePage {
     }
 
     public ChangeNamePage setNewUsername(String username) {
-        newUsernameInput.clearAndSetValue(username);
+        newUsernameInput.sendKeys(username);
         return this;
     }
 

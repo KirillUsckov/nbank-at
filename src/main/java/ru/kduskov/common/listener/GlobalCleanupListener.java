@@ -3,7 +3,10 @@ package ru.kduskov.common.listener;
 import groovy.util.logging.Slf4j;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestPlan;
+import ru.kduskov.api.constants.Headers;
 import ru.kduskov.api.generators.LoginRequestGenerator;
+import ru.kduskov.api.specs.RequestSpecs;
+import ru.kduskov.api.specs.ResponseSpecs;
 import ru.kduskov.api.steps.AccountSteps;
 import ru.kduskov.api.steps.AdminSteps;
 import ru.kduskov.api.steps.LoginSteps;
@@ -21,7 +24,11 @@ public class GlobalCleanupListener implements TestExecutionListener {
         CompletableFuture<Void> cleanup = CompletableFuture.runAsync(() -> {
             for (var user : AdminSteps.getAllUsers().getData()) {
                 try {
-                    var userToken = LoginSteps.login(LoginRequestGenerator.generate(user));
+                    var userToken = LoginSteps.login(
+                            LoginRequestGenerator.generate(user.getUsername(), user.getPassword()),
+                            ResponseSpecs.ok()
+                    )
+                            .header(Headers.AUTHORIZATION);
                     var userSteps = new UserSteps(userToken);
                     var customer = userSteps.getUserProfile();
                     var id = customer.getId();
@@ -31,7 +38,7 @@ public class GlobalCleanupListener implements TestExecutionListener {
                             .forEach(account ->
                                     AccountSteps.deleteAccount(userToken, account.getId()));
 
-                    AdminSteps.deleteUser(id);
+                    AdminSteps.deleteUser(RequestSpecs.adminSpec(), ResponseSpecs.ok(), id);
                 } catch (Exception e) {
                     System.err.println("Error cleaning user: " + e.getMessage());
                 }

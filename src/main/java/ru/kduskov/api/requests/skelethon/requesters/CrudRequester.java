@@ -9,13 +9,23 @@ import ru.kduskov.api.enums.Endpoint;
 import ru.kduskov.api.models.body.request.BaseRequest;
 import ru.kduskov.api.requests.skelethon.interfaces.CrudEndpointInterface;
 import ru.kduskov.api.requests.skelethon.HttpRequest;
+import ru.kduskov.common.confs.Config;
 
 import static io.restassured.RestAssured.given;
+import static ru.kduskov.common.enums.ConfigParams.API_VERSION;
 
 
 public class CrudRequester extends HttpRequest implements CrudEndpointInterface {
     public CrudRequester(RequestSpecification requestSpecification, ResponseSpecification responseSpecification, Endpoint endpoint) {
         super(requestSpecification, responseSpecification, endpoint);
+    }
+
+    protected String getEndpointWithApiVersion(Endpoint endpoint, String params) {
+        return Config.getProperty(API_VERSION) + endpoint.getUrlWithParam(params);
+    }
+
+    protected String getEndpointWithApiVersion(Endpoint endpoint) {
+        return  Config.getProperty(API_VERSION) + endpoint.getEndpoint();
     }
 
     @Override
@@ -44,7 +54,7 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
     }
 
     @Override
-    public ValidatableResponse delete(long id) {
+    public ValidatableResponse delete(Long id) {
         return delete(endpoint, id);
     }
 
@@ -53,7 +63,7 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
         return given()
                 .spec(requestSpecification)
                 .body(body == null ? "" : body)
-                .post(endpoint.getEndpoint())
+                .post(getEndpointWithApiVersion(endpoint))
                 .then()
                 .assertThat()
                 .spec(responseSpecification);
@@ -65,7 +75,7 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
                 .spec(requestSpecification)
                 .contentType(ContentType.JSON)
                 .body(body == null ? "" : body)
-                .put(endpoint.getEndpoint())
+                .put(getEndpointWithApiVersion(endpoint))
                 .then()
                 .assertThat()
                 .spec(responseSpecification);
@@ -75,7 +85,7 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
     private ValidatableResponse get(Endpoint endpoint) {
         return given()
                 .spec(requestSpecification)
-                .get(endpoint.getEndpoint())
+                .get(getEndpointWithApiVersion(endpoint))
                 .then()
                 .assertThat()
                 .spec(responseSpecification);
@@ -83,7 +93,7 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
 
     @Step("GET {endpoint} with query params {urlParam}")
     private ValidatableResponse get(Endpoint endpoint, String urlParam) {
-        var url = endpoint.getUrlWithParam(urlParam);
+        var url = getEndpointWithApiVersion(endpoint, urlParam);
         return given()
                 .spec(requestSpecification)
                 .get(url)
@@ -93,10 +103,10 @@ public class CrudRequester extends HttpRequest implements CrudEndpointInterface 
     }
 
     @Step("DELETE {endpoint} for id {id}")
-    private ValidatableResponse delete(Endpoint endpoint, long id) {
+    private ValidatableResponse delete(Endpoint endpoint, Long id) {
         return given()
                 .spec(requestSpecification)
-                .delete(endpoint.getEndpoint() + id)
+                .delete(getEndpointWithApiVersion(endpoint) + id)
                 .then()
                 .assertThat()
                 .spec(responseSpecification);

@@ -17,6 +17,7 @@ import java.util.Map;
 public abstract class BaseUiTest extends BaseTest {
     @BeforeAll
     public static void setupSelenoid() {
+        Configuration.timeout = Config.getLongProperty(ConfigParams.UI_TIMEOUT);
         Configuration.remote = Config.getProperty(ConfigParams.UI_REMOTE);
         Configuration.baseUrl = Config.getProperty(ConfigParams.UI_BASE_URL);
         Configuration.browser = Config.getProperty(ConfigParams.UI_BROWSER);

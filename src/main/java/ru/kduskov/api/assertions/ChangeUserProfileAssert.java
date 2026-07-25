@@ -4,6 +4,7 @@ import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
+import ru.kduskov.common.assertions.BaseAssert;
 
 public class ChangeUserProfileAssert extends BaseAssert<ChangeUserProfileAssert, ChangeUserProfileResponseBody> {
     protected ChangeUserProfileAssert(ChangeUserProfileResponseBody userProfileResponseBody, SoftAssertions softly) {

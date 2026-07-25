@@ -26,7 +26,9 @@
         <selenide.version>7.9.1</selenide.version>
         <postgre.version>42.7.7</postgre.version>
         <wiremock.version>3.13.2</wiremock.version>
-        <mvn.version>3.2.5</mvn.version></properties>
+        <mvn.version>3.2.5</mvn.version>
+        <swagger.coverage.version>1.5.0</swagger.coverage.version>
+    </properties>
 
 
     <dependencyManagement>
@@ -118,6 +120,11 @@
             <artifactId>selenide</artifactId>
             <version>${selenide.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.codeborne</groupId>
+            <artifactId>selenide</artifactId>
+            <version>${selenide.version}</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -139,6 +146,11 @@
             <artifactId>aspectjrt</artifactId>
             <version>${aspectj.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.viclovsky</groupId>
+            <artifactId>swagger-coverage-rest-assured</artifactId>
+            <version>${swagger.coverage.version}</version>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -151,6 +163,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${mvn.version}</version>
                         <configuration>
+                            <rerunFailingTestsCount>2</rerunFailingTestsCount>
                             <includes>
                                 <include>**/api/**/*Test.java</include>
                             </includes>

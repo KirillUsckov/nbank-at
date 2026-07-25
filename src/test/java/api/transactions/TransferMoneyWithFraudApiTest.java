@@ -2,6 +2,10 @@ package api.transactions;
 
 import io.qameta.allure.Step;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.utils.TransactionsListUtils;
 import support.ExpectedAccountState;
 import support.TransactionTestData;
@@ -33,6 +37,7 @@ import static common.Constans.FIRST_USER_ID;
 import static common.Constans.FIRST_ACC_ID;
 import static common.Constans.SECOND_ACC_ID;
 
+@Execution(ExecutionMode.SAME_THREAD)
 public class TransferMoneyWithFraudApiTest extends BaseMockTest {
     private AccountResponseBody firstUserAccount;
     private AccountResponseBody firstUserSecondAccount;
@@ -163,6 +168,24 @@ public class TransferMoneyWithFraudApiTest extends BaseMockTest {
                 expectedReceiverDbAccount,
                 FraudStatus.VERIFICATION_REQUIRED
         );
+    }
+
+
+    @Test
+    @UserSession(accountsNumber = 1)
+    @FraudMockStatus(FraudStatus.APPROVED)
+    @DisplayName("Transfer with fraud check request is rejected when auth header is empty")
+    public void shouldRejectUnauthorisedTransferWithFraudRequest() {
+        prepareFundedSenderAccount();
+        var transferRequestBody = TransferRequestGenerator.generateWithReceiver(firstUserAccount.getId());
+
+        var response = TransferSteps.sendTransferWithFraudRequestWithStringResponse(
+                RequestSpecs.unauthSpec(),
+                transferRequestBody,
+                ResponseSpecs.unauthorized()
+        );
+
+        this.stringAssertionsSteps.assertTextIsEmpty(response);
     }
 
     private void assertTransferWasNotProcessed(

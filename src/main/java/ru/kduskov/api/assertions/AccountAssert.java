@@ -3,6 +3,7 @@ package ru.kduskov.api.assertions;
 import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.common.assertions.BaseAssert;
 
 public class AccountAssert extends BaseAssert<AccountAssert, AccountResponseBody> {
     public AccountAssert(AccountResponseBody actual, SoftAssertions softly) {

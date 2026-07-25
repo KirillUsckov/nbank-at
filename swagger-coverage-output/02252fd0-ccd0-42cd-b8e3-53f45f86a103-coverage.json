@@ -1,0 +1,36 @@
+{
+  "swagger" : "2.0",
+  "host" : "localhost",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/accounts/deposit" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json, application/javascript, text/javascript, text/json"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "Basic ajBRdGJpc1p3djhxOkozbk1GZ3IkQVdCWkhuSVgka3FwJTlWRjcwdEFAN3QxNmVsLVJvQ1BzT0t1N04xd0xmcGs3QjR0RTBKM2M1Uy1EZmRnTmE5YXNYTk5veGNKZUN4TiFMbXB4IXQkMzQ2MEN5QDY0JEp6TG5Ua0djWlFaSjU5N0lwSHFlK0xpTDUrJGc/aVoxblN5Qm1PQ2EySFNSWUxyK1c4TU8tbUMkSlQwNFcmeEUwemtFZSZ6RUAkQmwwSS1UMlVrUm41aiY0QHBkejZUems="
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false
+        } ],
+        "responses" : {
+          "403" : { }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+---
+openapi: "3.0.1"
+servers:
+- url: "localhost"
+paths:
+  /api/v1/accounts/transfer-with-fraud-check:
+    post:
+      parameters:
+      - name: "Accept"
+        in: "header"
+        example: "application/json, application/javascript, text/javascript, text/json"
+      - name: "Authorization"
+        in: "header"
+        example: "Basic SzlidmRybF9NQTpjdmZJOWdlNkMxUG5FIU5MNkZpK0k3V3JUSj9rdXJqVDhQNWRScjBwckNVWGxvSksrMXZoYVo3YVJBZzR1T2FuOVMmRUNGZmZXQDJQVlA3enV5OFRleTRjVkROJTBvb3FkaWhaJElBai0ySlh3a3VHP293MEwxaTlEekdmMjg5UWMlRDQtbUBNRUYrJENZLT8tR2JzOUQmb2Y5UlpYd1dQeGpPcWxQQyZTS3dtQjdPTmRjQW85M1YrM1lUSjQ5d1JJeW43RlIlcnZzejVRREN3b3RaVmhvdiZ2dCRFdTc1Y3pXcmEraTlqUzk3ckxFT00="
+      - name: "Content-Type"
+        in: "header"
+        example: "application/json"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              exampleSetFlag: false
+            exampleSetFlag: false
+      responses:
+        "200":
+          content:
+            application/json:
+              exampleSetFlag: false

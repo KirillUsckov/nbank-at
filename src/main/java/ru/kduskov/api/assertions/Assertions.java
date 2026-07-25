@@ -8,6 +8,7 @@ import ru.kduskov.api.models.body.response.accounts.deposit.DepositResponseBody;
 import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBody;
 import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.api.models.body.response.general.ErrorResponseBody;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
 
 import java.util.List;
@@ -53,5 +54,9 @@ public class Assertions {
 
     public StringAssert assertThat(String string) {
         return StringAssert.assertThat(string, softly);
+    }
+
+    public ErrorResponseAssert assertThat(ErrorResponseBody error) {
+        return ErrorResponseAssert.assertThat(error, softly);
     }
 }

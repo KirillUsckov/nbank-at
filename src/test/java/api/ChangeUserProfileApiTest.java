@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import ru.kduskov.api.generators.common.RandomData;
+import ru.kduskov.common.generators.RandomData;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.specs.ResponseSpecs;
@@ -19,7 +19,7 @@ import ru.kduskov.db.steps.SqlSteps;
 import java.util.stream.Stream;
 
 import static common.Constans.FIRST_USER_ID;
-import static ru.kduskov.api.constants.ErrorMessages.UserProfile.NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY;
+import static ru.kduskov.api.constants.ErrorMessages.User.NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY;
 
 public class ChangeUserProfileApiTest extends BaseTest {
     private UserProfileAssertionSteps userProfileAssertionSteps;
@@ -47,8 +47,7 @@ public class ChangeUserProfileApiTest extends BaseTest {
         this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(requestBody, customerAfterRequest);
 
         var expectedCustomerOpt = SqlSteps.findCustomerByUsername(changeUserProfileResponse.getUsername());
-        this.userProfileAssertionSteps.assertOptionalIsPresent(expectedCustomerOpt);
-        var expectedCustomer = expectedCustomerOpt.get();
+        var expectedCustomer = expectedCustomerOpt.orElseThrow();
 
         this.dbAssertionSteps.assertCustomerDaoMatchChangeUserProfileResponse(expectedCustomer, changeUserProfileResponse);
     }
@@ -65,18 +64,30 @@ public class ChangeUserProfileApiTest extends BaseTest {
                 .build();
 
         var response = SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfile(requestBody, ResponseSpecs.badRequest());
-        this.userProfileAssertionSteps.assertMessage(NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY, response.getMessage());
+        this.stringAssertionsSteps.assertTextEqualsTo(NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY, response.getMessage());
 
         var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
 
         this.userProfileAssertionSteps.assertCustomerNameMatchesPrevious(customerBeforeRequest, customerAfterRequest);
 
         var expectedCustomerOpt = SqlSteps.findCustomerByUsername(customerBeforeRequest.getUsername());
-        this.userProfileAssertionSteps.assertOptionalIsPresent(expectedCustomerOpt);
-        var expectedCustomer = expectedCustomerOpt.get();
+        var expectedCustomer = expectedCustomerOpt.orElseThrow();
 
         this.dbAssertionSteps.assertCustomerDaoMatchUserProfileResponse(expectedCustomer, customerBeforeRequest);
+    }
 
+    @Test
+    @UserSession
+    @DisplayName("Profile name update is rejected when auth header is empty")
+    public void shouldRejectUnauthorisedRequest() {
+        var customerBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
+
+        var requestBody = ChangeUserProfileRequestBody.builder()
+                .name(customerBeforeRequest.getName())
+                .build();
+
+        var response = SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfileWithoutAuth(requestBody, ResponseSpecs.unauthorized());
+        this.stringAssertionsSteps.assertTextIsEmpty(response);
     }
 
     private static Stream<String> provideInvalidNames() {
@@ -84,7 +95,7 @@ public class ChangeUserProfileApiTest extends BaseTest {
                 "",
                 " ",
                 "   ",
-                RandomData.getStringAndNumericString(10),
+                RandomData.getAlphabetAndNumericString(10),
                 String.format("%s", RandomData.getAlphabeticString(5)),
                 String.format("%s ", RandomData.getAlphabeticString(5)),
                 String.format("%s%s", RandomData.getValidName(), RandomData.getNumericString(1)),

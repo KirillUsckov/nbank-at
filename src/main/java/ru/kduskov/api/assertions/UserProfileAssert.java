@@ -2,6 +2,7 @@ package ru.kduskov.api.assertions;
 
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
+import ru.kduskov.common.assertions.BaseAssert;
 
 public class UserProfileAssert extends BaseAssert<UserProfileAssert, UserProfileResponseBody> {
     protected UserProfileAssert(UserProfileResponseBody userProfileResponseBody, SoftAssertions softly) {

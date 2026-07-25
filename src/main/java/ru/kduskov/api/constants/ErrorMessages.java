@@ -1,7 +1,9 @@
 package ru.kduskov.api.constants;
 
 public class ErrorMessages {
-    public static class UserProfile {
+    public static class User {
+        public static final String USER_WITH_ID_NOT_FOUND = "Error: User with ID %s not found.";
+        public static final String INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
         public static final String NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY = "Name must contain two words with letters only";
     }
 

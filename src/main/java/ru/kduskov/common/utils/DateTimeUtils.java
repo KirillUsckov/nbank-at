@@ -7,18 +7,13 @@ import java.time.ZonedDateTime;
 
 public class DateTimeUtils {
     private static final ZoneId UTC = ZoneId.of("UTC");
-    private static final ZoneId MOSCOW = ZoneId.of("Europe/Moscow");
 
     private DateTimeUtils() {
     }
 
-    public static long differenceWithCurrentMoscowTimeInSeconds(LocalDateTime utcTime) {
-        ZonedDateTime serverTime = utcTime
-                .atZone(UTC)
-                .withZoneSameInstant(MOSCOW);
-
-        ZonedDateTime currentTime = ZonedDateTime.now(MOSCOW);
-
+    public static long differenceWithCurrent(LocalDateTime utcTime) {
+        ZonedDateTime serverTime = utcTime.atZone(UTC);
+        ZonedDateTime currentTime = ZonedDateTime.now(UTC);
         return Math.abs(Duration.between(serverTime, currentTime).getSeconds());
     }
 }

@@ -14,5 +14,5 @@ public interface CrudEndpointInterface {
 
     Object get(String urlParam);
 
-    Object delete(long id);
+    Object delete(Long id);
 }

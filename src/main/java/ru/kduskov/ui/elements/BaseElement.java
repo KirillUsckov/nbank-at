@@ -14,7 +14,7 @@ public abstract class BaseElement {
 
     public void click() {
         $(locator)
-                .shouldBe(Condition.exist)
+                .shouldBe(Condition.visible)
                 .scrollTo()
                 .shouldBe(Condition.clickable)
                 .click();

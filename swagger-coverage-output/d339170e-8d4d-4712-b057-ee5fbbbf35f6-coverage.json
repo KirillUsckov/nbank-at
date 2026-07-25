@@ -1,0 +1,32 @@
+{
+  "swagger" : "2.0",
+  "host" : "localhost",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/api/v1/accounts/868/transactions" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json, application/javascript, text/javascript, text/json"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "Basic VHJmY0lFM2ZwVTokbkdVeVFDWmVlaUhzTnRJVXFxZnBvNHNMdjJKMVBtcUIyZ2IkRVFtZCRBRmZYS1VheFElY1FWR0lvREg/ZCZUN1ZZSUVNR1E2UnVVUnhjMTNxbUZkNy1DUFUtUmVuaE9MMVl6LXV6NHR3SFl5d3RhcEgxWGVqejhmbGNLTDRrZ2hOSHhBdVBOSjdSMXlqOTRiZUBpWkokaiZMIU96empWTVNT"
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json"
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    }
+  }
+}

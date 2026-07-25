@@ -1,0 +1,22 @@
+---
+openapi: "3.0.1"
+servers:
+- url: "localhost"
+paths:
+  /accounts/752/transactions:
+    get:
+      parameters:
+      - name: "Accept"
+        in: "header"
+        example: "application/json, application/javascript, text/javascript, text/json"
+      - name: "Authorization"
+        in: "header"
+        example: "Basic WHQ1RjFwcDdUNF86NCtXQUBtRWNmcy1zeEJzVnMmJWxhZkolekdFTnlpNkorQ0MzZlB4djFwdHM/ZWVkRUpoeWVLeU53eDNLMm15Zm9HNjMrVFMxNitSSHpEMGVkMk9kd2Y2V3NuY0FHZVozb2xZJTJGJTE5MUhwZ0tVQWZMYk9wJnlyZDdBZDhuNmJQOUhnVTRjZkFlJUZZLUtINzhQbSYxT0dxMm9CYyZ5IUNZdFhhT0FjWFBjJkNCZnM5NDM/T3MlJlZCMFgyZUZAWEYtZjAhTlNlZUg3MVJHQTJtbzh2"
+      - name: "Content-Type"
+        in: "header"
+        example: "application/json"
+      responses:
+        "200":
+          content:
+            application/json:
+              exampleSetFlag: false

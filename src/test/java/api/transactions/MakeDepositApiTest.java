@@ -30,7 +30,6 @@ import static common.Constans.SECOND_USER_ID;
 import static ru.kduskov.api.constants.ErrorMessages.Account.UNAUTHORIZED_ACCESS_TO_ACCOUNT;
 
 public class MakeDepositApiTest extends BaseTest {
-    private final DepositSteps depositSteps = new DepositSteps();
     private DepositAssertionSteps depositAssertionSteps;
     private AccountAssertionSteps accountAssertionSteps;
     private DbAssertionSteps dbAssertionSteps;
@@ -62,7 +61,7 @@ public class MakeDepositApiTest extends BaseTest {
         var apiAccountsBeforeRequest = userSteps.getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId());
 
-        this.depositSteps.sendDepositWithStringResponse(depositRequestBody, RequestSpecs.adminSpec(), ResponseSpecs.accessForbidden());
+        DepositSteps.sendDepositWithStringResponse(depositRequestBody, RequestSpecs.adminSpec(), ResponseSpecs.accessForbidden());
 
         var apiAccountsAfterRequest = SessionStorage.getUserSteps(FIRST_ACC_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(apiAccountsBeforeRequest, apiAccountsAfterRequest, firstUserAccount);
@@ -81,7 +80,7 @@ public class MakeDepositApiTest extends BaseTest {
         var totalBalance = firstUserAccount.getBalance() + depositRequestBody.getAmount();
         var expectedAccountDao = ExpectedAccountState.withBalance(firstUserAccount, totalBalance);
 
-        var depositResponseBody = this.depositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok());
+        var depositResponseBody = DepositSteps.sendDeposit(depositRequestBody, RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.ok());
         firstUserAccount.setBalance(firstUserAccount.getBalance() + depositRequestBody.getAmount());
 
         var transfers = SessionStorage.getUserSteps(FIRST_ACC_ID).getAccountTransactions(firstUserAccount.getId());
@@ -114,11 +113,11 @@ public class MakeDepositApiTest extends BaseTest {
         var secondUserAccount = SessionStorage.getUserAccount(secondUser.getUsername(), FIRST_ACC_ID);
         depositRequestBody.setAccountId(secondUserAccount.getId());
 
-        var depositResponseBody = this.depositSteps.sendDeposit(
+        var depositResponseBody = DepositSteps.sendDeposit(
                 depositRequestBody,
                 RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.accessForbidden()
         );
-        this.accountAssertionSteps.assertMessage(UNAUTHORIZED_ACCESS_TO_ACCOUNT, depositResponseBody.getMessage());
+        this.stringAssertionsSteps.assertTextEqualsTo(UNAUTHORIZED_ACCESS_TO_ACCOUNT, depositResponseBody.getMessage());
 
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, secondUserAccount);
@@ -139,11 +138,11 @@ public class MakeDepositApiTest extends BaseTest {
 
         var depositRequestBody = DepositRequestGenerator.generate();
 
-        var depositResponseBody = this.depositSteps.sendDeposit(
+        var depositResponseBody = DepositSteps.sendDeposit(
                 depositRequestBody,
                 RequestSpecs.userSpec(firstUser.getToken()), ResponseSpecs.accessForbidden()
         );
-        this.accountAssertionSteps.assertMessage(UNAUTHORIZED_ACCESS_TO_ACCOUNT, depositResponseBody.getMessage());
+        this.stringAssertionsSteps.assertTextEqualsTo(UNAUTHORIZED_ACCESS_TO_ACCOUNT, depositResponseBody.getMessage());
 
         var dbAccountsAfterRequest = SqlSteps.findAllAccountsByCustomerId(user.getId());
         this.dbAssertionSteps.assertAccountDaoListEquals(dbAccountsAfterRequest, dbAccountsBeforeRequest);
@@ -161,7 +160,7 @@ public class MakeDepositApiTest extends BaseTest {
         var totalBalance = firstUserAccount.getBalance() + balance;
         var expectedAccountDao = ExpectedAccountState.withBalance(firstUserAccount, totalBalance);
 
-        var depositResponseBody =  this.depositSteps.sendDeposit(
+        var depositResponseBody = DepositSteps.sendDeposit(
                 depositRequestBody,
                 RequestSpecs.userSpec(firstUser.getToken()),
                 ResponseSpecs.ok()
@@ -196,12 +195,12 @@ public class MakeDepositApiTest extends BaseTest {
         var accountsBeforeRequest = userSteps.getUserAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId(), balance);
 
-        var depositResponseBody = this.depositSteps.sendDeposit(
+        var depositResponseBody = DepositSteps.sendDeposit(
                 depositRequestBody,
                 RequestSpecs.userSpec(firstUser.getToken()),
                 ResponseSpecs.badRequest()
         );
-        this.accountAssertionSteps.assertMessage(
+        this.stringAssertionsSteps.assertTextEqualsTo(
                 ErrorMessages.Deposit.INVALID_ACCOUNT_OR_AMOUNT,
                 depositResponseBody.getMessage()
         );
@@ -229,19 +228,36 @@ public class MakeDepositApiTest extends BaseTest {
                         .amount(5000.01)
                         .build();
 
-        var depositResponseBody = this.depositSteps.sendDeposit(
+        var depositResponseBody = DepositSteps.sendDeposit(
                 depositRequestBody,
                 RequestSpecs.userSpec(firstUser.getToken()),
                 ResponseSpecs.badRequest()
         );
         var message = depositResponseBody.getMessage();
-        this.depositAssertionSteps.assertMessage(ErrorMessages.Deposit.DEPOSIT_AMOUNT_EXCEED_MAX, message);
+        this.stringAssertionsSteps.assertTextEqualsTo(ErrorMessages.Deposit.DEPOSIT_AMOUNT_EXCEED_MAX, message);
 
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, firstUserAccount);
 
         var dbAccountAfterRequest = SqlSteps.getAccountByAccountNumber(firstUserAccount.getAccountNumber());
         this.dbAssertionSteps.assertAccountDaoEquals(dbAccountAfterRequest, dbAccountBeforeRequest, true);
+    }
+
+    @Test
+    @UserSession(accountsNumber = 1)
+    @DisplayName("Deposit request is rejected when auth header is empty")
+    public void shouldRejectUnauthorisedDepositRequest() {
+        var testData = TransactionTestData.getUserAccount(FIRST_USER_ID, FIRST_ACC_ID);
+        firstUserAccount = testData.getAccount();
+        var depositRequestBody = DepositRequestGenerator.generate(firstUserAccount.getId());
+
+        var response = DepositSteps.sendDepositWithStringResponse(
+                depositRequestBody,
+                RequestSpecs.unauthSpec(),
+                ResponseSpecs.unauthorized()
+        );
+
+        this.stringAssertionsSteps.assertTextIsEmpty(response);
     }
 }
 

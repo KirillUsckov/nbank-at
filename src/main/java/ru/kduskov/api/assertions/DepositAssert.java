@@ -5,6 +5,7 @@ import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.models.body.request.DepositRequestBody;
 import ru.kduskov.api.models.body.response.accounts.deposit.DepositResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.common.assertions.BaseAssert;
 
 public class DepositAssert extends BaseAssert<DepositAssert, DepositResponseBody> {
     public DepositAssert(DepositResponseBody actual, SoftAssertions softly) {

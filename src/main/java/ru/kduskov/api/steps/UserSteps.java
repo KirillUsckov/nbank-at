@@ -1,6 +1,7 @@
 package ru.kduskov.api.steps;
 
 import io.qameta.allure.Step;
+import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.ResponseSpecification;
 import lombok.AllArgsConstructor;
 import ru.kduskov.api.enums.Endpoint;
@@ -9,6 +10,7 @@ import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
 import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
 import ru.kduskov.api.models.body.response.customer.profile.CustomerAccountsResponseBody;
 import ru.kduskov.api.models.body.response.general.UserProfileResponseBody;
+import ru.kduskov.api.requests.skelethon.requesters.CrudRequester;
 import ru.kduskov.api.requests.skelethon.requesters.ValidatedCrudRequested;
 import ru.kduskov.api.specs.RequestSpecs;
 import ru.kduskov.api.specs.ResponseSpecs;
@@ -28,6 +30,21 @@ public class UserSteps {
                 Endpoint.CHANGE_USER_PROFILE
         )
                 .put(body);
+    }
+
+    @Step("Change user profile without auth")
+    public String changeUserProfileWithoutAuth(
+            ChangeUserProfileRequestBody body,
+            ResponseSpecification responseSpecification
+    ) {
+        return new CrudRequester(
+                RequestSpecs.unauthSpec(),
+                responseSpecification,
+                Endpoint.CHANGE_USER_PROFILE
+        )
+                .put(body)
+                .extract()
+                .asString();
     }
 
     @Step("Get user profile")

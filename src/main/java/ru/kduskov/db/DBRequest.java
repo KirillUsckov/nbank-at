@@ -558,11 +558,15 @@ public class DBRequest {
     }
 
     private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(
+        Connection connection = DriverManager.getConnection(
                 Config.getProperty(ConfigParams.DB_URL),
                 Config.getProperty(ConfigParams.DB_USERNAME),
                 Config.getProperty(ConfigParams.DB_PASSWORD)
         );
+        try (var statement = connection.createStatement()) {
+            statement.execute("SET TIME ZONE 'UTC'");
+        }
+        return connection;
     }
 
     // Builder

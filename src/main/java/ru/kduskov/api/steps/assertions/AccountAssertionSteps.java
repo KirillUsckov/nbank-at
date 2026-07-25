@@ -10,11 +10,11 @@ import ru.kduskov.api.models.body.response.customer.profile.CustomerAccountsResp
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.utils.AccountsListUtils;
 import ru.kduskov.api.utils.TransactionsListUtils;
-import ru.kduskov.common.assertions.OptionalAssert;
+
 import ru.kduskov.common.steps.BaseAssertionsSteps;
 
 import java.util.List;
-import java.util.Optional;
+
 
 public class AccountAssertionSteps extends BaseAssertionsSteps {
 

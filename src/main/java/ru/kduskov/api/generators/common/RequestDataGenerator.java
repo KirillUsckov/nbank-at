@@ -3,8 +3,9 @@ package ru.kduskov.api.generators.common;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import net.datafaker.Faker;
 import ru.kduskov.api.annotations.GeneratingRule;
-import ru.kduskov.api.enums.GenerationsRules;
+import ru.kduskov.common.enums.GenerationsRules;
 import ru.kduskov.api.models.body.request.BaseRequest;
+import ru.kduskov.common.generators.RandomData;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -31,50 +32,18 @@ public final class RequestDataGenerator {
     }
 
     private static Object generateFromRegex(String regex) {
-        return RgxGen.parse(regex).generate();
+        String reg = RgxGen.parse(regex).generate();
+        return reg;
     }
 
     private static Object generateFromValueKey(GenerationsRules rule, int minLength, int maxLength) {
         return switch (rule) {
             case DEPOSIT_BALANCE -> Double.parseDouble(DF.format(new Random().nextDouble(0.01, 5_001)));
             case TRANSFER_AMOUNT -> Double.parseDouble(DF.format(new Random().nextDouble(0.01, 10_001)));
-            case PASSWORD -> generateSecurePassword(minLength, maxLength);
+            // TODO: удалить
+            case PASSWORD -> RandomData.generateSecurePassword(minLength, maxLength);
             default -> null;
         };
-    }
-
-    private static String generateSecurePassword(int minLength, int maxLength) {
-        var upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        var lower = "abcdefghijklmnopqrstuvwxyz";
-        var digits = "0123456789";
-        var special = "@$!%-+?&";
-
-        var random = new Random();
-        var password = new StringBuilder();
-
-        password.append(lower.charAt(random.nextInt(lower.length())));
-        password.append(upper.charAt(random.nextInt(upper.length())));
-        password.append(digits.charAt(random.nextInt(digits.length())));
-        password.append(special.charAt(random.nextInt(special.length())));
-
-        var allChars = upper + lower + digits + special;
-        minLength = minLength < 0 ? 0 : maxLength;
-        maxLength = maxLength < 0 ? Integer.MAX_VALUE : maxLength;
-        var length = minLength + random.nextInt(maxLength - 1);
-        for (int i = 4; i < length; i++) {
-            password.append(allChars.charAt(random.nextInt(allChars.length())));
-        }
-
-        // Перемешиваем символы
-        var chars = password.toString().toCharArray();
-        for (var i = chars.length - 1; i > 0; i--) {
-            var j = random.nextInt(i + 1);
-            var temp = chars[i];
-            chars[i] = chars[j];
-            chars[j] = temp;
-        }
-
-        return new String(chars);
     }
 
     private static Object generateByType(Class<?> type) {

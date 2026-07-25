@@ -11,6 +11,7 @@ public enum ConfigParams {
     UI_BASE_URL("ui.baseUrl"),
     UI_BROWSER("ui.browser"),
     UI_BROWSER_SIZE("ui.browserSize"),
+    UI_TIMEOUT("ui.timeout"),
     ADMIN_USERNAME("admin.username"),
     ADMIN_PASSWORD("admin.password"),
     ADMIN_TOKEN("admin.token"),

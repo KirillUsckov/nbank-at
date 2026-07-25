@@ -1,0 +1,28 @@
+---
+openapi: "3.0.1"
+servers:
+- url: "localhost"
+paths:
+  /api/v1/accounts/transfer:
+    post:
+      parameters:
+      - name: "Accept"
+        in: "header"
+        example: "application/json, application/javascript, text/javascript, text/json"
+      - name: "Authorization"
+        in: "header"
+        example: "Basic azFrYkZyYXU6ajFsdiZWelptOGQ0JnFZNSVLKzBZRi1tSVBOKyFEU1QxaiRNJncmR1dASzZCZVc0MTZYYSFad0BPUVczaDJtQE56aFFXY0lpeC1BMGNNISZzTVVQZnhUN1FXWHBjUHdUVWJheTdSdGpHM2h5ZCVUS1lpN0liJmYzanV3dTA4bVZXcHkmOW9qTEo4IUVsVEp3SHkkTkdDdmM4M2FZZWVKamdAJTNqajRzK3kyVGtPSGkmcjdRVj9jK2dAY000QDg5ViskeFJ1b3Y="
+      - name: "Content-Type"
+        in: "header"
+        example: "application/json"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              exampleSetFlag: false
+            exampleSetFlag: false
+      responses:
+        "200":
+          content:
+            application/json:
+              exampleSetFlag: false

@@ -42,6 +42,7 @@ public class FraudMockExtension implements BeforeEachCallback {
                 StandardCharsets.UTF_8
         );
         stubFor(post(urlEqualTo("/fraud-check"))
+
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")

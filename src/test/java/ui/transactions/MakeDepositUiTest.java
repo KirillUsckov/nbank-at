@@ -5,11 +5,12 @@ import org.junit.jupiter.api.Test;
 import ru.kduskov.api.generators.DepositRequestGenerator;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
+import ru.kduskov.common.steps.StringAssertionsSteps;
 import ru.kduskov.common.storage.SessionStorage;
+import ru.kduskov.ui.enums.MessageTypes;
 import ru.kduskov.ui.pages.DashboardPage;
 import ru.kduskov.ui.pages.MakeDepositPage;
 import ru.kduskov.ui.steps.BrowserSteps;
-import ru.kduskov.ui.steps.assertions.AlertAssertionSteps;
 import ui.BaseUiTest;
 
 import static common.Constans.FIRST_ACC_ID;
@@ -21,13 +22,13 @@ import static ru.kduskov.ui.pages.BasePage.loginWithUserCredentials;
 public class MakeDepositUiTest extends BaseUiTest {
     private final DashboardPage dashboardPage = new DashboardPage();
     private final MakeDepositPage makeDepositPage = new MakeDepositPage();
-    private AlertAssertionSteps alertAssertionSteps;
+    private StringAssertionsSteps stringAssertionsSteps;
     private AccountAssertionSteps accountAssertionSteps;
 
     @BeforeEach
     public void initAssertionClasses() {
         this.accountAssertionSteps = new AccountAssertionSteps(softly);
-        this.alertAssertionSteps = new AlertAssertionSteps(softly);
+        this.stringAssertionsSteps = new StringAssertionsSteps(softly);
     }
 
     @Test
@@ -53,7 +54,7 @@ public class MakeDepositUiTest extends BaseUiTest {
                 depositRequestBody.getAmount(),
                 userAccount.getAccountNumber()
         );
-        alertAssertionSteps.assertTextEqualsTo(expectedMessage, successfulMessage);
+        stringAssertionsSteps.assertTextEqualsTo(MessageTypes.ALERT.getTxt(), expectedMessage, successfulMessage);
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts().getAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
@@ -77,7 +78,7 @@ public class MakeDepositUiTest extends BaseUiTest {
         makeDepositPage.clickDepositButton();
 
         var errorMessage = BrowserSteps.getAlertText();
-        alertAssertionSteps.assertTextEqualsTo(DEPOSIT_LESS_OR_EQUAL_TO_5000.getMessage(), errorMessage);
+        stringAssertionsSteps.assertTextEqualsTo(MessageTypes.ALERT.getTxt(), DEPOSIT_LESS_OR_EQUAL_TO_5000.getMessage(), errorMessage);
 
         var accountsAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(accountsBeforeRequest, accountsAfterRequest, userAccount);

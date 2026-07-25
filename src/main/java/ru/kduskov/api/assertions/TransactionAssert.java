@@ -4,13 +4,8 @@ import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.enums.TransactionType;
 import ru.kduskov.api.models.body.response.Transaction;
-import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
+import ru.kduskov.common.assertions.BaseAssert;
 import ru.kduskov.common.utils.DateTimeUtils;
-
-import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Comparator;
 
 public class TransactionAssert extends BaseAssert<TransactionAssert, Transaction> {
 
@@ -43,9 +38,7 @@ public class TransactionAssert extends BaseAssert<TransactionAssert, Transaction
     }
 
     private TransactionAssert hasTimestampCloseToNow() {
-        long secondsDiff = DateTimeUtils.differenceWithCurrentMoscowTimeInSeconds(
-                actual.getTimestamp()
-        );
+        long secondsDiff = DateTimeUtils.differenceWithCurrent(actual.getTimestamp());
 
         softly.assertThat(secondsDiff)
                 .withFailMessage("Transaction time difference is more than 30 seconds. Difference: %ss", secondsDiff)
@@ -71,17 +64,5 @@ public class TransactionAssert extends BaseAssert<TransactionAssert, Transaction
                 .hasTransactionType(expectedType)
                 .hasRelatedAccountId(expectedRelatedAccountId)
                 .hasTimestampCloseToNow();
-    }
-
-    public TransactionAssert isDeposit(double expectedAmount, long expectedAccountId) {
-        return matches(expectedAmount, TransactionType.DEPOSIT, expectedAccountId);
-    }
-
-    public TransactionAssert isTransferIn(double expectedAmount, long expectedRelatedAccountId) {
-        return matches(expectedAmount, TransactionType.TRANSFER_IN, expectedRelatedAccountId);
-    }
-
-    public TransactionAssert isTransferOut(double expectedAmount, long expectedRelatedAccountId) {
-        return matches(expectedAmount, TransactionType.TRANSFER_OUT, expectedRelatedAccountId);
     }
 }

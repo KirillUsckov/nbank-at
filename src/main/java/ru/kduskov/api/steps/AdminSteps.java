@@ -1,5 +1,9 @@
 package ru.kduskov.api.steps;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import ru.kduskov.api.enums.Endpoint;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.CreateUserRequestBody;
@@ -20,15 +24,18 @@ public final class AdminSteps {
                 .get();
     }
 
-    public static String deleteUser(long userId) {
-        return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.ok(), Endpoint.DELETE_USER)
+    public static ExtractableResponse<Response> deleteUser(
+            RequestSpecification requestSpec,
+            ResponseSpecification responseSpec,
+            Long userId
+    ) {
+        return new CrudRequester(requestSpec, responseSpec, Endpoint.DELETE_USER)
                 .delete(userId)
-                .extract()
-                .asString();
+                .extract();
     }
 
-    public static String createUser(CreateUserRequestBody requestBody) {
-        return new CrudRequester(RequestSpecs.adminSpec(), ResponseSpecs.entityWasCreated(), Endpoint.CREATE_USER)
+    public static String createUser(RequestSpecification requestSpecs, ResponseSpecification responseSpecs, CreateUserRequestBody requestBody) {
+        return new CrudRequester(requestSpecs, responseSpecs, Endpoint.CREATE_USER)
                 .post(requestBody)
                 .extract()
                 .header("Authorization");
@@ -36,13 +43,7 @@ public final class AdminSteps {
 
     public static UserModel createRandomUser() {
         var requestBody = RequestDataGenerator.generateFilledObject(CreateUserRequestBody.class);
-
-        System.out.printf(
-                "Created user: %s, thread=%s%n",
-                requestBody.getUsername(),
-                Thread.currentThread().getName()
-        );
-        var authToken = createUser(requestBody);
+        var authToken = createUser(RequestSpecs.adminSpec(), ResponseSpecs.entityWasCreated(), requestBody);
         return UserModel.fromCreateUserRequest(requestBody, authToken);
     }
 }

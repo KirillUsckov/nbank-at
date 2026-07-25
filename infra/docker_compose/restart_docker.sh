@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo ">>> Остановить docker-compose"
-docker compose down
+docker compose down -v
 
 echo ">>> Выгрузить образы из config/browsers.json"
 

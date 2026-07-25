@@ -3,13 +3,8 @@ package ru.kduskov.api.assertions;
 import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.enums.TransactionType;
-import ru.kduskov.api.models.body.response.Transaction;
 import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
-
-import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Comparator;
+import ru.kduskov.common.assertions.BaseAssert;
 
 public class TransactionsAssert extends BaseAssert<TransactionsAssert, TransactionsResponseBody> {
 

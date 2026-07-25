@@ -22,11 +22,6 @@ public class UserSessionExtension implements BeforeEachCallback {
         if (annotation == null) {
             return;
         }
-        System.out.printf(
-                "beforeEach: test=%s, thread=%s%n",
-                context.getRequiredTestMethod().getName(),
-                Thread.currentThread().getName()
-        );
 
         Allure.step("Create user session", () ->
                 createSession(annotation)

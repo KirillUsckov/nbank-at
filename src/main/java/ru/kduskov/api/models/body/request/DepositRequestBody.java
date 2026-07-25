@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 import ru.kduskov.api.annotations.GeneratingRule;
-import ru.kduskov.api.enums.GenerationsRules;
+import ru.kduskov.common.enums.GenerationsRules;
 
 @Data
 @Builder

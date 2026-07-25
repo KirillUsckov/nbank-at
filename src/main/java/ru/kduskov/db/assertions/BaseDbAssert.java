@@ -52,7 +52,7 @@ public abstract class BaseDbAssert<S extends BaseDbAssert<S, A>, A extends BaseD
     protected BaseDbAssert<S, A> dateUpdatedAfter(LocalDateTime expected) {
         softly.assertThat(actual.getUpdatedAt())
                 .withFailMessage(
-                        String.format("Expected date updated %s should be after %s", expected, actual.getUpdatedAt())
+                        String.format("Actual date updated %s should be after expected %s", actual.getUpdatedAt(), expected)
                 )
                 .isAfter(expected);
         return this;

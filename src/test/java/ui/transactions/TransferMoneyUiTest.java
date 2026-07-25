@@ -5,7 +5,7 @@ import ru.kduskov.api.enums.TransactionType;
 import support.TransactionTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.kduskov.api.generators.common.RandomData;
+import ru.kduskov.common.generators.RandomData;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
@@ -54,7 +54,6 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
         var recipientAccountNumber = firstUserSecondAccount.getAccountNumber();
         dashboardPage.clickMakeTransferButton();
-        BrowserSteps.refresh();
 
         transferPage.waitPageOpened();
         transferPage.selectAccount(firstUserAccount.getAccountNumber());

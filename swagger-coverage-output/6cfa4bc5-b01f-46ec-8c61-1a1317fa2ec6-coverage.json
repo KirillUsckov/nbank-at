@@ -1,0 +1,36 @@
+{
+  "swagger" : "2.0",
+  "host" : "localhost",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/api/v1/accounts/transfer-with-fraud-check" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json, application/javascript, text/javascript, text/json"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "Basic Y0hkM0k6U0ltanJsNFEtVkEwMnVNY0ttejhKb3h3TGxaU2cyUSRjNHR6ZFAxWUViU0FGN2FrJU92dFNaZFZpUnBUZTYyc2RtUUNiWj92MGxzdlA3JiZ2WnJaeFBRUWRyVTU4JSYlMHNRIW8xJFh1SjdlSGUrbzhaJjlMaT9tU09KM0h2cXEreTBQT2JCUzg1YmotaTRJWSFvMEw0V2orWkBKJS0wSjNaMUMxdnpMbkBhbm94dWpzbXk1TW9OQm1vb3k0QzIlK1huQXZoYVhZcEVrWTJMMEdHaHlyITJYRUV1QnMr"
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    }
+  }
+}
