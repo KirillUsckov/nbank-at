@@ -87,7 +87,6 @@ public final class RandomData {
         if (minLength <= 0) {
             return EMPTY;
         }
-        // Генерируем строку длины minLength - 1
         return generateStringOfLength(minLength - 1);
     }
 
