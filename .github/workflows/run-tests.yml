@@ -33,11 +33,6 @@ jobs:
       - name: Wait for backend startup
         run: bash infra/docker_compose/wait-for-backend.sh
 
-      - name: Inspect image
-        if: always()
-        run: |
-          docker buildx imagetools inspect nobugsme/nbank:with_fraud_check_with_approve
-
       - name: Run tests
         run: ./mvnw clean test -q
 
