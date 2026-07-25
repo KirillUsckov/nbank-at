@@ -1,12 +1,12 @@
 package ru.kduskov.api.utils;
 
+import lombok.experimental.UtilityClass;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 
 import java.util.List;
 
+@UtilityClass
 public final class AccountsListUtils {
-    private AccountsListUtils() {}
-
     public static AccountResponseBody findAccountOrElseThrow(
             List<AccountResponseBody> accounts,
             String accountNumber

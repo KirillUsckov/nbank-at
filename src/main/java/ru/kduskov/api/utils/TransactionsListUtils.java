@@ -1,14 +1,14 @@
 package ru.kduskov.api.utils;
 
+import lombok.experimental.UtilityClass;
 import ru.kduskov.api.enums.TransactionType;
 import ru.kduskov.api.models.body.response.Transaction;
 
 import java.util.Comparator;
 import java.util.List;
 
+@UtilityClass
 public class TransactionsListUtils {
-    private TransactionsListUtils() {}
-
     public static Transaction findLatestTransaction(List<Transaction> transactions) {
         return transactions.stream()
                 .max(Comparator.comparing(Transaction::getId))
