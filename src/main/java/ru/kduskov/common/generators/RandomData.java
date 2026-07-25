@@ -99,11 +99,9 @@ public final class RandomData {
         return RgxGen.parse(regex).generateNotMatching();
     }
 
-    // Вспомогательные методы
-
     private static String generateStringOfLength(int length) {
         if (length <= 0) {
-            return "";
+            return EMPTY;
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {

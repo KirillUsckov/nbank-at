@@ -5,7 +5,7 @@ build/
 !**/src/test/**/build/
 target/
 test-results/
-
+swagger-coverage-output/
 ### IntelliJ IDEA ###
 .idea/
 *.iws
