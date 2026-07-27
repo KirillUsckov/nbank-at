@@ -26,7 +26,7 @@ jobs:
       - name: Make scripts executable
         run: |
           chmod +x ./mvnw 
-          chmod +x ./swagger-coverage-commandline-1.5.0/bin/swagger-coverage-commandline
+          chmod +x .swagger-coverage-commandline-1.5.0/bin/swagger-coverage-commandline
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -49,7 +49,7 @@ jobs:
       - name: Run Swagger coverage
         if: always()
         run: |
-          ./swagger-coverage-commandline-1.5.0/bin/swagger-coverage-commandline \
+          .swagger-coverage-commandline-1.5.0/bin/swagger-coverage-commandline \
             -s http://localhost:4111/v3/api-docs \
             -i swagger-coverage-output
 
