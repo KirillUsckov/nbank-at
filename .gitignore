@@ -5,7 +5,6 @@ build/
 !**/src/test/**/build/
 target/
 test-results/
-!.swagger-coverage-commandline-1.5.0/
 swagger-coverage-output/
 ### IntelliJ IDEA ###
 .idea/
@@ -24,7 +23,6 @@ out/
 .settings
 .springBeans
 .sts4-cache
-bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
