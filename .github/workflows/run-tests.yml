@@ -33,6 +33,12 @@ jobs:
       - name: Wait for backend startup
         run: bash infra/docker_compose/wait-for-backend.sh
 
+      - name: Inspect Docker network
+        if: always()
+        run: |
+          docker network inspect nbank-network
+          docker ps -a
+
       - name: Run tests
         run: ./mvnw clean test -q
 
@@ -129,18 +135,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: allure-report
-          path: reports/test-report/${{ github.run_number }}/allure-report
+          path: site/test-report/${{ github.run_number }}/allure-report
 
       - name: Download Swagger report
         uses: actions/download-artifact@v4
         with:
           name: swagger-report
-          path: reports/test-report/${{ github.run_number }}/swagger-coverage
+          path: site/test-report/${{ github.run_number }}/swagger-coverage
 
       - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: reports
+          publish_dir: site
           keep_files: true
