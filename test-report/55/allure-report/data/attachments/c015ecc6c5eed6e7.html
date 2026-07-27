@@ -1,0 +1,32 @@
+<div>POST to http://localhost:4111/api/v1/admin/users</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;username&quot;: &quot;6To&quot;,
+    &quot;name&quot;: &quot;OtbQMNwvzWNWQlrpxsfxnEwWLehGZgEZNlrtbdlKymlaevwSg hcaTSRcqtVBWVTYLjvEcBySmesehNV&quot;,
+    &quot;password&quot;: &quot;Yr@1dW&amp;GmytJgniY&amp;MFLVvATtLKJwriVWsJNn8NtRN44&amp;!kQ^z0vjLqwGa2B=EhoJf6PG%N=$HN$tzFtOEf6P1eUS!jXB3JcZG%le^7icDQJ4lXEJjj6&amp;l@LkR0&quot;,
+    &quot;role&quot;: &quot;USER&quot;
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Basic YWRtaW46YWRtaW4=</div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:4111/api/v1/admin/users&#39; -H &#39;Authorization: Basic YWRtaW46YWRtaW4=&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;username&quot;: &quot;6To&quot;,
+    &quot;name&quot;: &quot;OtbQMNwvzWNWQlrpxsfxnEwWLehGZgEZNlrtbdlKymlaevwSg hcaTSRcqtVBWVTYLjvEcBySmesehNV&quot;,
+    &quot;password&quot;: &quot;Yr@1dW&amp;GmytJgniY&amp;MFLVvATtLKJwriVWsJNn8NtRN44&amp;!kQ^z0vjLqwGa2B=EhoJf6PG%N=$HN$tzFtOEf6P1eUS!jXB3JcZG%le^7icDQJ4lXEJjj6&amp;l@LkR0&quot;,
+    &quot;role&quot;: &quot;USER&quot;
+}&#39;
+    </div>
+
