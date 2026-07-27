@@ -33,14 +33,12 @@ jobs:
       - name: Wait for backend startup
         run: bash infra/docker_compose/wait-for-backend.sh
 
-      - name: Inspect Docker network
-        if: always()
-        run: |
-          docker network inspect nbank-network
-          docker ps -a
-
       - name: Run tests
         run: ./mvnw clean test -q
+
+      - name: Print Selenoid logs
+        if: always()
+        run: docker logs selenoid
 
       - name: Run Swagger coverage
         if: always()
