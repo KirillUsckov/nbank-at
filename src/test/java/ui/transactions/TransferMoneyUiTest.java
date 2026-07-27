@@ -1,7 +1,9 @@
 package ui.transactions;
 
 import io.qameta.allure.Step;
+import org.junit.jupiter.api.DisplayName;
 import ru.kduskov.api.enums.TransactionType;
+import ru.kduskov.ui.enums.MessageTypes;
 import support.TransactionTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +20,7 @@ import ui.BaseUiTest;
 import static common.Constans.FIRST_ACC_ID;
 import static common.Constans.FIRST_USER_ID;
 import static common.Constans.SECOND_USER_ID;
-import static ru.kduskov.api.enums.BankAlerts.FILL_ALL_FIELDS_AND_CONFIRM;
-import static ru.kduskov.api.enums.BankAlerts.SUCCESSFULLY_TRANSFERRED_TO_ACCOUNT;
-import static ru.kduskov.api.enums.BankAlerts.RECIPIENT_NAME_DOES_NOT_MATCH_REGISTERED_NAME;
+import static ru.kduskov.api.enums.BankAlerts.*;
 
 public class TransferMoneyUiTest extends BaseUiTest {
     private AccountResponseBody firstUserAccount;
@@ -43,7 +43,8 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
     @Test
     @UserSession(accountsNumber = 2, isUi = true)
-    public void transferMoneySuccessfully() {
+    @DisplayName("User can transfer money between own accounts and see successful alert")
+    public void shouldTransferMoneyBetweenOwnAccounts() {
         prepareFundedSenderAccount();
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts().getAccounts();
@@ -65,7 +66,7 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
         var successfulTransferAlertText = BrowserSteps.getAlertText();
         var expectedMessage = String.format(SUCCESSFULLY_TRANSFERRED_TO_ACCOUNT.getMessage(), amount, recipientAccountNumber);
-        softly.assertThat(successfulTransferAlertText).isEqualTo(expectedMessage);
+        stringAssertionsSteps.assertTextEqualsTo(MessageTypes.ALERT.getTxt(), expectedMessage, successfulTransferAlertText);
 
         var accountsAfterRequest = userSteps.getUserAccounts().getAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
@@ -91,7 +92,8 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
     @Test
     @UserSession(accountsNumber = 2, isUi = true)
-    public void transferMoneyErrorWithoutConfirmCheckbox() {
+    @DisplayName("User cannot transfer money without confirming the transfer and see failure alert")
+    public void shouldRejectTransferWithoutConfirmation() {
         prepareFundedSenderAccount();
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts();
@@ -111,7 +113,11 @@ public class TransferMoneyUiTest extends BaseUiTest {
         transferPage.clickSendTransferButton();
 
         var failedTransferAlertText = BrowserSteps.getAlertText();
-        softly.assertThat(failedTransferAlertText).isEqualTo(FILL_ALL_FIELDS_AND_CONFIRM.getMessage());
+        stringAssertionsSteps.assertTextEqualsTo(
+                MessageTypes.ALERT.getTxt(),
+                FILL_ALL_FIELDS_AND_CONFIRM.getMessage(),
+                failedTransferAlertText
+        );
 
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -122,7 +128,8 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
     @Test
     @UserSession(accountsNumber = 2, isUi = true)
-    public void transferMoneyErrorWithMismatchedReceiverName() {
+    @DisplayName("User cannot transfer money when recipient name does not match and see failure alert")
+    public void shouldRejectTransferWhenRecipientNameDoesNotMatch() {
         prepareFundedSenderAccount();
 
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
@@ -144,7 +151,11 @@ public class TransferMoneyUiTest extends BaseUiTest {
         transferPage.clickSendTransferButton();
 
         var failedTransferAlertText = BrowserSteps.getAlertText();
-        softly.assertThat(failedTransferAlertText).isEqualTo(RECIPIENT_NAME_DOES_NOT_MATCH_REGISTERED_NAME.getMessage());
+        stringAssertionsSteps.assertTextEqualsTo(
+                MessageTypes.ALERT.getTxt(),
+                RECIPIENT_NAME_DOES_NOT_MATCH_REGISTERED_NAME.getMessage(),
+                failedTransferAlertText
+        );
 
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(

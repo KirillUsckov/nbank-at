@@ -1,6 +1,7 @@
 package ui.transactions;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.kduskov.api.generators.DepositRequestGenerator;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
@@ -33,7 +34,8 @@ public class MakeDepositUiTest extends BaseUiTest {
 
     @Test
     @UserSession(accountsNumber = 1, isUi = true)
-    public void makeDepositSuccessfully() {
+    @DisplayName("User can deposit money into own account and see success alert")
+    public void shouldDepositMoneyIntoOwnAccount() {
         var user = SessionStorage.getUser(FIRST_USER_ID);
         var userAccount = SessionStorage.getUserAccount(user.getUsername(), FIRST_ACC_ID);
 
@@ -68,7 +70,8 @@ public class MakeDepositUiTest extends BaseUiTest {
 
     @Test
     @UserSession(accountsNumber = 1, isUi = true)
-    public void makeDepositErrorWithTooHighAmount() {
+    @DisplayName("User sees error alert when deposit amount exceeds the limit")
+    public void shouldRejectDepositWhenAmountExceedsLimit() {
         var user = SessionStorage.getUser(FIRST_USER_ID);
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var userAccount = SessionStorage.getUserAccount(user.getUsername(), FIRST_ACC_ID);
