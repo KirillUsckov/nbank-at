@@ -52,6 +52,7 @@ public class TransferMoneyUiTest extends BaseUiTest {
         var name = customer.getName();
 
         var recipientAccountNumber = firstUserSecondAccount.getAccountNumber();
+        dashboardPage.waitPageOpened();
         dashboardPage.clickMakeTransferButton();
 
         transferPage.waitPageOpened();
@@ -99,6 +100,7 @@ public class TransferMoneyUiTest extends BaseUiTest {
         var name = customer.getName();
 
         var recipientAccountNumber = firstUserSecondAccount.getAccountNumber();
+        dashboardPage.waitPageOpened();
         dashboardPage.clickMakeTransferButton();
 
         transferPage.waitPageOpened();
@@ -130,6 +132,7 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
         var recipientAccountNumber = firstUserSecondAccount.getAccountNumber();
 
+        dashboardPage.waitPageOpened();
         dashboardPage.clickMakeTransferButton();
 
         transferPage.waitPageOpened();

@@ -3,6 +3,8 @@ services:
     platform: linux/arm64/v8
     image: nobugsme/nbank:with_fraud_check_with_approve
     container_name: backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/nbank
       - SPRING_DATASOURCE_USERNAME=postgres

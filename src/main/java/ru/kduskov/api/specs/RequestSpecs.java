@@ -4,6 +4,9 @@ import com.github.viclovsky.swagger.coverage.SwaggerCoverageRestAssured;
 import com.github.viclovsky.swagger.coverage.SwaggerCoverageV3RestAssured;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.filter.log.LogDetail;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import ru.kduskov.api.constants.Headers;
@@ -21,7 +24,7 @@ public final class RequestSpecs {
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .setBaseUri(Config.getProperty(API_BASE_URL))
-                .addFilters(List.of(new AllureRestAssured(), new SwaggerCoverageRestAssured(), new SwaggerCoverageV3RestAssured()));
+                .addFilters(List.of(new AllureRestAssured(), new RequestLoggingFilter(LogDetail.ALL), new ResponseLoggingFilter(LogDetail.ALL), new SwaggerCoverageRestAssured(), new SwaggerCoverageV3RestAssured()));
     }
 
     public static RequestSpecification unauthSpec() {

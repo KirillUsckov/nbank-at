@@ -40,6 +40,8 @@ public class MakeDepositUiTest extends BaseUiTest {
         loginWithUserCredentials(user.getToken());
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts().getAccounts();
         var depositRequestBody = DepositRequestGenerator.generate(userAccount.getId());
+
+        dashboardPage.waitPageOpened();
         dashboardPage.clickDepositMoneyButton();
 
         makeDepositPage.waitPageOpened();
@@ -71,6 +73,7 @@ public class MakeDepositUiTest extends BaseUiTest {
         var accountsBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserAccounts();
         var userAccount = SessionStorage.getUserAccount(user.getUsername(), FIRST_ACC_ID);
 
+        dashboardPage.waitPageOpened();
         dashboardPage.clickDepositMoneyButton();
         makeDepositPage.waitPageOpened();
         makeDepositPage.selectAccount(userAccount.getAccountNumber());

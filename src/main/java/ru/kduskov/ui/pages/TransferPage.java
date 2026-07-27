@@ -1,12 +1,10 @@
 package ru.kduskov.ui.pages;
 
 import com.codeborne.selenide.Selectors;
-import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
+import ru.kduskov.ui.elements.ButtonElement;
 import ru.kduskov.ui.elements.InputElement;
 import ru.kduskov.ui.elements.SelectElement;
-
-import static com.codeborne.selenide.Selenide.$;
 
 public class TransferPage extends BasePage {
     private final SelectElement accountsSelect = new SelectElement(Selectors.byXpath("//*[contains(@class,'account-selector')]"));
@@ -17,9 +15,9 @@ public class TransferPage extends BasePage {
 
     private final InputElement recipientAccountNumberInput = new InputElement(Selectors.byAttribute("placeholder", "Enter recipient account number"));
 
-    private final SelenideElement sendTransferButton = $(Selectors.byText("\uD83D\uDE80 Send Transfer"));
+    private final ButtonElement sendTransferButton = new ButtonElement(Selectors.byXpath("//button[contains(text(), 'Send Transfer')]"));
 
-    private final SelenideElement confirmTransferCheckbox = $(Selectors.byId("confirmCheck"));
+    private final ButtonElement confirmTransferCheckbox = new ButtonElement(Selectors.byId("confirmCheck"));
 
     @Override
     String url() {
@@ -28,7 +26,7 @@ public class TransferPage extends BasePage {
 
     @Override
     By pageLocator() {
-        return Selectors.byText("\uD83C\uDD95 New Transfer");
+        return Selectors.byXpath("//button[contains(text(), 'Send Transfer')]");
     }
 
     public void selectAccount(String accountNumber) {

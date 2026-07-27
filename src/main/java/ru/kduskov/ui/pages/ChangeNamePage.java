@@ -17,7 +17,7 @@ public class ChangeNamePage extends BasePage {
 
     @Override
     protected By pageLocator() {
-        return Selectors.byText("✏\uFE0F Edit Profile");
+        return Selectors.byXpath("//h1[contains(text(), 'Edit Profile')]");
     }
 
     public ChangeNamePage setNewUsername(String username) {

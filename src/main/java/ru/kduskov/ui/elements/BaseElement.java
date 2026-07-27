@@ -1,5 +1,6 @@
 package ru.kduskov.ui.elements;
 
+import com.codeborne.selenide.ClickOptions;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
@@ -17,7 +18,7 @@ public abstract class BaseElement {
                 .shouldBe(Condition.visible)
                 .scrollTo()
                 .shouldBe(Condition.clickable)
-                .click();
+                .click(ClickOptions.usingJavaScript());
     }
 
     protected SelenideElement find(By selector) {

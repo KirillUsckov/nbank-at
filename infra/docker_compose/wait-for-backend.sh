@@ -4,8 +4,8 @@ set -Eeuo pipefail
 
 CONTAINER_NAME="backend"
 EXPECTED_LOG="Started BankApplication"
-TIMEOUT_SECONDS=180
-CHECK_INTERVAL=2
+TIMEOUT_SECONDS=240
+CHECK_INTERVAL=5
 
 echo "Ожидаем запуска контейнера ${CONTAINER_NAME}..."
 
