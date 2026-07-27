@@ -1,7 +1,6 @@
 package ru.kduskov.mock;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import lombok.Getter;
 
@@ -17,7 +16,8 @@ public class MockRunner {
                             .port(8080)
             );
 
-            wireMockServer.start();}
+            wireMockServer.start();
+        }
     }
 
     public static void closeWireMock() {

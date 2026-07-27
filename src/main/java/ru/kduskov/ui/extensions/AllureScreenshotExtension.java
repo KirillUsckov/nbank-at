@@ -15,7 +15,7 @@ public class AllureScreenshotExtension implements TestExecutionExceptionHandler 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
         String className = context.getRequiredTestClass().getSimpleName();
-        if(className.toLowerCase().contains("uitest")) {
+        if (className.toLowerCase().contains("uitest")) {
             try {
                 // Take the binary screenshot from Selenide and forward it straight to Allure
                 byte[] screenshot = Selenide.screenshot(OutputType.BYTES);
