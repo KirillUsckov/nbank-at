@@ -20,7 +20,9 @@ import ui.BaseUiTest;
 import static common.Constans.FIRST_ACC_ID;
 import static common.Constans.FIRST_USER_ID;
 import static common.Constans.SECOND_USER_ID;
-import static ru.kduskov.api.enums.BankAlerts.*;
+import static ru.kduskov.api.enums.BankAlerts.FILL_ALL_FIELDS_AND_CONFIRM;
+import static ru.kduskov.api.enums.BankAlerts.SUCCESSFULLY_TRANSFERRED_TO_ACCOUNT;
+import static ru.kduskov.api.enums.BankAlerts.RECIPIENT_NAME_DOES_NOT_MATCH_REGISTERED_NAME;
 
 public class TransferMoneyUiTest extends BaseUiTest {
     private AccountResponseBody firstUserAccount;
