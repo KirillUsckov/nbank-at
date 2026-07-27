@@ -40,7 +40,6 @@ public final class RequestDataGenerator {
         return switch (rule) {
             case DEPOSIT_BALANCE -> Double.parseDouble(DF.format(new Random().nextDouble(0.01, 5_001)));
             case TRANSFER_AMOUNT -> Double.parseDouble(DF.format(new Random().nextDouble(0.01, 10_001)));
-            // TODO: удалить
             case PASSWORD -> RandomData.generateSecurePassword(minLength, maxLength);
             default -> null;
         };
