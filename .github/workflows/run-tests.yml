@@ -100,31 +100,45 @@ jobs:
     runs-on: ubuntu-latest
     needs: run-tests
     if: ${{ always() && needs.run-tests.result != 'cancelled' }}
+
     steps:
-      - name: Download allure results
+      - name: Download Allure results
         uses: actions/download-artifact@v4
         with:
           name: allure-results
           path: allure-results
 
-      - name: Load allure history
-        uses: actions/checkout@v2
+      - name: Load Allure history
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
         with:
           ref: gh-pages
           path: gh-pages
 
-      - name: Build allure report
+      - name: Prepare previous history
+        if: always()
+        run: |
+          mkdir -p previous-allure-history
+
+          if [ -d "gh-pages/allure-history" ]; then
+            cp -r gh-pages/allure-history/. previous-allure-history/
+          fi
+
+      - name: Build Allure report
         uses: simple-elf/allure-report-action@v1.15
+        if: always()
         with:
-          gh_pages: gh-pages
+          gh_pages: previous-allure-history
           allure_results: allure-results
           allure_history: allure-history
 
-      - name: Upload Allure report
+      - name: Upload complete Allure history
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report
-          path: allure-history/${{ github.run_number }}
+          name: allure-history
+          path: allure-history
+          if-no-files-found: error
           retention-days: 7
 
   publish-reports:
@@ -134,12 +148,13 @@ jobs:
       - run-tests
       - allure-report
     if: ${{ always() && needs.allure-report.result == 'success' }}
+
     steps:
-      - name: Download Allure report
+      - name: Download complete Allure history
         uses: actions/download-artifact@v4
         with:
-          name: allure-report
-          path: site/test-report/${{ github.run_number }}/allure-report
+          name: allure-history
+          path: complete-allure-history
 
       - name: Download Swagger report
         uses: actions/download-artifact@v4
@@ -147,8 +162,23 @@ jobs:
           name: swagger-report
           path: site/test-report/${{ github.run_number }}/swagger-coverage
 
+      - name: Prepare Allure report and history
+        run: |
+          mkdir -p \
+            site/test-report/${{ github.run_number }}/allure-report
+
+          mkdir -p site/allure-history
+
+          cp -r \
+            complete-allure-history/${{ github.run_number }}/. \
+            site/test-report/${{ github.run_number }}/allure-report/
+
+          cp -r \
+            complete-allure-history/. \
+            site/allure-history/
+
       - name: Publish to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
