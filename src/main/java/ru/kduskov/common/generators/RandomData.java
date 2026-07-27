@@ -169,7 +169,7 @@ public final class RandomData {
         }
 
         // Генерируем длину
-        int length = RANDOM.nextInt(minLength, maxLength + 1);
+        int length = RANDOM.nextInt(minLength, maxLength);
 
         StringBuilder password = new StringBuilder(length);
         List<Character> allCharsList = new ArrayList<>();
