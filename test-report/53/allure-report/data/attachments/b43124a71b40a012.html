@@ -1,0 +1,30 @@
+<div>POST to http://localhost:4111/api/v1/accounts/transfer</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;senderAccountId&quot;: 70,
+    &quot;receiverAccountId&quot;: 71,
+    &quot;amount&quot;: 10000.0
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Basic SlA0b0swLmR1RUF4SjpTdiUxbklpKzdKdFhCcXJCRXhUSDU2eHR0IUhEIUF0Y2laS242UjJYJXJzXm9pNDdtXjVDQnJCekQlaTZyU3ZBZzJRMTdaYkxBTVN3TkB3UT1pMTglTUUmYUdsUHZ4Rm5VRDAyTHB0Z0hENmV4b3RtTDQ=</div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:4111/api/v1/accounts/transfer&#39; -H &#39;Authorization: Basic SlA0b0swLmR1RUF4SjpTdiUxbklpKzdKdFhCcXJCRXhUSDU2eHR0IUhEIUF0Y2laS242UjJYJXJzXm9pNDdtXjVDQnJCekQlaTZyU3ZBZzJRMTdaYkxBTVN3TkB3UT1pMTglTUUmYUdsUHZ4Rm5VRDAyTHB0Z0hENmV4b3RtTDQ=&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;senderAccountId&quot;: 70,
+    &quot;receiverAccountId&quot;: 71,
+    &quot;amount&quot;: 10000.0
+}&#39;
+    </div>
+
