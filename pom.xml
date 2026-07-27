@@ -164,9 +164,8 @@
                         <version>${mvn.version}</version>
                         <configuration>
                             <rerunFailingTestsCount>2</rerunFailingTestsCount>
-                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <includes>
-                                <include>**/api/**/*Test.java</include>
+                                <include>**/java/**/*Test.java</include>
                             </includes>
                         </configuration>
                     </plugin>
