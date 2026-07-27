@@ -19,7 +19,7 @@ public final class RandomData {
     private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String LOWER = "abcdefghijklmnopqrstuvwxyz";
     private static final String DIGITS = "0123456789";
-    private static final String SPECIAL = "@$!%-+?&";
+    private static final String SPECIAL = "@$!%+?&";
     private static final String[] VALID_GROUPS = {UPPER, LOWER, DIGITS, SPECIAL};
 
     private static final int MIN_PASSWORD_LENGTH = 8;
