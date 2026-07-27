@@ -127,9 +127,6 @@ public final class RandomData {
      * @return безопасный пароль
      */
     public static String generateSecurePassword(int minLength, int maxLength) {
-        minLength = Math.max(minLength, VALID_GROUPS.length);
-        maxLength = Math.max(maxLength, minLength);
-
         return generateFromGroups(VALID_GROUPS, minLength, maxLength);
     }
 
@@ -154,10 +151,6 @@ public final class RandomData {
         Collections.shuffle(shuffledGroups, RANDOM);
         String[] selectedGroups = shuffledGroups.subList(0, numGroups).toArray(new String[0]);
 
-        // Корректируем длину
-        minLength = Math.max(minLength, selectedGroups.length);
-        maxLength = Math.max(maxLength, minLength);
-
         return generateFromGroups(selectedGroups, minLength, maxLength);
     }
 
@@ -174,10 +167,6 @@ public final class RandomData {
         if (groups == null || groups.length == 0) {
             throw new IllegalArgumentException("Должна быть хотя бы одна группа символов");
         }
-
-        // Корректируем минимальную длину
-        minLength = Math.max(minLength, groups.length);
-        maxLength = Math.max(maxLength, minLength);
 
         // Генерируем длину
         int length = RANDOM.nextInt(minLength, maxLength + 1);
