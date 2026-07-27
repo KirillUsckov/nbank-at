@@ -1,0 +1,30 @@
+<div>POST to http://localhost:4111/api/v1/accounts/transfer-with-fraud-check</div>
+
+    <h4>Body</h4>
+    <div>
+    <pre class="preformated-text">
+{
+    &quot;senderAccountId&quot;: 86,
+    &quot;receiverAccountId&quot;: 87,
+    &quot;amount&quot;: 9999.99
+}    </pre>
+    </div>
+
+    <h4>Headers</h4>
+    <div>
+            <div>Authorization: Basic X0Z2WkR0bFR5bFhpX0M6WmleM0xMM09XciVrdGM3Z3FqU2VFeWlyWksyYSFwV1BXWDVeeHdVTm8hdGRhcUUkYXVBdmoha0VHc0xyUVBvY2xISE1GcFhXUUhaWVhsZGZjJWg5RElvTk13JnVkdGtUT3M4T05yZU5IOGglMGFxZz0=</div>
+            <div>Accept: application/json, application/javascript, text/javascript, text/json</div>
+            <div>Content-Type: application/json</div>
+    </div>
+
+
+
+    <h4>Curl</h4>
+    <div>
+        curl -v -X POST &#39;http://localhost:4111/api/v1/accounts/transfer-with-fraud-check&#39; -H &#39;Authorization: Basic X0Z2WkR0bFR5bFhpX0M6WmleM0xMM09XciVrdGM3Z3FqU2VFeWlyWksyYSFwV1BXWDVeeHdVTm8hdGRhcUUkYXVBdmoha0VHc0xyUVBvY2xISE1GcFhXUUhaWVhsZGZjJWg5RElvTk13JnVkdGtUT3M4T05yZU5IOGglMGFxZz0=&#39; -H &#39;Accept: application/json, application/javascript, text/javascript, text/json&#39; -H &#39;Content-Type: application/json&#39; -d &#39;{
+    &quot;senderAccountId&quot;: 86,
+    &quot;receiverAccountId&quot;: 87,
+    &quot;amount&quot;: 9999.99
+}&#39;
+    </div>
+
