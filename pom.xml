@@ -165,7 +165,7 @@
                         <configuration>
                             <rerunFailingTestsCount>2</rerunFailingTestsCount>
                             <includes>
-                                <include>**/java/**/*Test.java</include>
+                                <include>**/api/**/*Test.java</include>
                             </includes>
                         </configuration>
                     </plugin>
@@ -182,6 +182,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${mvn.version}</version>
                         <configuration>
+                            <rerunFailingTestsCount>2</rerunFailingTestsCount>
                             <includes>
                                 <include>**/ui/**/*Test.java</include>
                             </includes>

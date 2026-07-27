@@ -38,15 +38,15 @@ public class TransferPage extends BasePage {
     }
 
     public void setAmount(String amount) {
-        amountInput.setValue(amount);
+        amountInput.sendKeys(amount);
     }
 
     public void setRecipientAccountNumber(String accountNumber) {
-        recipientAccountNumberInput.setValue(accountNumber);
+        recipientAccountNumberInput.sendKeys(accountNumber);
     }
 
     public void setRecipientName(String recipientName) {
-        recipientNameInput.setValue(recipientName);
+        recipientNameInput.sendKeys(recipientName);
     }
 
     public void clickSendTransferButton() {
