@@ -1,0 +1,28 @@
+---
+openapi: "3.0.1"
+servers:
+- url: "localhost"
+paths:
+  /api/v1/accounts/deposit:
+    post:
+      parameters:
+      - name: "Accept"
+        in: "header"
+        example: "application/json, application/javascript, text/javascript, text/json"
+      - name: "Authorization"
+        in: "header"
+        example: "Basic R2VIcU1pSXI4OXE3STdyOnE1WjJiVTg0dlR0QSt1REx2SDVsU1NzdlJBZnQybWxtelFsP1V6NkZvOFJiOCRFalA2N1BpYit3UlpkSmFERC0hZFhILU1sSGVQMmxAQGlSRjg4N2RuaFVQOC1kZzZQMHhsP0dtWitAS1ZmNzUmK2hFWUh0RkN5cjNxVnVLU25BPzhBOVJMNjclTk9YRE53cEhNY1hKQzRuciUwMExScTlqJUxUN1VYMlpRJGYlVkdVTmhYWjF1aFlUcytIZUhKOEYrUFU2TGUxIVUkQU9ucHdYVUgrLQ=="
+      - name: "Content-Type"
+        in: "header"
+        example: "application/json"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              exampleSetFlag: false
+            exampleSetFlag: false
+      responses:
+        "400":
+          content:
+            application/json:
+              exampleSetFlag: false

@@ -1,13 +1,13 @@
 package ru.kduskov.api.annotations;
 
-import ru.kduskov.api.enums.GenerationsRules;
+import ru.kduskov.common.enums.GenerationsRules;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static ru.kduskov.api.enums.GenerationsRules.DEFAULT;
+import static ru.kduskov.common.enums.GenerationsRules.DEFAULT;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

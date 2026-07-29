@@ -1,0 +1,36 @@
+{
+  "swagger" : "2.0",
+  "host" : "localhost",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/api/v1/customer/profile" : {
+      "put" : {
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json, application/javascript, text/javascript, text/json"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "Basic dENGWlAtMEhqcDgyOGJDOk1ubmwzVU1tV1BwME1hTEw/SjdrVFp3RWlwcEFtM3U5ZjhkeDNJaWlzSlFAWklnM1AweVk5OWpOQ0czeHZwSWFXVz8lYT90JmI1JGFEMXVvIWlrJjdxTjlmP3hDWVN5byY2YmJlJUI3Vkt2Sk80K214UWpZRGlTYndXaHpHYUVjTHk1dGUhMnp3aWRSUXd5U1R4LXZzbmZieXVSd1hJbm8rQUpjOEVQRHpCITNpeFVnendCNEBwQlElJU95bTZqQFAwTk9OJk5UQnZ3SWp0YTV6SkZyQU9QeW8tJmlyM3hMSGRIV1BIeVJ4aDBPOVBVS0hvZXlVc2Y="
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false
+        } ],
+        "responses" : {
+          "400" : { }
+        }
+      }
+    }
+  }
+}

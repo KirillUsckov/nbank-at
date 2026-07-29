@@ -1,0 +1,22 @@
+---
+openapi: "3.0.1"
+servers:
+- url: "localhost"
+paths:
+  /api/v1/customer/profile:
+    get:
+      parameters:
+      - name: "Accept"
+        in: "header"
+        example: "application/json, application/javascript, text/javascript, text/json"
+      - name: "Authorization"
+        in: "header"
+        example: "Basic aGk4UjExSjpHWEpqQ28mKzJqeXpZdj9FakFOeDVVZE4yLUlUUnRZOFF1LUZxQ3h0SXd6JDd1bGNVQzRzOXVnUlhVaUJtUnYxOVdOYmI5RUlSTyRzYkdwRmNiTE5JVnAtZ3QxPzY3c3lBakR3S0lpc01jSCVJcE0zTCF5S3RwTnRYaXlrUyFGNGNISE8hNTc1P2ZSc25ELWd5bGdaMnBhb29uMGdNbXBYMUR3UDVhbHZpWk1RQVhUJjYxQFVzMk8="
+      - name: "Content-Type"
+        in: "header"
+        example: "application/json"
+      responses:
+        "200":
+          content:
+            application/json:
+              exampleSetFlag: false

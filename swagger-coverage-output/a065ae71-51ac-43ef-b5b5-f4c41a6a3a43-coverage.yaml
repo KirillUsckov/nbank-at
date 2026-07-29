@@ -1,0 +1,22 @@
+---
+openapi: "3.0.1"
+servers:
+- url: "localhost"
+paths:
+  /api/v1/accounts/1143/transactions:
+    get:
+      parameters:
+      - name: "Accept"
+        in: "header"
+        example: "application/json, application/javascript, text/javascript, text/json"
+      - name: "Authorization"
+        in: "header"
+        example: "Basic ZnJpa206TGY1Jj9oN3UreiVqd1A/NzVUNGs2NDAzcDdOdXpzTTd1NmJUT0xFJT8xczlAYTJTTytzdVZibzJCJkRYcTlKdEVuM0BuUWRZQVJweUcrSm9DJlQycHU1eWpwRWhqeWM2TThsag=="
+      - name: "Content-Type"
+        in: "header"
+        example: "application/json"
+      responses:
+        "200":
+          content:
+            application/json:
+              exampleSetFlag: false

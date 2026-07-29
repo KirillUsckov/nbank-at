@@ -32,4 +32,16 @@ public final class ResponseSpecs {
                 .expectStatusCode(HttpStatus.SC_BAD_REQUEST)
                 .build();
     }
+
+    public static ResponseSpecification unauthorized() {
+        return defaultResponseSpec()
+                .expectStatusCode(HttpStatus.SC_UNAUTHORIZED)
+                .build();
+    }
+
+    public static ResponseSpecification notFound() {
+        return defaultResponseSpec()
+                .expectStatusCode(HttpStatus.SC_NOT_FOUND)
+                .build();
+    }
 }

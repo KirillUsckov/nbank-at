@@ -1,7 +1,7 @@
 package ru.kduskov.api.assertions.list;
 
 import org.assertj.core.api.SoftAssertions;
-import ru.kduskov.api.assertions.BaseAssert;
+import ru.kduskov.common.assertions.BaseAssert;
 
 import java.util.List;
 

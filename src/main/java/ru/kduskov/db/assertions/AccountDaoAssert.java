@@ -14,7 +14,7 @@ public class AccountDaoAssert extends BaseDbAssert<AccountDaoAssert, AccountDao>
         return new AccountDaoAssert(actual,  softly);
     }
 
-    public AccountDaoAssert isEqualTo(AccountDao expected, boolean isDateUpdatedEquals) {
+    public AccountDaoAssert matches(AccountDao expected, boolean isDateUpdatedEquals) {
         var assertion = (AccountDaoAssert) customerIdEquals(expected.getCustomerId())
                 .accountNumberEquals(expected.getAccountNumber())
                 .balanceEquals(expected.getBalance())

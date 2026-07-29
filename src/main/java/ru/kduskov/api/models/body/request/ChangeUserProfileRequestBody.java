@@ -13,6 +13,11 @@ import ru.kduskov.api.annotations.GeneratingRule;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ChangeUserProfileRequestBody extends BaseRequest {
-    @GeneratingRule(regex = "^[A-Za-z]{0,50} [A-Za-z]{0,50}$")
+    @GeneratingRule(regex = "^[A-Za-z]{2,50} [A-Za-z]{3,50}$")
     private String name;
+
+    @Override
+    public String toString() {
+        return "ChangeUserProfileRequestBody{name = " + name + "}";
+    }
 }

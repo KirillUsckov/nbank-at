@@ -1,0 +1,19 @@
+---
+openapi: "3.0.1"
+servers:
+- url: "localhost"
+paths:
+  /api/v1/admin/users/null:
+    delete:
+      parameters:
+      - name: "Accept"
+        in: "header"
+        example: "application/json, application/javascript, text/javascript, text/json"
+      - name: "Content-Type"
+        in: "header"
+        example: "application/json"
+      responses:
+        "401":
+          content:
+            ? ""
+            : exampleSetFlag: false

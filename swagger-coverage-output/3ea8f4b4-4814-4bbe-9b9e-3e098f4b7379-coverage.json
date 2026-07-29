@@ -1,0 +1,32 @@
+{
+  "swagger" : "2.0",
+  "host" : "localhost",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/customer/accounts" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json, application/javascript, text/javascript, text/json"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "Basic dUNFYnV4UEFmV1lrZUxZOlo3R0UyMVFteTRJZSZQITBhTGVWK1Vleks1Z1Q2eU5XTi1RZy0kK3U2NG5WZ2cwZjMwYWs5WTIka1Y2WC1GUj8xcXBYK2glbDROcTA2QWFqWm1FK016VGF4TTFEODYlWWhKLWVwMWM2eWE2bngkZW5paUtBTzdON1dCQWY4b0ZScU1ZOE9WQWNXRXRKK2lwQXJqRnlSWXJDZmxqVnc5cFExbDhmVnZyb1Fw"
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json"
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    }
+  }
+}

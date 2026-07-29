@@ -1,0 +1,36 @@
+{
+  "swagger" : "2.0",
+  "host" : "localhost",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/accounts/deposit" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json, application/javascript, text/javascript, text/json"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "Basic S0hMOlhWayVvdS0xMGYrMVpOZ1pPZVIhZ2k0cUVsNnlSZmtBS2prR2paOTY2d1Z0ZHZGVmdOUDV1M2JubXpVT3I4S1BzRVU2bHhJP3NNWUQrNVZqcEhSZ1dnNVpLN2l6LTkrYkZweCEyN0wxV0B4Q2hLND9qUjc/aFNSTXpIQURwLXBJVDZWQ1BtN2N3Mlp0Y00kWkRIK25kTWhTZjBuYkk2SXRQUk8ybFZHQ1lKbkglcEszQHc5aEJUJkt3cU9TMjdaY20yd3UyNDRXcmkkZmR2eU1yV1JRblR4SzcleEZSSXNPRmQtczgwJDhJMldZQXZQSXBXYmxB"
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    }
+  }
+}

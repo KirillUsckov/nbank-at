@@ -1,15 +1,19 @@
 package ru.kduskov.api.steps.assertions;
 
+import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.assertions.AccountAssert;
 import ru.kduskov.api.enums.TransactionType;
+import ru.kduskov.api.models.body.response.Transaction;
 import ru.kduskov.api.models.body.response.accounts.TransactionsResponseBody;
 import ru.kduskov.api.models.body.response.customer.profile.CustomerAccountsResponseBody;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
+import ru.kduskov.api.utils.AccountsListUtils;
+import ru.kduskov.api.utils.TransactionsListUtils;
+
 import ru.kduskov.common.steps.BaseAssertionsSteps;
 
 import java.util.List;
-import java.util.Optional;
 
 public class AccountAssertionSteps extends BaseAssertionsSteps {
 
@@ -24,9 +28,8 @@ public class AccountAssertionSteps extends BaseAssertionsSteps {
         assertions.assertThatAccounts(accountsAfterRequest.getAccounts())
                 .containsAccountWithNumber(account.getAccountNumber())
                 .accountWithNumber(account.getAccountNumber())
-                .wasNotChangedComparedTo(
-                        findAccountByNumber(accountsBeforeRequest.getAccounts(), account.getAccountNumber())
-                                .orElseThrow(() -> new AssertionError("Account not found in before request"))
+                .matches(
+                        AccountsListUtils.findAccountOrElseThrow(accountsBeforeRequest.getAccounts(), account.getAccountNumber())
                 );
     }
 
@@ -36,8 +39,7 @@ public class AccountAssertionSteps extends BaseAssertionsSteps {
                                           double transactionAmount) {
         assertAccountExistInList(accountsAfterRequest, account)
                 .wasIncreasedBy(transactionAmount,
-                        findAccountByNumber(accountsBeforeRequest, account.getAccountNumber())
-                                .orElseThrow(() -> new AssertionError("Account not found in before request"))
+                        AccountsListUtils.findAccountOrElseThrow(accountsBeforeRequest, account.getAccountNumber())
                 );
     }
 
@@ -49,35 +51,29 @@ public class AccountAssertionSteps extends BaseAssertionsSteps {
         assertions.assertThatAccounts(accountsAfterRequest)
                 .containsAccountWithNumber(account.getAccountNumber())
                 .accountWithNumber(account.getAccountNumber())
-                .wasDencreasedBy(transactionAmount,
-                        findAccountByNumber(accountsBeforeRequest, account.getAccountNumber())
-                                .orElseThrow(() -> new AssertionError("Account not found in before request"))
+                .wasDecreasedBy(transactionAmount,
+                        AccountsListUtils.findAccountOrElseThrow(accountsBeforeRequest, account.getAccountNumber())
                 );
     }
 
-    public void assertAccountHasLatestTransferOut(TransactionsResponseBody senderAccountAfter, double amount, Long id) {
-        assertions.assertThat(senderAccountAfter).hasLatestTransferOut(amount, id);
+    @Step("Check account has latest transaction with expected values")
+    public void assertAccountHasLatestTransaction(TransactionsResponseBody senderAccountAfter, TransactionType type, double amount, Long id) {
+        assertions.assertThat(senderAccountAfter).hasTransactions();
+        Transaction latestTransaction = TransactionsListUtils.findLatestTransaction(senderAccountAfter.getTransactions());
+        assertions.assertThat(latestTransaction).matches(amount, type, id);
     }
 
-    public void assertAccountHasLatestTransferIn(TransactionsResponseBody receiverAccountAfter, double amount, Long id) {
-        assertions.assertThat(receiverAccountAfter).hasLatestTransferIn(amount, id);
-    }
-
+    @Step("Check account has no transactions with type '{type}'")
     public void assertAccountHasNoTransactionsWithType(TransactionsResponseBody account, TransactionType type) {
         assertions.assertThat(account).hasNoTransactionOfType(type);
 
     }
 
+    @Step("Check account exist in list")
     private AccountAssert assertAccountExistInList(List<AccountResponseBody> accountsAfterRequest,
                                                    AccountResponseBody account) {
         return assertions.assertThatAccounts(accountsAfterRequest)
                 .containsAccountWithNumber(account.getAccountNumber())
                 .accountWithNumber(account.getAccountNumber());
-    }
-
-    private Optional<AccountResponseBody> findAccountByNumber(List<AccountResponseBody> accounts, String accountNumber) {
-        return accounts.stream()
-                .filter(acc -> acc.getAccountNumber().equals(accountNumber))
-                .findFirst();
     }
 }

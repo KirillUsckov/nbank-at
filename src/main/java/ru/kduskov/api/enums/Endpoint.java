@@ -45,4 +45,9 @@ public enum Endpoint {
     public String getUrlWithParam(String param) {
         return this.endpoint.replace(this.replacement, param);
     }
+
+    @Override
+    public String toString() {
+        return endpoint;
+    }
 }

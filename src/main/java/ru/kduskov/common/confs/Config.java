@@ -33,4 +33,8 @@ public final class Config {
         }
         return INSTANCE.properties.getProperty(configParam.getValue());
     }
+
+    public static long getLongProperty(ConfigParams configParam) {
+        return Long.parseLong(getProperty(configParam));
+    }
 }

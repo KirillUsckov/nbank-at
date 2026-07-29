@@ -1,8 +1,10 @@
 package ru.kduskov.api.assertions;
 
+import io.qameta.allure.Step;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.models.body.response.customer.profile.ChangeUserProfileResponseBody;
+import ru.kduskov.common.assertions.BaseAssert;
 
 public class ChangeUserProfileAssert extends BaseAssert<ChangeUserProfileAssert, ChangeUserProfileResponseBody> {
     protected ChangeUserProfileAssert(ChangeUserProfileResponseBody userProfileResponseBody, SoftAssertions softly) {
@@ -13,26 +15,18 @@ public class ChangeUserProfileAssert extends BaseAssert<ChangeUserProfileAssert,
         return new ChangeUserProfileAssert(actual, softly);
     }
 
+    @Step("Check name matches {expectedName}")
     public ChangeUserProfileAssert nameEquals(String expectedName) {
         softly(() ->
-                softly.assertThat(actual.getCustomer().getName())
+                softly.assertThat(actual.getName())
                         .withFailMessage("Expected name %s but was %s",
-                                expectedName, actual.getCustomer().getName())
+                                expectedName, actual.getName())
                         .isEqualTo(expectedName)
         );
         return this;
     }
 
-    public ChangeUserProfileAssert messageEquals(String expectedMessage) {
-        softly(() ->
-                softly.assertThat(actual.getMessage())
-                        .withFailMessage("Expected message '%s' but was '%s'",
-                                expectedMessage, actual.getMessage())
-                        .isEqualTo(expectedMessage)
-        );
-        return this;
-    }
-
+    @Step("Check ChangeUserProfileResponse matches {request}")
     public ChangeUserProfileAssert matchesRequest(ChangeUserProfileRequestBody request) {
         return nameEquals(request.getName());
     }

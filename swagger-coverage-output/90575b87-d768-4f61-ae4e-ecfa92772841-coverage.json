@@ -1,0 +1,36 @@
+{
+  "swagger" : "2.0",
+  "host" : "localhost",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/api/v1/accounts/transfer" : {
+      "post" : {
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json, application/javascript, text/javascript, text/json"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "Basic TmhkTkp2Mjk6JGh3cEZ3Tm5HSCZhODN2cGYlUngma3lmWDNQZmlJUSYwNFNXZyEmViRhaitAKzI0Z1hYTVJZSmZ6THM2cWxUNnA1ZW9qYW10ITdrRTdKaUhGZnd6UkQhVTRzUWhKS00hdVhCcG1nJks/LTBASm91VW0mJFptQXlvUm5taGglTyFtMGo3cU9iQVpSZ3AzalFzLUtpeUw3MlorZA=="
+        }, {
+          "name" : "Content-Type",
+          "in" : "header",
+          "required" : false,
+          "x-example" : "application/json"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false
+        } ],
+        "responses" : {
+          "200" : { }
+        }
+      }
+    }
+  }
+}

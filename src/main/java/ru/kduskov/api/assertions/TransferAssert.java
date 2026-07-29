@@ -3,6 +3,7 @@ package ru.kduskov.api.assertions;
 import org.assertj.core.api.SoftAssertions;
 import ru.kduskov.api.models.body.response.accounts.transfer.TransferResponseBody;
 import ru.kduskov.api.models.body.request.TransferRequestBody;
+import ru.kduskov.common.assertions.BaseAssert;
 import ru.kduskov.mock.enums.FraudStatus;
 import ru.kduskov.mock.models.FraudMockResponse;
 

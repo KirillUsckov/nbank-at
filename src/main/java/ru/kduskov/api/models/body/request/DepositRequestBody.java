@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 import ru.kduskov.api.annotations.GeneratingRule;
-import ru.kduskov.api.enums.GenerationsRules;
+import ru.kduskov.common.enums.GenerationsRules;
 
 @Data
 @Builder
@@ -17,4 +17,9 @@ public class DepositRequestBody extends BaseRequest {
     private Long accountId;
     @GeneratingRule(valueKey = GenerationsRules.DEPOSIT_BALANCE)
     private Double amount;
+
+    @Override
+    public String toString() {
+        return "DepositRequestBody: accountId=" + accountId + ", amount=" + amount;
+    }
 }

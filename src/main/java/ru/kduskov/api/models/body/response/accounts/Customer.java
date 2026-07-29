@@ -20,4 +20,14 @@ public class Customer extends BaseDao {
     private Role role;
     private List<AccountDao> accounts;
     private String name;
+
+    @Override
+    public String toString() {
+        return "Customer{username='%s', role=%s, accountsCount=%d, name='%s'}"
+                .formatted(
+                        username,
+                        role,
+                        accounts == null ? 0 : accounts.size(),
+                        name
+                );    }
 }

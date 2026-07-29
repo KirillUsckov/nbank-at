@@ -8,6 +8,8 @@ import ru.kduskov.db.annotations.Column;
 
 import java.math.BigDecimal;
 
+import static ru.kduskov.common.utils.LogMaskingUtils.maskAccountNumber;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,4 +20,12 @@ public class AccountDao extends BaseDao {
     private BigDecimal balance;
     @Column(name = "customer_id")
     private Long customerId;
+
+    @Override
+    public String toString() {
+        return "AccountDao{"
+                + "accountNumber='" + maskAccountNumber(accountNumber) + '\''
+                + ", balance=" + balance
+                + ", customerId=" + customerId + '}';
+    }
 }

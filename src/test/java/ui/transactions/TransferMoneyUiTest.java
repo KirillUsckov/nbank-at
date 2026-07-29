@@ -1,11 +1,13 @@
 package ui.transactions;
 
+import io.qameta.allure.Step;
+import org.junit.jupiter.api.DisplayName;
+import ru.kduskov.api.enums.TransactionType;
+import ru.kduskov.ui.enums.MessageTypes;
 import support.TransactionTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.kduskov.api.generators.common.RandomData;
-import ru.kduskov.api.generators.common.RequestDataGenerator;
-import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
+import ru.kduskov.common.generators.RandomData;
 import ru.kduskov.api.models.body.response.general.AccountResponseBody;
 import ru.kduskov.api.steps.assertions.AccountAssertionSteps;
 import ru.kduskov.common.annotations.UserSession;
@@ -29,7 +31,8 @@ public class TransferMoneyUiTest extends BaseUiTest {
     private final DashboardPage dashboardPage = new DashboardPage();
     private final TransferPage transferPage = new TransferPage();
 
-    public void setUpTestData() {
+    @Step("Prepare funded sender account")
+    public void prepareFundedSenderAccount() {
         var testData = TransactionTestData.getAccountWithDeposit(FIRST_USER_ID, FIRST_ACC_ID, 50_000);
         firstUserAccount = testData.getAccount();
         firstUserSecondAccount = TransactionTestData.getUserAccount(FIRST_USER_ID, SECOND_USER_ID).getAccount();
@@ -42,15 +45,17 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
     @Test
     @UserSession(accountsNumber = 2, isUi = true)
-    public void transferMoneySuccessfully() {
-        setUpTestData();
+    @DisplayName("User can transfer money between own accounts and see successful alert")
+    public void shouldTransferMoneyBetweenOwnAccounts() {
+        prepareFundedSenderAccount();
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts().getAccounts();
         var amount = RandomData.getNumericString(4);
-        var customer = userSteps.getCustomer();
+        var customer = userSteps.getUserProfile();
         var name = customer.getName();
 
         var recipientAccountNumber = firstUserSecondAccount.getAccountNumber();
+        dashboardPage.waitPageOpened();
         dashboardPage.clickMakeTransferButton();
 
         transferPage.waitPageOpened();
@@ -63,7 +68,7 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
         var successfulTransferAlertText = BrowserSteps.getAlertText();
         var expectedMessage = String.format(SUCCESSFULLY_TRANSFERRED_TO_ACCOUNT.getMessage(), amount, recipientAccountNumber);
-        softly.assertThat(successfulTransferAlertText).isEqualTo(expectedMessage);
+        stringAssertionsSteps.assertTextEqualsTo(MessageTypes.ALERT.getTxt(), expectedMessage, successfulTransferAlertText);
 
         var accountsAfterRequest = userSteps.getUserAccounts().getAccounts();
         this.accountAssertionSteps.assertBalanceWasIncreased(
@@ -73,21 +78,33 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
         var senderTransactions = userSteps.getAccountTransactions(firstUserAccount.getId());
         var receiverTransactions = userSteps.getAccountTransactions(firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferOut(senderTransactions, Double.parseDouble(amount), firstUserSecondAccount.getId());
-        this.accountAssertionSteps.assertAccountHasLatestTransferIn(receiverTransactions, Double.parseDouble(amount), firstUserAccount.getId());
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(
+                senderTransactions,
+                TransactionType.TRANSFER_OUT,
+                Double.parseDouble(amount),
+                firstUserSecondAccount.getId()
+        );
+        this.accountAssertionSteps.assertAccountHasLatestTransaction(
+                receiverTransactions,
+                TransactionType.TRANSFER_IN,
+                Double.parseDouble(amount),
+                firstUserAccount.getId()
+        );
     }
 
     @Test
     @UserSession(accountsNumber = 2, isUi = true)
-    public void transferMoneyErrorWithoutConfirmCheckbox() {
-        setUpTestData();
+    @DisplayName("User cannot transfer money without confirming the transfer and see failure alert")
+    public void shouldRejectTransferWithoutConfirmation() {
+        prepareFundedSenderAccount();
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts();
         var amount = RandomData.getNumericString(4);
-        var customer = userSteps.getCustomer();
+        var customer = userSteps.getUserProfile();
         var name = customer.getName();
 
         var recipientAccountNumber = firstUserSecondAccount.getAccountNumber();
+        dashboardPage.waitPageOpened();
         dashboardPage.clickMakeTransferButton();
 
         transferPage.waitPageOpened();
@@ -98,7 +115,11 @@ public class TransferMoneyUiTest extends BaseUiTest {
         transferPage.clickSendTransferButton();
 
         var failedTransferAlertText = BrowserSteps.getAlertText();
-        softly.assertThat(failedTransferAlertText).isEqualTo(FILL_ALL_FIELDS_AND_CONFIRM.getMessage());
+        stringAssertionsSteps.assertTextEqualsTo(
+                MessageTypes.ALERT.getTxt(),
+                FILL_ALL_FIELDS_AND_CONFIRM.getMessage(),
+                failedTransferAlertText
+        );
 
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(
@@ -109,10 +130,9 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
     @Test
     @UserSession(accountsNumber = 2, isUi = true)
-    public void transferMoneyErrorWithMismatchedReceiverName() {
-        setUpTestData();
-        var requestBody = RequestDataGenerator.generateFilledObject(ChangeUserProfileRequestBody.class);
-        SessionStorage.getUserSteps(FIRST_USER_ID).changeUserProfile(requestBody);
+    @DisplayName("User cannot transfer money when recipient name does not match and see failure alert")
+    public void shouldRejectTransferWhenRecipientNameDoesNotMatch() {
+        prepareFundedSenderAccount();
 
         var userSteps = SessionStorage.getUserSteps(FIRST_USER_ID);
         var accountsBeforeRequest = userSteps.getUserAccounts();
@@ -121,6 +141,7 @@ public class TransferMoneyUiTest extends BaseUiTest {
 
         var recipientAccountNumber = firstUserSecondAccount.getAccountNumber();
 
+        dashboardPage.waitPageOpened();
         dashboardPage.clickMakeTransferButton();
 
         transferPage.waitPageOpened();
@@ -132,7 +153,11 @@ public class TransferMoneyUiTest extends BaseUiTest {
         transferPage.clickSendTransferButton();
 
         var failedTransferAlertText = BrowserSteps.getAlertText();
-        softly.assertThat(failedTransferAlertText).isEqualTo(RECIPIENT_NAME_DOES_NOT_MATCH_REGISTERED_NAME.getMessage());
+        stringAssertionsSteps.assertTextEqualsTo(
+                MessageTypes.ALERT.getTxt(),
+                RECIPIENT_NAME_DOES_NOT_MATCH_REGISTERED_NAME.getMessage(),
+                failedTransferAlertText
+        );
 
         var accountsAfterRequest = userSteps.getUserAccounts();
         this.accountAssertionSteps.assertBalanceWasNotChanged(

@@ -1,9 +1,10 @@
 services:
   backend:
-    platform: linux/amd64
-    image: nobugsme/nbank:with_fraud_check_with_transfer_fix
-#    image: nobugsme/nbank:with_validation_fix
+    platform: linux/arm64/v8
+    image: nobugsme/nbank:with_fraud_check_with_approve
     container_name: backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/nbank
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -34,7 +35,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d:ro
     networks:
       - nbank-network
@@ -69,10 +69,12 @@ services:
       - nbank-network
 
   selenoid:
-    image: aerokube/selenoid:latest-release
+    image: aerokube/selenoid:latest
     container_name: selenoid
     ports:
       - "4444:4444"
+    environment:
+      DOCKER_API_VERSION: "1.40"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./config/:/etc/selenoid/:ro

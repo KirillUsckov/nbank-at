@@ -1,12 +1,19 @@
 name: Run tests
 
-#trigger
-on: [ push, workflow_dispatch ]
+on:
+  push:
+    branches-ignore:
+      - gh-pages
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   run-tests:
-    name: Set up review apps and run tests
+    name: Run tests
     runs-on: ubuntu-latest
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -14,11 +21,21 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'corretto'
-          java-version: '21'
+          distribution: corretto
+          java-version: "21"
           cache: maven
 
-      - name: Set up Services
+      - name: Make scripts executable
+        run: |
+          chmod +x ./mvnw
+          chmod +x ./.swagger-coverage-commandline-1.5.0/bin/swagger-coverage-commandline
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Set up services
         run: bash infra/docker_compose/restart_docker.sh
 
       - name: Wait for backend startup
@@ -27,6 +44,91 @@ jobs:
       - name: Run tests
         run: ./mvnw clean test -q
 
-      - name: Print Docker logs on failure
-        if: failure()
-        run: docker compose -f infra/docker_compose/docker-compose.yml logs
+      - name: Generate Swagger coverage report
+        if: always()
+        run: |
+          ./.swagger-coverage-commandline-1.5.0/bin/swagger-coverage-commandline \
+            -s http://localhost:4111/v3/api-docs \
+            -i swagger-coverage-output
+
+          mkdir -p swagger-report
+          cp swagger-coverage-report.html swagger-report/index.html
+
+      - name: Print logs and stop services
+        if: always()
+        run: |
+          if [ "${{ job.status }}" != "success" ]; then
+            docker compose \
+              -f infra/docker_compose/docker-compose.yml \
+              logs --no-color || true
+          fi
+
+          docker compose \
+            -f infra/docker_compose/docker-compose.yml \
+            down
+
+      - name: Upload report inputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-inputs
+          path: |
+            target/allure-results
+            swagger-report
+          if-no-files-found: warn
+          retention-days: 7
+
+  allure-report:
+    name: Build and publish reports
+    runs-on: ubuntu-latest
+    needs: run-tests
+    if: ${{ always() && needs.run-tests.result != 'cancelled' }}
+
+    steps:
+      - name: Download report inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: report-inputs
+          path: report-inputs
+
+      - name: Load previous Allure history
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Build Allure report
+        uses: simple-elf/allure-report-action@v1.15
+        with:
+          gh_pages: gh-pages/allure-history
+          allure_results: report-inputs/target/allure-results
+          allure_history: generated-allure-history
+
+      - name: Prepare GitHub Pages
+        run: |
+          RUN_DIR="site/test-report/${{ github.run_number }}"
+
+          mkdir -p "$RUN_DIR/allure-report"
+          mkdir -p "$RUN_DIR/swagger-coverage"
+          mkdir -p site/allure-history
+
+          cp -r \
+            generated-allure-history/${{ github.run_number }}/. \
+            "$RUN_DIR/allure-report/"
+
+          cp -r \
+            report-inputs/swagger-report/. \
+            "$RUN_DIR/swagger-coverage/"
+
+          cp -r \
+            generated-allure-history/. \
+            site/allure-history/
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: site
+          keep_files: true

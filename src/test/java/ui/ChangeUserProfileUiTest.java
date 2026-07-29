@@ -1,15 +1,18 @@
 package ui;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.kduskov.api.generators.common.RandomData;
+import ru.kduskov.common.generators.RandomData;
 import ru.kduskov.api.generators.common.RequestDataGenerator;
 import ru.kduskov.api.models.body.request.ChangeUserProfileRequestBody;
 import ru.kduskov.api.steps.assertions.UserProfileAssertionSteps;
 import ru.kduskov.common.annotations.Browser;
 import ru.kduskov.common.annotations.UserSession;
 import ru.kduskov.common.enums.Browsers;
+import ru.kduskov.common.steps.StringAssertionsSteps;
 import ru.kduskov.common.storage.SessionStorage;
+import ru.kduskov.ui.enums.MessageTypes;
 import ru.kduskov.ui.pages.ChangeNamePage;
 import ru.kduskov.ui.panels.HeaderPanel;
 import ru.kduskov.ui.steps.BrowserSteps;
@@ -22,53 +25,61 @@ public class ChangeUserProfileUiTest extends BaseUiTest {
     private UserProfileAssertionSteps userProfileAssertionSteps;
     private final ChangeNamePage changeNamePage = new ChangeNamePage();
     private final HeaderPanel headerPanel = new HeaderPanel();
+    private StringAssertionsSteps stringAssertionsSteps;
 
     @BeforeEach
     public void initAssertionClasses() {
+        this.stringAssertionsSteps = new StringAssertionsSteps(softly);
         this.userProfileAssertionSteps = new UserProfileAssertionSteps(softly);
     }
 
     @Test
     @Browser(value = {Browsers.CHROME, Browsers.FIREFOX})
     @UserSession(isUi = true)
-    public void changeNameSuccessfullyWithValidName() {
+    @DisplayName("User name is updated when a valid name is submitted")
+    public void shouldUpdateUserNameWhenNewNameIsValid() {
         headerPanel.clickUserInfo();
         changeNamePage.waitPageOpened();
 
         var requestBody = RequestDataGenerator.generateFilledObject(ChangeUserProfileRequestBody.class);
         var newName = requestBody.getName();
-        changeNamePage.setNewUsername(newName).clickSaveChangesButton();
+        System.out.println("NEW NAME : " + newName);
+        changeNamePage.setNewUsername(newName)
+                .clickSaveChangesButton();
 
         var alertText = BrowserSteps.getAlertText();
-        softly.assertThat(alertText).isEqualTo(NAME_UPDATED_SUCCESSFULLY.getMessage());
+
+        stringAssertionsSteps.assertTextEqualsTo(MessageTypes.ALERT.getTxt(), NAME_UPDATED_SUCCESSFULLY.getMessage(), alertText);
         BrowserSteps.refresh();
 
         var headerUsername = headerPanel.getUserNameFromUserInfo();
-        softly.assertThat(headerUsername).withFailMessage("New username is not equal expected").isEqualTo(newName);
-        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
+        stringAssertionsSteps.assertTextEqualsTo(MessageTypes.HEADER_USERNAME.getTxt(), newName, headerUsername);
+
+        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
         this.userProfileAssertionSteps.assertCustomerNameMatchesRequest(requestBody, customerAfterRequest);
     }
 
     @Test
     @Browser(value = {Browsers.CHROME, Browsers.FIREFOX})
     @UserSession(isUi = true)
-    public void changeNameErrorWithInvalidName() {
+    @DisplayName("User name is not updated when an invalid name is submitted")
+    public void shouldNotUpdateUserNameWhenNewNameIsInvalid() {
         var oldName = headerPanel.getUserNameFromUserInfo();
         headerPanel.clickUserInfo();
         changeNamePage.waitPageOpened();
-        var customerBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
+        var customerBeforeRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
 
-        var newName = RandomData.getStringAndNumericString(10);
+        var newName = RandomData.getAlphabetAndNumericString(10);
 
         changeNamePage.setNewUsername(newName).clickSaveChangesButton();
 
         var alertText = BrowserSteps.getAlertText();
-        softly.assertThat(alertText).isEqualTo(NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY.getMessage());
+        stringAssertionsSteps.assertTextEqualsTo(MessageTypes.ALERT.getTxt(), NAME_MUST_CONTAIN_TWO_WORDS_WITH_LETTERS_ONLY.getMessage(), alertText);
         BrowserSteps.refresh();
 
         var headerUsername = headerPanel.getUserNameFromUserInfo();
         softly.assertThat(headerUsername).withFailMessage("New username is not equal old name").isEqualTo(oldName);
-        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getCustomer();
+        var customerAfterRequest = SessionStorage.getUserSteps(FIRST_USER_ID).getUserProfile();
         this.userProfileAssertionSteps.assertCustomerNameMatchesPrevious(customerBeforeRequest, customerAfterRequest);
     }
 }

@@ -5,7 +5,7 @@ build/
 !**/src/test/**/build/
 target/
 test-results/
-
+swagger-coverage-output/
 ### IntelliJ IDEA ###
 .idea/
 *.iws
@@ -23,7 +23,6 @@ out/
 .settings
 .springBeans
 .sts4-cache
-bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
@@ -39,3 +38,5 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+allure-report/

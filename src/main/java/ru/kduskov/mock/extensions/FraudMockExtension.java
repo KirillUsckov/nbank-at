@@ -3,6 +3,7 @@ package ru.kduskov.mock.extensions;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
+import ru.kduskov.mock.MockRunner;
 import ru.kduskov.mock.annotations.FraudMockStatus;
 import ru.kduskov.mock.enums.FraudStatus;
 
@@ -10,7 +11,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -41,7 +41,8 @@ public class FraudMockExtension implements BeforeEachCallback {
                 ).readAllBytes(),
                 StandardCharsets.UTF_8
         );
-        stubFor(post(urlEqualTo("/fraud-check"))
+        MockRunner.getWireMockServer()
+                .stubFor(post(urlEqualTo("/fraud-check"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
