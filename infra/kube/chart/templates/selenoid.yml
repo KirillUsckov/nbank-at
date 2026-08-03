@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selenoid
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: selenoid
+  template:
+    metadata:
+      labels:
+        app: selenoid
+    spec:
+      containers:
+        - name: selenoid
+          image: aerokube/selenoid:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            ["-container-network", "nbank-network"] #Нужно, что был доступ к контейнерам браузеров, которые создает selenoid
+          ports:
+            - containerPort: 4444
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: docker-sock
+            - mountPath: /etc/selenoid
+              name: selenoid-config
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+        - name: selenoid-config
+          configMap:
+            name: selenoid-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: selenoid
+spec:
+  selector:
+    app: selenoid
+  ports:
+    - protocol: TCP
+      port: 4444 # порт, на котором работает серивс
+      targetPort: 4444 # куда пересылать трафик внутри пода (контейнер слушает этот порт)
+  type: NodePort # ClusterIp (только внутри контейнера), NodePort - открывает порт на всех нодах для доступа извне

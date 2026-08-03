@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: env-secrets
+                key: db.password
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: env-secrets
+                key: db.username
+          - name: POSTGRES_DB
+            value: {{ .Values.db.name }}
+          ports:
+            - containerPort: {{ .Values.db.connection.port }}
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: migration-config
+      volumes:
+        - name: migration-config
+          configMap:
+            name: postgres-init
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: {{ .Values.db.connection.port }} # порт, на котором работает серивс
+      targetPort: {{ .Values.db.connection.port }} # куда пересылать трафик внутри пода (контейнер слушает этот порт)
+  type: ClusterIP # ClusterIP (только внутри контейнера), NodePort - открывает порт на всех нодах для доступа извне

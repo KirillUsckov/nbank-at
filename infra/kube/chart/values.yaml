@@ -1,0 +1,8 @@
+imagePullPolicy: Always
+replicaCount: 1
+db:
+  name: nbank
+  connection:
+    timeout: 300
+    port: 5432
+    url: jdbc:postgresql://postgres:5432/nbank
