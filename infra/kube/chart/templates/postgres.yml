@@ -50,4 +50,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.db.connection.port }} # порт, на котором работает серивс
       targetPort: {{ .Values.db.connection.port }} # куда пересылать трафик внутри пода (контейнер слушает этот порт)
-  type: ClusterIP # ClusterIP (только внутри контейнера), NodePort - открывает порт на всех нодах для доступа извне
+  type: NodePort # ClusterIP (только внутри контейнера), NodePort - открывает порт на всех нодах для доступа извне
