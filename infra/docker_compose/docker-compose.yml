@@ -35,7 +35,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - infra/init-scripts:/docker-entrypoint-initdb.d:ro
+      - /infra/init-scripts:/docker-entrypoint-initdb.d:ro
     networks:
       - nbank-network
     healthcheck:
@@ -47,7 +47,7 @@ services:
   frontend:
     image: nobugsme/nbank-ui:with_nginx_with_send_transfer_fix
     container_name: frontend
-    expose:
+    ports:
       - "3000:80"
     depends_on:
       - backend
@@ -63,7 +63,7 @@ services:
       DOCKER_API_VERSION: "1.40"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/:/etc/selenoid/:ro
+      - ../config:/etc/selenoid:ro
       - /dev/shm:/dev/shm
     command: ["-container-network", "nbank-network"] #Нужно, что был доступ к контейнерам браузеров, которые создает selenoid
     depends_on:
