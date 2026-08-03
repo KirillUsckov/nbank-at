@@ -17,28 +17,6 @@ spec:
         co.elastic.logs/json.keys_under_root: "true"
         co.elastic.logs/json.add_error_key: "true"
     spec:
-      initContainers:
-        - name: wait-for-postgres
-          image: postgres:15
-          env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: env-secrets
-                  key: db.username
-          command:
-            - sh
-            - -c
-            - |
-              timeout {{ .Values.db.connection.timeout }} sh -c '
-                until pg_isready -h postgres -p {{ .Values.db.connection.port }}  -U "$POSTGRES_USER"; do
-                echo "Waiting for Postgres..."
-                sleep 2
-                done
-                ' || {
-                echo "Postgres is unavailable after 120 seconds"
-                exit 1
-              }
       containers:
         - name: backend
           image: nobugsme/nbank:with_fraud_check_with_approve
@@ -66,7 +44,7 @@ spec:
             httpGet:
               path: /actuator/health
               port: 4111
-            periodSeconds: 15
+            periodSeconds: 10
             failureThreshold: 15
           readinessProbe:
             httpGet:
