@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selenoid-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: selenoid-ui
+  template:
+    metadata:
+      labels:
+        app: selenoid-ui
+    spec:
+      containers:
+        - name: selenoid-ui
+          image: aerokube/selenoid-ui:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            [ "--selenoid-uri", "http://selenoid:4444" ] #Указываем адрес контейнера, в котором открыт селеноид
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: selenoid-ui
+spec:
+  selector:
+    app: selenoid-ui
+  ports:
+    - protocol: TCP
+      port: 8080 # порт, на котором работает серивс
+      targetPort: 8080 # куда пересылать трафик внутри пода (контейнер слушает этот порт)
+  type: NodePort # ClusterIp (только внутри контейнера), NodePort - открывает порт на всех нодах для доступа извне

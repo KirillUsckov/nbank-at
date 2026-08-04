@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run-tests:
     name: Run tests
@@ -132,3 +136,12 @@ jobs:
           publish_branch: gh-pages
           publish_dir: site
           keep_files: true
+
+      - name: Add report links to summary
+        run: |
+          echo "## 📊 Test Reports" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Report | Link |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Allure | https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/test-report/${{ github.run_number }}/allure-report/ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Swagger Coverage | https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/test-report/${{ github.run_number }}/swagger-coverage/ |" >> $GITHUB_STEP_SUMMARY

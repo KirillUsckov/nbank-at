@@ -29,13 +29,13 @@ services:
   postgres:
     image: postgres:15-alpine
     ports:
-      - "5433:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_DB=nbank
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+      - /infra/init-scripts:/docker-entrypoint-initdb.d:ro
     networks:
       - nbank-network
     healthcheck:
@@ -45,25 +45,11 @@ services:
       retries: 5
 
   frontend:
-    image: nobugsme/nbank-ui:preprod_version
+    image: nobugsme/nbank-ui:with_nginx_with_send_transfer_fix
     container_name: frontend
-    expose:
-      # не открываем порт наружу, а даем доступ внутри сети
-      - "3000"
-    depends_on:
-      - backend
-    networks:
-      - nbank-network
-
-  nginx:
-    image: nginx:latest
-    container_name: nginx
     ports:
       - "3000:80"
-    volumes:
-      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - frontend
       - backend
     networks:
       - nbank-network
@@ -77,7 +63,7 @@ services:
       DOCKER_API_VERSION: "1.40"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/:/etc/selenoid/:ro
+      - ../config:/etc/selenoid:ro
       - /dev/shm:/dev/shm
     command: ["-container-network", "nbank-network"] #Нужно, что был доступ к контейнерам браузеров, которые создает selenoid
     depends_on:

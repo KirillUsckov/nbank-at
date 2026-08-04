@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend # связываем деплоймент и Pod (управляем только подами с label backend)
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: nobugsme/nbank-ui:with_nginx_with_send_transfer_fix
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  selector:
+    app: frontend # сервис будет направлять трафик на поды с app= backend
+  ports:
+    - protocol: TCP
+      port: 80 # порт, на котором работает серивс
+      targetPort: 80 # куда пересылать трафик внутри пода (контейнер слушает этот порт)
+  type: NodePort # ClusterIp (только внутри контейнера), NodePort - открывает порт на всех нодах для доступа извне

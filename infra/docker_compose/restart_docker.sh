@@ -3,12 +3,12 @@
 echo ">>> Остановить docker-compose"
 docker compose -f infra/docker_compose/docker-compose.yml down -v
 
-echo ">>> Выгрузить образы из config/browsers.json"
+echo ">>> Выгрузить образы из infra/config/browsers.json"
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-JSON_FILE="$SCRIPT_DIR/config/browsers.json"
+JSON_FILE="infra/config/browsers.json"
 COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
 
 # Проверки
