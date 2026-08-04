@@ -3,4 +3,4 @@ appVersion: with_fraud_check_with_approve
 description: A hole chart got NBank
 name: nbank
 type: application
-version: 0.0.1
+version: 0.0.2

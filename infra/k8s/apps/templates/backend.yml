@@ -27,12 +27,12 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: env-secrets
+                  name: postgres-secrets
                   key: db.password
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: env-secrets
+                  name: postgres-secrets
                   key: db.username
             - name: SPRING_DATASOURCE_URL
               value: {{ .Values.db.connection.url }}
@@ -40,17 +40,12 @@ spec:
               value: org.postgresql.Driver
             - name: FRAUD_DETECTION_SERVICE_URL
               value: http://fraud-detection-service:8080
-          startupProbe:
-            httpGet:
-              path: /actuator/health
-              port: 4111
-            periodSeconds: 10
-            failureThreshold: 15
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 4111
-            periodSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 25
 ---
 apiVersion: v1
 kind: Service

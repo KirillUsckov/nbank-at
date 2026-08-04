@@ -1,0 +1,115 @@
+{
+  "id": null,
+  "title": "Total Metrics Dashboard",
+  "tags": ["tests"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "15s",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Созданные пользователи",
+      "id": 1,
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "lines": true,
+      "linewidth": 2,
+      "fill": 3,
+      "targets": [
+        { "expr": "user_created_total" }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Начатые переводы",
+      "id": 2,
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "lines": true,
+      "linewidth": 2,
+      "fill": 3,
+      "targets": [
+        { "expr": "transfer_started_total" }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Успешные переводы",
+      "id": 3,
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "lines": true,
+      "linewidth": 2,
+      "fill": 3,
+      "targets": [
+        { "expr": "transfer_success_total" }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Неудачные переводы",
+      "id": 4,
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "lines": true,
+      "linewidth": 2,
+      "fill": 3,
+      "targets": [
+        { "expr": "transfer_failed_total" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          }
+        }
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Удаление пользователей админом",
+      "id": 5,
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "lines": true,
+      "linewidth": 2,
+      "fill": 3,
+      "targets": [
+        { "expr": "admin_user_deleted_total" }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Открытые счета",
+      "id": 6,
+      "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+      "lines": true,
+      "linewidth": 2,
+      "fill": 3,
+      "targets": [
+        { "expr": "account_created_total" }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Просмотр профиля клиента",
+      "id": 7,
+      "gridPos": { "x": 0, "y": 24, "w": 12, "h": 8 },
+      "lines": true,
+      "linewidth": 2,
+      "fill": 3,
+      "targets": [
+        { "expr": "customer_profile_fetched_total" }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Входы пользователей",
+      "id": 8,
+      "gridPos": { "x": 12, "y": 24, "w": 12, "h": 8 },
+      "lines": true,
+      "linewidth": 2,
+      "fill": 3,
+      "targets": [
+        { "expr": "user_login_total" }
+      ]
+    }
+  ]
+}
