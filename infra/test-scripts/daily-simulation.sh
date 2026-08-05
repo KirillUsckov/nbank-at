@@ -50,8 +50,8 @@ for (( i=0; i<$USER_COUNT; i++ )); do
   fi
 done
 
-echo "⏸ Pause 1 minute before next phase..."
-sleep 60
+echo "⏸ Pause 5 sec before next phase..."
+sleep 5
 
 # --- 2) Создание аккаунтов для пользователей ---
 if [ ${#USER_LIST[@]} -gt 0 ]; then
@@ -76,8 +76,8 @@ if [ ${#USER_LIST[@]} -gt 0 ]; then
   done
 fi
 
-echo "⏸ Pause 2 minutes before transfers..."
-sleep 120
+echo "⏸ Pause 30 sec before transfers..."
+sleep 30
 
 # --- 3) Минимум 50 переводов ---
 if [ ${#USER_LIST[@]} -gt 1 ]; then
@@ -109,15 +109,19 @@ if [ ${#USER_LIST[@]} -gt 1 ]; then
     AUTH_HEADER="Authorization: Basic $(echo -n "$SENDER_NAME:$SENDER_PASS" | base64)"
 
     # 💰 Пополняем счёт перед переводом, чтобы было с чего списывать
-    curl -s -X POST "$API_URL/accounts/deposit" \
+    RESPONSE=$(curl -s -X POST "$API_URL/accounts/deposit" \
       -H "Content-Type: application/json" \
       -H "$AUTH_HEADER" \
-      -d "{\"id\": $SENDER_ACCOUNT_ID, \"balance\": 100}" > /dev/null
-
+      -d "{\"accountId\": $SENDER_ACCOUNT_ID, \"amount\": 100}")
+    if [ "$RESPONSE" == "200" ]; then
+      echo "$SENDER_NAME deposit to $RECEIVER_NAME"
+    else
+      echo "$SENDER_NAME failed deposit to $RECEIVER_NAME (HTTP $RESPONSE)"
+    fi
     RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$API_URL/accounts/transfer" \
       -H "Content-Type: application/json" \
       -H "$AUTH_HEADER" \
-      -d "{\"senderAccountId\": $SENDER_ACCOUNT_ID, \"receiverAccountId\": $RECEIVER_ACCOUNT_ID, \"amount\": 50}")
+      -d "{\"senderAccountId\": $SENDER_ACCOUNT_ID, \"receiverAccountId\": $RECEIVER_ACCOUNT_ID, \"amount\": 50.0}")
 
     if [ "$RESPONSE" == "200" ]; then
       log_success "$SENDER_NAME transferred to $RECEIVER_NAME"
@@ -147,7 +151,7 @@ if [ ${#USER_LIST[@]} -gt 0 ]; then
       RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$API_URL/accounts/deposit" \
         -H "Content-Type: application/json" \
         -H "$AUTH_HEADER" \
-        -d "{\"id\": $ACCOUNT_ID, \"balance\": 100}")
+        -d "{\"accountId\": $ACCOUNT_ID, \"amount\": 100}")
 
       if [ "$RESPONSE" == "200" ]; then
         log_success "$USERNAME deposited money"
