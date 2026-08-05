@@ -2,7 +2,7 @@
 
 # Поднятие сервисов приложения
 # запустили локальный кластер с помощью minikube, с использлванием драйвера docker - кластер будет запущен внутри докер контейнера minikube
-minikube start --driver=docker
+minikube start --driver=docker --memory=6000 --cpus=4
 
 # Создание configmap с именем selenoid-config, в котором будет доступен файл infra/config/browsers.json под именем browsers.json
 kubectl create configmap selenoid-config --from-file=browsers.json=infra/config/browsers.json

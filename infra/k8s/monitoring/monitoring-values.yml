@@ -1,7 +1,6 @@
 grafana:
   enabled: true
-  adminUser: "admin"
-  adminPassword: "admin"
+  adminUser: admin
   service:
     type: NodePort
   sidecar:
