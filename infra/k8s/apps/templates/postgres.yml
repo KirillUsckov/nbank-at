@@ -20,12 +20,12 @@ spec:
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: env-secrets
+                name: postgres-secrets
                 key: db.password
           - name: POSTGRES_USER
             valueFrom:
               secretKeyRef:
-                name: env-secrets
+                name: postgres-secrets
                 key: db.username
           - name: POSTGRES_DB
             value: {{ .Values.db.name }}

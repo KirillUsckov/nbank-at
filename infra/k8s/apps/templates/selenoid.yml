@@ -25,6 +25,9 @@ spec:
               name: docker-sock
             - mountPath: /etc/selenoid
               name: selenoid-config
+          env:
+            - name: DOCKER_API_VERSION
+              value: "1.44"
       volumes:
         - name: docker-sock
           hostPath:
